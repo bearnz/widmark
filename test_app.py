@@ -1,8 +1,11 @@
+import json
 import tempfile
+import time
 import tkinter as tk
 import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
+from unittest import mock
 
 import app
 
@@ -55,6 +58,32 @@ class StateTest(unittest.TestCase):
         log = [{"time": (now - timedelta(hours=h)).isoformat()} for h in (25, 23, 1)]
         self.assertEqual(len(app.recent(log, now)), 2)
 
+    def test_unreadable_file_is_moved_aside_not_overwritten(self):
+        self.path.parent.mkdir(parents=True)
+        self.path.write_text('{"profile": {"sex": "male", "weight": 80}, "log": [', encoding="utf-8")
+        with self.assertRaises(app.StateError):
+            app.load_state(self.path)
+        self.assertFalse(self.path.exists())
+        backups = list(self.path.parent.glob("state.unreadable-*.json"))
+        self.assertEqual(len(backups), 1)
+        self.assertIn('"weight": 80', backups[0].read_text(encoding="utf-8"))
+        self.assertEqual(app.load_state(self.path)["log"], [])
+
+    def test_save_leaves_no_temp_file(self):
+        app.save_state({"log": []}, self.path)
+        self.assertEqual([p.name for p in self.path.parent.iterdir()], ["state.json"])
+
+    def test_old_naive_times_mix_with_new_aware_ones(self):
+        now = datetime(2026, 10, 26, 8, 0).astimezone()
+        log = [{"time": "2026-10-26T07:00:00"}, {"time": (now - timedelta(hours=2)).isoformat()}]
+        self.assertEqual(len(app.recent(log, now)), 2)
+        self.assertEqual(sorted(log, key=app.entry_time)[0], log[1])
+
+    def test_implausible_watson_falls_back_to_the_default(self):
+        r, how = app.body_water({"sex": "female", "age": 30, "height": 250, "weight": 30})
+        self.assertEqual(r, 0.55)
+        self.assertIn("implausible", how)
+
     def test_profile_r_uses_watson_only_with_age_and_height(self):
         self.assertEqual(app.profile_r({"sex": "male", "weight": 80}), 0.68)
         self.assertAlmostEqual(app.profile_r({"sex": "male", "weight": 80, "age": 35, "height": 180}), 0.709, places=3)
@@ -73,6 +102,11 @@ class AppSmokeTest(unittest.TestCase):
         except tk.TclError as e:
             self.skipTest(f"no display: {e}")
         self.window.withdraw()
+        self.messages = []
+        for kind in ("showerror", "showinfo", "showwarning"):
+            patcher = mock.patch.object(app.messagebox, kind, lambda title, text, **_: self.messages.append(text))
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def tearDown(self):
         self.window.destroy()
@@ -112,6 +146,62 @@ class AppSmokeTest(unittest.TestCase):
         w.tree.selection_set("0")
         w.remove_selected()
         self.assertEqual(w.data["log"], [])
+
+    def add_custom(self, text, qty="1", when="now"):
+        w = self.window
+        before = len(w.data["log"])
+        self.messages.clear()
+        w.search.set(text)
+        w.qty.set(qty)
+        w.when.set(when)
+        w.add_drink()
+        return len(w.data["log"]) - before
+
+    def test_rejects_impossible_drinks_with_a_message(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        for text, qty, when in (("500ml 150%", "1", "now"), ("0ml 5%", "1", "now"), ("330ml 5%", "25", "now"),
+                                ("330ml 5%", "1", "25 hours ago")):
+            self.assertEqual(self.add_custom(text, qty, when), 0, (text, qty, when))
+            self.assertEqual(len(self.messages), 1, (text, qty, when))
+        self.assertIn("more than 24 hours ago", self.messages[0])
+        self.assertEqual(self.add_custom("330ml 5%", "24", "23 hours ago"), 1)
+
+    def test_rejects_ages_outside_adult_range(self):
+        w = self.window
+        w.weight.set("80")
+        w.height.set("180")
+        for age in ("-5", "0", "400"):
+            self.messages.clear()
+            w.age.set(age)
+            w.save_profile()
+            self.assertEqual(len(self.messages), 1, age)
+            self.assertNotIn("age", w.data["profile"])
+        w.age.set("35")
+        w.save_profile()
+        self.assertEqual(w.data["profile"]["age"], 35)
+
+    def test_log_selection_survives_the_minute_refresh(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        self.add_custom("330ml 5%", when="2h ago")
+        self.add_custom("330ml 5%", when="1h ago")
+        w.tree.selection_set("1")
+        w.refresh()
+        self.assertEqual(w.tree.selection(), ("1",))
+
+    def test_warns_when_saved_data_was_unreadable(self):
+        path = Path(tempfile.mkdtemp()) / "state.json"
+        path.write_text("not json", encoding="utf-8")
+        other = app.App(path, catalogue=self.window.catalogue)
+        other.withdraw()
+        deadline = time.monotonic() + 2
+        while not self.messages and time.monotonic() < deadline:
+            other.update()
+        other.destroy()
+        self.assertTrue(self.messages and "couldn't be read" in self.messages[0], self.messages)
 
     def pick(self, name):
         w = self.window
