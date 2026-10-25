@@ -67,7 +67,8 @@ class AppSmokeTest(unittest.TestCase):
                 {"name": "Test Lager", "type": "beer", "abv": 5.0, "pour": False,
                  "units": [{"label": "can/bottle", "ml": 330}, {"label": "pint", "ml": 568}]},
                 {"name": "Test Gin", "type": "spirit", "abv": 40.0, "pour": True,
-                 "units": [{"label": "nip", "ml": 30}, {"label": "double", "ml": 60}]},
+                 "units": [{"label": "shot", "ml": 15}, {"label": "double", "ml": 30},
+                           {"label": "family", "ml": 40}]},
             ])
         except tk.TclError as e:
             self.skipTest(f"no display: {e}")
@@ -165,9 +166,10 @@ class AppSmokeTest(unittest.TestCase):
         self.pick("gin")
         self.assertTrue(w.pour_row.winfo_manager())
         self.assertFalse(w.unit_row.winfo_manager())
-        self.assertEqual(w.spirit_ml.get(), "30")
-        w.quick.winfo_children()[1].invoke()  # the "double 60" button
-        self.assertEqual(w.spirit_ml.get(), "60")
+        self.assertEqual(w.spirit_ml.get(), "15")
+        self.assertEqual([b["text"] for b in w.quick.winfo_children()], ["shot 15", "double 30", "family 40"])
+        w.quick.winfo_children()[2].invoke()
+        self.assertEqual(w.spirit_ml.get(), "40")
         w.spirit_ml.set("45")
         w.mixer_ml.set("150")
         w.add_drink()

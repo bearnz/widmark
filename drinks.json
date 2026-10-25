@@ -4246,12 +4246,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4263,12 +4267,16 @@
    "abv": 37.5,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4280,12 +4288,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4297,12 +4309,16 @@
    "abv": 37.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4314,12 +4330,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4331,12 +4351,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4348,12 +4372,16 @@
    "abv": 37.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4365,12 +4393,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4382,12 +4414,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4399,12 +4435,16 @@
    "abv": 37.5,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4416,12 +4456,16 @@
    "abv": 37.5,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
@@ -4433,12 +4477,16 @@
    "abv": 40.0,
    "units": [
     {
-     "label": "nip",
-     "ml": 30.0
+     "label": "shot",
+     "ml": 15.0
     },
     {
      "label": "double",
-     "ml": 60.0
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 40.0
     }
    ],
    "pour": true,
