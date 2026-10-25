@@ -1879,32 +1879,6 @@
    "source": "Woolworths"
   },
   {
-   "name": "-196 Double Lemon",
-   "type": "rtd",
-   "abv": 6.0,
-   "units": [
-    {
-     "label": "can/bottle",
-     "ml": 330.0
-    }
-   ],
-   "pour": false,
-   "source": "Liquorland"
-  },
-  {
-   "name": "-196 Lemon Passionfruit",
-   "type": "rtd",
-   "abv": 6.0,
-   "units": [
-    {
-     "label": "can/bottle",
-     "ml": 330.0
-    }
-   ],
-   "pour": false,
-   "source": "Liquorland"
-  },
-  {
    "name": "Absolut & Sprite",
    "type": "rtd",
    "abv": 5.0,
@@ -2761,6 +2735,32 @@
     {
      "label": "can/bottle",
      "ml": 440.0
+    }
+   ],
+   "pour": false,
+   "source": "Liquorland"
+  },
+  {
+   "name": "Suntory -196 Double Lemon",
+   "type": "rtd",
+   "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
+   "source": "Liquorland"
+  },
+  {
+   "name": "Suntory -196 Lemon Passionfruit",
+   "type": "rtd",
+   "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
     }
    ],
    "pour": false,

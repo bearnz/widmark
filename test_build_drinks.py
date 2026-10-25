@@ -41,6 +41,61 @@ class UnitsTest(unittest.TestCase):
                 build_drinks.parse_units(bad)
 
 
+def copy_sources(edit=None):
+    """A temp copy of the real CSV, optionally edited line by line; returns (csv path, json path)."""
+    tmp = Path(tempfile.mkdtemp())
+    src = tmp / "abv_sources.csv"
+    lines = build_drinks.SOURCES.read_text(encoding="utf-8").splitlines()
+    if edit:
+        edit(lines)
+    src.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return src, tmp / "drinks.json"
+
+
+def set_cell(line, column, value):
+    """Edit one cell of the Heineken row (line 2)."""
+    def edit(lines):
+        header = lines[0].split(",")
+        cells = lines[line - 1].split(",")
+        cells[header.index(column)] = value
+        lines[line - 1] = ",".join(cells)
+    return edit
+
+
+class ProblemsTest(unittest.TestCase):
+    def assert_problem(self, edit, expected):
+        src, out = copy_sources(edit)
+        with self.assertRaises(build_drinks.BuildError) as ctx:
+            build_drinks.build(src, out)
+        self.assertIn(expected, str(ctx.exception))
+        self.assertFalse(out.exists(), "nothing should be written")
+
+    def test_bad_cells_are_named_by_line(self):
+        self.assert_problem(set_cell(2, "manual", '"4,5"'), "line 2 (Heineken): manual '4,5' isn't a number")
+        self.assert_problem(set_cell(2, "manual", "abc"), "manual 'abc' isn't a number")
+        self.assert_problem(set_cell(2, "woolworths", "150"), "woolworths 150 isn't a possible ABV")
+        self.assert_problem(set_cell(2, "type", "lager"), "type 'lager' isn't one of")
+        self.assert_problem(set_cell(2, "units", "pint"), "can't read unit 'pint'")
+        self.assert_problem(set_cell(2, "drink", "-Heineken"), "spreadsheets read as a formula")
+        self.assert_problem(set_cell(2, "drink", "Tui"), "another row has the same name")
+
+    def test_missing_column(self):
+        def drop_note(lines):
+            lines[:] = [line.rsplit(",", 1)[0] for line in lines]
+        self.assert_problem(drop_note, "missing column(s) note")
+
+    def test_reads_excel_utf8_with_byte_order_mark(self):
+        src, out = copy_sources()
+        src.write_text(src.read_text(encoding="utf-8"), encoding="utf-8-sig")
+        build_drinks.build(src, out)
+        self.assertTrue(out.exists())
+
+    def test_unusual_abv_is_flagged_not_rejected(self):
+        src, out = copy_sources(set_cell(2, "manual", "55"))
+        rows = build_drinks.build(src, out)
+        self.assertEqual([(r["drink"], abv) for r, abv in build_drinks.unusual(rows)], [("Heineken", 55)])
+
+
 class InSyncTest(unittest.TestCase):
     def test_drinks_json_matches_the_csv(self):
         tmp = Path(tempfile.mkdtemp())
