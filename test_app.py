@@ -42,10 +42,11 @@ class StateTest(unittest.TestCase):
         self.path = Path(tempfile.mkdtemp()) / "nested" / "state.json"
 
     def test_missing_file_gives_empty_state(self):
-        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "food": False})
+        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "food": False, "favourites": []})
 
     def test_round_trip(self):
-        data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00"}], "food": True}
+        data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00"}], "food": True,
+                "favourites": ["Lion Red"]}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
 
@@ -134,6 +135,30 @@ class AppSmokeTest(unittest.TestCase):
         w.other_ml.set("400")
         w.add_drink()
         self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("other", 400))
+
+    def test_favourites_are_pinned_and_remembered(self):
+        w = self.window
+        self.assertEqual(str(w.fav_button["state"]), "disabled")
+        self.pick("gin")
+        self.assertEqual(w.fav_button["text"], "☆ Pin as favourite")
+        w.fav_button.invoke()
+        self.assertEqual(w.data["favourites"], ["Test Gin"])
+        self.assertEqual(w.fav_button["text"], "★ Unpin favourite")
+        self.assertEqual(w._selected()["name"], "Test Gin")  # still selected after re-listing
+
+        w.search.set("")
+        self.assertEqual(w.listbox.get(0, "end"), ("★ Test Gin  (40%)", "Test Lager  (5%)"))
+
+        reopened = app.App(w.state_path, catalogue=w.catalogue)
+        reopened.withdraw()
+        self.assertEqual(reopened.listbox.get(0), "★ Test Gin  (40%)")
+        reopened.destroy()
+
+        self.pick("gin")
+        w.fav_button.invoke()
+        w.search.set("")
+        self.assertEqual(w.data["favourites"], [])
+        self.assertEqual(w.listbox.get(0), "Test Lager  (5%)")
 
     def test_spirit_pour_counts_only_the_spirit(self):
         w = self.window

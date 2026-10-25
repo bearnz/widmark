@@ -19,6 +19,7 @@ Widmark factor.
 Pick a drink, then how it was served: one of its units (can/bottle, handle,
 pint, glass, bottle...) or any other amount in ml. Spirits are logged by the ml
 poured, with the mixer recorded alongside; only the spirit counts.
+Pin drinks you have often as favourites: they stay at the top of the list.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths and New
