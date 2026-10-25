@@ -134,12 +134,15 @@ class App(tk.Tk):
         self.pour_row = ttk.Frame(serve)
         self.spirit_ml = tk.StringVar()
         self.mixer_ml = tk.StringVar()
-        for i, (label, var) in enumerate((("Spirit", self.spirit_ml), ("Mixer", self.mixer_ml))):
-            ttk.Label(self.pour_row, text=label).grid(row=i, column=0, sticky="w", pady=1)
-            ttk.Entry(self.pour_row, textvariable=var, width=6).grid(row=i, column=1, padx=(4, 0), pady=1)
-            ttk.Label(self.pour_row, text="ml").grid(row=i, column=2, padx=(2, 6), pady=1)
-        self.quick = ttk.Frame(self.pour_row)
-        self.quick.grid(row=0, column=3, sticky="w")
+        for label, var in (("Spirit", self.spirit_ml), ("Mixer", self.mixer_ml)):
+            line = ttk.Frame(self.pour_row)
+            line.pack(fill="x", pady=1)
+            ttk.Label(line, text=label, width=6).pack(side="left")
+            ttk.Entry(line, textvariable=var, width=6).pack(side="left")
+            ttk.Label(line, text="ml").pack(side="left", padx=(2, 0))
+            if label == "Spirit":  # quick picks for the spirit, e.g. shot 15 / double 30
+                self.quick = ttk.Frame(self.pour_row)
+                self.quick.pack(anchor="w", pady=(0, 2))
 
         row = ttk.Frame(box)
         row.pack(fill="x")
