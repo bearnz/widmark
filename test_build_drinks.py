@@ -39,8 +39,8 @@ class InSyncTest(unittest.TestCase):
         self.assertEqual(json.loads((tmp / "drinks.json").read_text(encoding="utf-8")),
                          json.loads(app.CATALOGUE.read_text(encoding="utf-8")),
                          "drinks.json is stale: run uv run build_drinks.py")
-        self.assertEqual((tmp / "abv_sources.csv").read_text(encoding="utf-8"),
-                         build_drinks.SOURCES.read_text(encoding="utf-8"),
+        self.assertEqual((tmp / "abv_sources.csv").read_text(encoding="utf-8").splitlines(),
+                         build_drinks.SOURCES.read_text(encoding="utf-8").splitlines(),
                          "the CSV status column is stale: run uv run build_drinks.py")
 
 
