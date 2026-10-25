@@ -1,7 +1,47 @@
 import unittest
 from datetime import datetime
 
-from bac import Drink, parse_drink, parse_weight, place_drinks, simulate, time_below
+from bac import (Drink, parse_approx_time, parse_drink, parse_weight, place_drinks, simulate,
+                 time_below, watson_r)
+
+
+class ApproxTimeTest(unittest.TestCase):
+    NOW = datetime(2026, 10, 26, 1, 20, 33)  # Monday 01:20
+
+    def check(self, text, expected):
+        self.assertEqual(parse_approx_time(text, self.NOW), expected, text)
+
+    def test_now_and_ago(self):
+        self.check("now", datetime(2026, 10, 26, 1, 20))
+        self.check("1h ago", datetime(2026, 10, 26, 0, 20))
+        self.check("45 min ago", datetime(2026, 10, 26, 0, 35))
+        self.check("1.5 hours ago", datetime(2026, 10, 25, 23, 50))
+
+    def test_clock_times_are_the_most_recent_past(self):
+        self.check("9pm", datetime(2026, 10, 25, 21, 0))
+        self.check("~21:30", datetime(2026, 10, 25, 21, 30))
+        self.check("about 12:30am", datetime(2026, 10, 26, 0, 30))
+        self.check("1am", datetime(2026, 10, 26, 1, 0))
+        self.check("2am", datetime(2026, 10, 25, 2, 0))
+
+    def test_bare_hour_picks_latest_of_am_and_pm(self):
+        self.check("11", datetime(2026, 10, 25, 23, 0))
+        self.check("1", datetime(2026, 10, 26, 1, 0))
+        self.check("9.15", datetime(2026, 10, 25, 21, 15))
+
+    def test_rejects_nonsense(self):
+        for text in ("25:00", "13pm", "9:75", "yesterday", "0am"):
+            with self.assertRaises(ValueError, msg=text):
+                parse_approx_time(text, self.NOW)
+
+
+class WatsonTest(unittest.TestCase):
+    def test_typical_adults_land_near_widmark_defaults(self):
+        self.assertAlmostEqual(watson_r("male", 35, 180, 80), 0.709, places=3)
+        self.assertAlmostEqual(watson_r("female", 35, 165, 65), 0.607, places=3)
+
+    def test_heavier_body_means_lower_r(self):
+        self.assertLess(watson_r("male", 35, 180, 120), watson_r("male", 35, 180, 80))
 
 
 class ParseTest(unittest.TestCase):

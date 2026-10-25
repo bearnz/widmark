@@ -19,6 +19,9 @@ ML_PER_OZ = 29.5735
 STANDARD_DRINK_G = 10  # NZ/AU standard drink; the US uses 14 g
 WIDMARK_R = {"male": 0.68, "female": 0.55}  # body water distribution ratio
 ELIM_RATES = {"fast": 0.020, "typical": 0.015, "slow": 0.010}  # BAC % per hour
+ABSORB_MINUTES = 45
+ABSORB_MINUTES_FOOD = 90
+BLOOD_WATER_FRACTION = 0.8  # links Watson body water to Widmark r
 THRESHOLDS = (0.08, 0.05, 0.02)
 
 # name: (volume mL, default ABV %)
@@ -38,6 +41,9 @@ DRINK_RE = re.compile(
     r"@\s*(?P<time>\d{1,2}:\d{2})\s*$",
     re.IGNORECASE,
 )
+APPROX_PREFIX_RE = re.compile(r"^(?:~|about|around|approx\.?)\s*")
+AGO_RE = re.compile(r"^(\d+(?:\.\d+)?)\s*(h|hrs?|hours?|m|mins?|minutes?)\s+ago$")
+CLOCK_RE = re.compile(r"^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?$")
 MINUTE = timedelta(minutes=1)
 
 
@@ -50,6 +56,50 @@ class Drink:
 def parse_clock(text):
     t = datetime.strptime(text.strip(), "%H:%M")
     return t.hour, t.minute
+
+
+def most_recent(now, hour, minute):
+    t = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    return t - timedelta(days=1) if t > now else t
+
+
+def parse_approx_time(text, now):
+    """'now', '9pm', '~21:30', 'about 9', '1h ago', '45 min ago' -> a datetime in the last 24 hours.
+
+    A bare hour with no am/pm picks whichever of the two came round most recently.
+    """
+    s = APPROX_PREFIX_RE.sub("", text.strip().lower())
+    if s in ("", "now"):
+        return now.replace(second=0, microsecond=0)
+    m = AGO_RE.match(s)
+    if m:
+        amount = float(m[1])
+        delta = timedelta(hours=amount) if m[2].startswith("h") else timedelta(minutes=amount)
+        return (now - delta).replace(second=0, microsecond=0)
+    m = CLOCK_RE.match(s)
+    hour, minute = (int(m[1]), int(m[2] or 0)) if m else (99, 99)
+    if m and m[3] and 1 <= hour <= 12:
+        hours = [hour % 12 + (12 if m[3] == "pm" else 0)]
+    elif m and not m[3] and hour <= 23:
+        hours = [hour, (hour + 12) % 24] if hour <= 12 else [hour]
+    else:
+        hours = []
+    if not hours or minute > 59:
+        raise ValueError(f"can't read time {text!r}; try now, 9pm, ~21:30 or 45 min ago")
+    return max(most_recent(now, h, minute) for h in hours)
+
+
+def alcohol_grams(ml, abv, count=1):
+    return count * ml * abv / 100 * ETHANOL_G_PER_ML
+
+
+def watson_r(sex, age, height_cm, weight_kg):
+    """Widmark r from Watson's total body water estimate, for people who give age and height."""
+    if sex == "male":
+        water_l = 2.447 - 0.09516 * age + 0.1074 * height_cm + 0.3362 * weight_kg
+    else:
+        water_l = -2.097 + 0.1069 * height_cm + 0.2466 * weight_kg
+    return water_l / (BLOOD_WATER_FRACTION * weight_kg)
 
 
 def parse_drink(spec):
@@ -70,8 +120,7 @@ def parse_drink(spec):
         abv = float(m["abv"])
     if abv is None:
         raise ValueError(f"{spec!r} needs an ABV, e.g. '330ml 5% @20:00'")
-    count = int(m["count"] or 1)
-    return count * ml * abv / 100 * ETHANOL_G_PER_ML, parse_clock(m["time"])
+    return alcohol_grams(ml, abv, int(m["count"] or 1)), parse_clock(m["time"])
 
 
 def parse_weight(text):
@@ -187,7 +236,7 @@ def main(argv=None):
     drinks = place_drinks(parsed, now)
     at = roll_forward(args.at, drinks[0].time) if args.at else now
     r = args.r or WIDMARK_R[args.sex]
-    absorb = 90 if args.food else 45
+    absorb = ABSORB_MINUTES_FOOD if args.food else ABSORB_MINUTES
     series = simulate(drinks, args.weight, r, args.elim, absorb)
     # Same night at the slow and fast ends of normal elimination, for a range.
     slow = simulate(drinks, args.weight, r, ELIM_RATES["slow"], absorb)
