@@ -4,6 +4,7 @@ Your profile and the last 24 hours of drinks are kept in ~/.boozer-calc/state.js
 Estimate only: never use it to decide whether you're fit to drive.
 """
 import json
+import os
 import re
 import tkinter as tk
 from datetime import datetime, timedelta
@@ -15,9 +16,16 @@ import bac
 CATALOGUE = Path(__file__).with_name("drinks.json")
 STATE = Path.home() / ".boozer-calc" / "state.json"
 LOG_HOURS = 24  # drinks older than this drop off the log
+MAX_QTY = 24
+AGE = (18, 120)
+HEIGHT_CM = (100, 250)
 CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNORECASE)
 HINT = "#666"
 OTHER = "other amount"
+
+
+class StateError(Exception):
+    """state.json couldn't be read; it has been moved aside so nothing overwrites it."""
 
 
 def load_catalogue(path=CATALOGUE):
@@ -27,35 +35,59 @@ def load_catalogue(path=CATALOGUE):
 def load_state(path=STATE):
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
+        if not isinstance(data, dict):
+            raise ValueError("not a JSON object")
+    except FileNotFoundError:
         data = {}
+    except ValueError as e:  # includes JSONDecodeError and UnicodeDecodeError
+        backup = path.with_name(f"{path.stem}.unreadable-{datetime.now():%Y%m%d-%H%M%S}{path.suffix}")
+        path.replace(backup)
+        raise StateError(f"{path} couldn't be read ({e}), so it was moved to {backup.name} "
+                         f"and the app started with an empty profile and log.") from e
     return {"profile": data.get("profile", {}), "log": data.get("log", []), "food": data.get("food", False),
             "favourites": data.get("favourites", [])}
 
 
 def save_state(data, path=STATE):
+    """Write via a temporary file, so a crash mid-write can't leave a half-written state.json."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    os.replace(tmp, path)
+
+
+def entry_time(entry):
+    """A logged drink's time as an aware local datetime (entries from older versions are naive)."""
+    return datetime.fromisoformat(entry["time"]).astimezone()
 
 
 def recent(log, now):
-    cutoff = now - timedelta(hours=LOG_HOURS)
-    return [e for e in log if datetime.fromisoformat(e["time"]) >= cutoff]
+    cutoff = now.astimezone() - timedelta(hours=LOG_HOURS)
+    return [e for e in log if entry_time(e) >= cutoff]
 
 
 def entry_grams(entry):
     return bac.alcohol_grams(entry["ml"], entry["abv"], entry["count"])
 
 
+def body_water(profile):
+    """(Widmark r, how it was worked out) for a saved profile."""
+    default = bac.WIDMARK_R[profile["sex"]]
+    if not (profile.get("age") and profile.get("height")):
+        return default, "default for sex; add age and height for a closer fit"
+    r = bac.watson_r(profile["sex"], profile["age"], profile["height"], profile["weight"])
+    if not bac.PLAUSIBLE_R[0] <= r <= bac.PLAUSIBLE_R[1]:
+        return default, f"default for sex: Watson gave an implausible {r:.2f}, check age, height and weight"
+    return r, "Watson, from age and height"
+
+
 def profile_r(profile):
-    if profile.get("age") and profile.get("height"):
-        return bac.watson_r(profile["sex"], profile["age"], profile["height"], profile["weight"])
-    return bac.WIDMARK_R[profile["sex"]]
+    return body_water(profile)[0]
 
 
 def estimate(profile, log, food):
     """BAC series at typical, slow and fast elimination for the logged drinks."""
-    drinks = [bac.Drink(datetime.fromisoformat(e["time"]), entry_grams(e)) for e in log]
+    drinks = [bac.Drink(entry_time(e), entry_grams(e)) for e in log]
     absorb = bac.ABSORB_MINUTES_FOOD if food else bac.ABSORB_MINUTES
     r = profile_r(profile)
     return [bac.simulate(drinks, profile["weight"], r, bac.ELIM_RATES[k], absorb)
@@ -67,7 +99,12 @@ class App(tk.Tk):
         super().__init__()
         self.title("boozer-calc")
         self.state_path = state_path
-        self.data = load_state(state_path)
+        try:
+            self.data = load_state(state_path)
+        except StateError as e:
+            self.data = load_state(state_path)
+            warning = str(e)
+            self.after(200, lambda: messagebox.showwarning("Saved data", warning, parent=self))
         self.catalogue = load_catalogue() if catalogue is None else catalogue
         left = ttk.Frame(self, padding=8)
         left.grid(row=0, column=0, sticky="ns")
@@ -149,7 +186,7 @@ class App(tk.Tk):
         self.qty = tk.StringVar(value="1")
         self.when = tk.StringVar(value="now")
         ttk.Label(row, text="Qty").pack(side="left")
-        ttk.Spinbox(row, from_=1, to=12, textvariable=self.qty, width=4).pack(side="left", padx=(4, 12))
+        ttk.Spinbox(row, from_=1, to=MAX_QTY, textvariable=self.qty, width=4).pack(side="left", padx=(4, 12))
         ttk.Label(row, text="When").pack(side="left")
         ttk.Entry(row, textvariable=self.when, width=16).pack(side="left", padx=4)
         ttk.Label(box, text="e.g. now, 9pm, ~21:30, 45 min ago", foreground=HINT).pack(anchor="w")
@@ -195,11 +232,15 @@ class App(tk.Tk):
         except ValueError:
             messagebox.showerror("Profile", "Age, weight and height must be numbers.", parent=self)
             return
-        if not 30 <= weight <= 300:
-            messagebox.showerror("Profile", "Weight is in kg, between 30 and 300.", parent=self)
-            return
-        if height is not None and not 100 <= height <= 250:
-            messagebox.showerror("Profile", "Height is in cm, between 100 and 250.", parent=self)
+        problems = []
+        if not bac.WEIGHT_KG[0] <= weight <= bac.WEIGHT_KG[1]:
+            problems.append(f"Weight is in kg, between {bac.WEIGHT_KG[0]} and {bac.WEIGHT_KG[1]}.")
+        if age is not None and not AGE[0] <= age <= AGE[1]:
+            problems.append(f"Age must be between {AGE[0]} and {AGE[1]}.")
+        if height is not None and not HEIGHT_CM[0] <= height <= HEIGHT_CM[1]:
+            problems.append(f"Height is in cm, between {HEIGHT_CM[0]} and {HEIGHT_CM[1]}.")
+        if problems:
+            messagebox.showerror("Profile", "\n".join(problems), parent=self)
             return
         self.data["profile"] = {"sex": self.sex.get(), "age": age, "weight": weight, "height": height}
         self._save()
@@ -219,19 +260,24 @@ class App(tk.Tk):
                 unit = d["units"][self.unit_pick.current()]
                 entry = {"name": d["name"], "abv": d["abv"], "unit": unit["label"], "ml": unit["ml"]}
             elif custom:
-                ml, abv = float(custom[1]), float(custom[2])
-                entry = {"name": f"Custom {abv:g}%", "abv": abv, "ml": ml}
+                abv = bac.check_abv(float(custom[2]))
+                entry = {"name": f"Custom {abv:g}%", "abv": abv, "ml": amount(custom[1], "Drink size", 3000)}
             else:
                 messagebox.showinfo("Add a drink", "Pick a drink from the list, or type one like 500ml 6%.",
                                     parent=self)
                 return
             entry["count"] = whole(self.qty.get())
-            entry["time"] = bac.parse_approx_time(self.when.get(), datetime.now()).isoformat()
+            now = bac.now_local()
+            when = bac.parse_approx_time(self.when.get(), now)
+            if when < now - timedelta(hours=LOG_HOURS):
+                raise ValueError(f"That's more than {LOG_HOURS} hours ago, so it would drop straight off the log. "
+                                 "Drinks that long ago no longer change the estimate much.")
+            entry["time"] = when.isoformat()
         except ValueError as e:
             messagebox.showerror("Add a drink", str(e), parent=self)
             return
         self.data["log"].append(entry)
-        self.data["log"].sort(key=lambda e: e["time"])
+        self.data["log"].sort(key=entry_time)
         self.qty.set("1")
         self.when.set("now")
         self._save()
@@ -319,12 +365,17 @@ class App(tk.Tk):
     # --- display ---
 
     def refresh(self):
-        now = datetime.now()
-        self.data["log"] = recent(self.data["log"], now)
+        now = bac.now_local()
+        # The log is rebuilt every minute; keep whatever rows were selected for Remove.
+        log = self.data["log"]
+        selected = [log[int(iid)] for iid in self.tree.selection() if int(iid) < len(log)]
+        self.data["log"] = recent(log, now)
         self.tree.delete(*self.tree.get_children())
         for i, e in enumerate(self.data["log"]):
             self.tree.insert("", "end", iid=str(i), values=(
-                bac.fmt(datetime.fromisoformat(e["time"])), describe(e), e["count"], f"{entry_grams(e):.0f} g"))
+                bac.fmt(entry_time(e)), describe(e), e["count"], f"{entry_grams(e):.0f} g"))
+            if any(e is s for s in selected):
+                self.tree.selection_add(str(i))
         self.chart.delete("all")
         p = self.data["profile"]
         if not p.get("weight"):
@@ -332,9 +383,8 @@ class App(tk.Tk):
             self.now_label.configure(text="--", foreground="")
             self.detail_label["text"] = "Set up your profile to get an estimate."
             return
-        how = ("Watson, from age and height" if p.get("age") and p.get("height")
-               else "default for sex; add age and height for a closer fit")
-        self.r_label["text"] = f"Body water factor r = {profile_r(p):.2f} ({how})"
+        r, how = body_water(p)
+        self.r_label["text"] = f"Body water factor r = {r:.2f} ({how})"
         if not self.data["log"]:
             self.now_label.configure(text="0.000%", foreground="")
             self.detail_label["text"] = "No drinks in the last 24 hours."
@@ -385,7 +435,7 @@ class App(tk.Tk):
         tick = t0.replace(minute=0) + timedelta(hours=1)
         while tick < t1:
             c.create_line(x(tick), bottom, x(tick), bottom + 4, fill="#999")
-            c.create_text(x(tick), bottom + 6, text=tick.strftime("%H:%M"), anchor="n", font=small, fill=HINT)
+            c.create_text(x(tick), bottom + 6, text=tick.astimezone().strftime("%H:%M"), anchor="n", font=small, fill=HINT)
             tick += step
         points = series[::5] + [series[-1]]
         c.create_line(*[v for t, b in points for v in (x(t), y(b))], fill="#2c6fbb", width=2)
@@ -428,8 +478,8 @@ def whole(text):
         count = int(text)
     except ValueError:
         count = 0
-    if count < 1:
-        raise ValueError("Qty must be a whole number, 1 or more.")
+    if not 1 <= count <= MAX_QTY:
+        raise ValueError(f"Qty must be a whole number from 1 to {MAX_QTY}.")
     return count
 
 
