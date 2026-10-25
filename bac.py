@@ -22,6 +22,9 @@ ELIM_RATES = {"fast": 0.020, "typical": 0.015, "slow": 0.010}  # BAC % per hour
 ABSORB_MINUTES = 45
 ABSORB_MINUTES_FOOD = 90
 BLOOD_WATER_FRACTION = 0.8  # links Watson body water to Widmark r
+PLAUSIBLE_R = (0.4, 0.95)  # a Watson r outside this means the profile numbers don't fit together
+WEIGHT_KG = (30, 300)
+MAX_ABV = 100
 THRESHOLDS = (0.08, 0.05, 0.02)
 
 # name: (volume mL, default ABV %)
@@ -58,16 +61,35 @@ def parse_clock(text):
     return t.hour, t.minute
 
 
+# Times are aware local datetimes (datetime.now().astimezone()), so the gap between
+# two times is real elapsed time even across a daylight-saving change. Naive times
+# are read as local.
+
+def now_local():
+    return datetime.now().astimezone()
+
+
+def at_clock(day, hour, minute):
+    """hour:minute local wall-clock time on the given date, with that moment's UTC offset."""
+    return datetime(day.year, day.month, day.day, hour, minute).astimezone()
+
+
+def local_date(t):
+    return t.astimezone().date()
+
+
 def most_recent(now, hour, minute):
-    t = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-    return t - timedelta(days=1) if t > now else t
+    t = at_clock(local_date(now), hour, minute)
+    return at_clock(local_date(now) - timedelta(days=1), hour, minute) if t > now else t
 
 
 def parse_approx_time(text, now):
-    """'now', '9pm', '~21:30', 'about 9', '1h ago', '45 min ago' -> a datetime in the last 24 hours.
+    """'now', '9pm', '~21:30', 'about 9', '1h ago', '45 min ago' -> an aware local datetime.
 
-    A bare hour with no am/pm picks whichever of the two came round most recently.
+    Clock times are the most recent time that clock time came round; a bare hour
+    with no am/pm picks whichever of the two came round most recently.
     """
+    now = now.astimezone()
     s = APPROX_PREFIX_RE.sub("", text.strip().lower())
     if s in ("", "now"):
         return now.replace(second=0, microsecond=0)
@@ -75,7 +97,7 @@ def parse_approx_time(text, now):
     if m:
         amount = float(m[1])
         delta = timedelta(hours=amount) if m[2].startswith("h") else timedelta(minutes=amount)
-        return (now - delta).replace(second=0, microsecond=0)
+        return (now - delta).replace(second=0, microsecond=0).astimezone()
     m = CLOCK_RE.match(s)
     hour, minute = (int(m[1]), int(m[2] or 0)) if m else (99, 99)
     if m and m[3] and 1 <= hour <= 12:
@@ -91,6 +113,12 @@ def parse_approx_time(text, now):
 
 def alcohol_grams(ml, abv, count=1):
     return count * ml * abv / 100 * ETHANOL_G_PER_ML
+
+
+def check_abv(abv):
+    if not 0 < abv <= MAX_ABV:
+        raise ValueError(f"ABV must be more than 0% and at most {MAX_ABV}%, not {abv:g}%")
+    return abv
 
 
 def watson_r(sex, age, height_cm, weight_kg):
@@ -120,7 +148,10 @@ def parse_drink(spec):
         abv = float(m["abv"])
     if abv is None:
         raise ValueError(f"{spec!r} needs an ABV, e.g. '330ml 5% @20:00'")
-    return alcohol_grams(ml, abv, int(m["count"] or 1)), parse_clock(m["time"])
+    count = int(m["count"] or 1)
+    if count < 1 or ml <= 0:
+        raise ValueError(f"{spec!r} has no drink in it")
+    return alcohol_grams(ml, check_abv(abv), count), parse_clock(m["time"])
 
 
 def parse_weight(text):
@@ -128,33 +159,32 @@ def parse_weight(text):
     if not m:
         raise argparse.ArgumentTypeError(f"can't read weight {text!r}; use e.g. 80kg or 176lb")
     value = float(m[1])
-    return value * 0.45359237 if (m[2] or "").lower().startswith("lb") else value
+    kg = value * 0.45359237 if (m[2] or "").lower().startswith("lb") else value
+    if not WEIGHT_KG[0] <= kg <= WEIGHT_KG[1]:
+        raise argparse.ArgumentTypeError(f"weight must be {WEIGHT_KG[0]}-{WEIGHT_KG[1]} kg, not {kg:g} kg")
+    return kg
 
 
 def place_drinks(parsed, now):
-    """Turn clock times into datetimes.
+    """Turn clock times into aware local datetimes.
 
     The first drink is the most recent time that clock time came round (so it's
     in the last 24 hours), and each later drink rolls past midnight as needed.
     """
-    (h, mi) = parsed[0][1]
-    t = now.replace(hour=h, minute=mi, second=0, microsecond=0)
-    if t > now:
-        t -= timedelta(days=1)
+    t = most_recent(now.astimezone(), *parsed[0][1])
     drinks = []
     for grams, (h, mi) in parsed:
-        nxt = t.replace(hour=h, minute=mi)
+        nxt = at_clock(local_date(t), h, mi)
         if nxt < t:
-            nxt += timedelta(days=1)
+            nxt = at_clock(local_date(t) + timedelta(days=1), h, mi)
         t = nxt
         drinks.append(Drink(t, grams))
     return drinks
 
 
 def roll_forward(clock, after):
-    h, mi = clock
-    t = after.replace(hour=h, minute=mi, second=0, microsecond=0)
-    return t + timedelta(days=1) if t < after else t
+    t = at_clock(local_date(after), *clock)
+    return at_clock(local_date(after) + timedelta(days=1), *clock) if t < after else t
 
 
 def simulate(drinks, weight_kg, r, elim_per_hour, absorb_minutes):
@@ -192,7 +222,7 @@ def time_below(series, threshold):
 
 
 def fmt(t):
-    return t.strftime("%a %H:%M")
+    return t.astimezone().strftime("%a %H:%M")
 
 
 def timeline(series, mark=None, width=40):
@@ -226,16 +256,18 @@ def main(argv=None):
     args = p.parse_args(argv)
     if args.elim <= 0:
         p.error("--elim must be positive")
+    if args.r is not None and not PLAUSIBLE_R[0] <= args.r <= PLAUSIBLE_R[1]:
+        p.error(f"--r must be between {PLAUSIBLE_R[0]} and {PLAUSIBLE_R[1]}")
 
     try:
         parsed = [parse_drink(s) for s in args.drink]
     except ValueError as e:
         p.error(str(e))
 
-    now = datetime.now()
+    now = now_local()
     drinks = place_drinks(parsed, now)
     at = roll_forward(args.at, drinks[0].time) if args.at else now
-    r = args.r or WIDMARK_R[args.sex]
+    r = WIDMARK_R[args.sex] if args.r is None else args.r
     absorb = ABSORB_MINUTES_FOOD if args.food else ABSORB_MINUTES
     series = simulate(drinks, args.weight, r, args.elim, absorb)
     # Same night at the slow and fast ends of normal elimination, for a range.
