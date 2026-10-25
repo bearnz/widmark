@@ -4,6 +4,21 @@ Python CLI that approximates blood alcohol (BAC) from the drinks you had.
 
 ## Running
 
+Desktop app (profile, NZ drink list, live estimate and chart):
+
+```
+uv run app.py
+```
+
+Your profile and the last 24 hours of drinks are saved to
+`~/.boozer-calc/state.json`, outside the repo. Times can be rough: `now`,
+`9pm`, `~21:30`, `45 min ago`. The drink list is `drinks.json`; its sizes and
+ABVs are from memory and worth checking against labels. With age and height in
+the profile, body water comes from the Watson formula instead of the fixed
+Widmark factor.
+
+One-off estimate from the command line:
+
 ```
 uv run bac.py -w 80kg --sex male --at 08:00 -d "2x pint 5% @20:00" -d "glass 13% @22:30" -d "shot @00:30"
 ```
