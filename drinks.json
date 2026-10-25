@@ -4,1752 +4,4445 @@
   {
    "name": "Asahi Super Dry",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Bavaria Holland",
    "type": "beer",
-   "ml": 440.0,
    "abv": 4.3,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
+  },
+  {
+   "name": "Beer (generic)",
+   "type": "beer",
+   "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
+   "source": "generic"
   },
   {
    "name": "BRB 18th Amendment APA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "BRB Bouncing Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "BRB Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Cassels Light Owl",
    "type": "beer",
-   "ml": 330.0,
    "abv": 2.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cassels Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Coopers Best Extra Stout",
    "type": "beer",
-   "ml": 750.0,
    "abv": 6.3,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 750.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Coopers Sparkling Ale",
    "type": "beer",
-   "ml": 750.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 750.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Corona Extra (330 ml can)",
+   "name": "Corona Extra (bottle)",
    "type": "beer",
-   "ml": 330.0,
-   "abv": 4.5,
+   "abv": 4.6,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 355.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
-   "name": "Corona Extra (355 ml bottle)",
+   "name": "Corona Extra (can)",
    "type": "beer",
-   "ml": 355.0,
-   "abv": 4.6,
+   "abv": 4.5,
+   "units": [
+    {
+     "label": "can",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "DB Draught",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Double Brown",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Emerson's Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.9,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Epic Hop Zombie",
    "type": "beer",
-   "ml": 330.0,
    "abv": 8.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Export 33",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Export Citrus (low alcohol)",
    "type": "beer",
-   "ml": 330.0,
    "abv": 2.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Export Gold",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Export Ultra Low Carb",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Garage Project Boss Level Ultra IPA",
    "type": "beer",
-   "ml": 440.0,
    "abv": 8.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Garage Project Hapi Daze Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.6,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Garage Project Hazy Pernicious Weed",
    "type": "beer",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Garage Project Party & Bullshit IPA",
    "type": "beer",
-   "ml": 440.0,
    "abv": 6.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Garage Project Pernicious Weed",
    "type": "beer",
-   "ml": 330.0,
    "abv": 8.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Haagen Lager",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Heineken",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "can",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
-  },
-  {
-   "name": "Heineken (500 ml can)",
-   "type": "beer",
-   "ml": 500.0,
-   "abv": 5.0,
-   "source": "Woolworths"
   },
   {
    "name": "Heineken Silver Low Carb",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Ichiban",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Kronenbourg 1664",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Lakeman Love Doctor Hazy IPA",
    "type": "beer",
-   "ml": 440.0,
    "abv": 8.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Liberty Halo Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Liberty Jungle Juice Hazy IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 6.6,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Liberty Oh Brother Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.1,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Lion Red",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Mac's Gold",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Mac's Maverick Ultra Low Carb",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mac's Mid Vicious Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 2.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mac's Showboat Hazy NEIPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mac's Three Wolves Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.7,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mac's Too Easy Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.4,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Monteith's Classic Original",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Monteith's Driftin IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Monteith's Gold Dust Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Monteith's Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Panhead Road Hog NZ IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Panhead Supercharger APA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.7,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Parrotdog Birdseye Hazy IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Parrotdog Bitterbitch IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Parrotdog Greyhound Low Carb Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.3,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Parrotdog Raptor APA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.7,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Parrotdog Yellowhammer Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Peroni Nastro Azzurro",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.1,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Sawmill Bright IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Sawmill Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Sawmill Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Speight's Gold Medal Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Speight's Summit Ultra Lime",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Speight's Summit Ultra Low Carb",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
-   "source": "Woolworths"
-  },
-  {
-   "name": "Speight's Summit Ultra Low Carb (500 ml can)",
-   "type": "beer",
-   "ml": 500.0,
-   "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "can",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Steinlager Classic",
    "type": "beer",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Steinlager Tokyo Dry",
    "type": "beer",
-   "ml": 500.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Steinlager Ultra Low Carb",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Stoke Hazy",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Stoke Hazy Pale Ale",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Stoke IPA",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Stoke Pilsner",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Swifty",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Tui",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
    "name": "Victoria Bitter",
    "type": "beer",
-   "ml": 375.0,
    "abv": 4.9,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 375.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Waikato Draught",
    "type": "beer",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Good George Doris Plum Cider",
    "type": "cider",
-   "ml": 946.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 946.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Good George Extra Dry Apple Cider",
    "type": "cider",
-   "ml": 946.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 946.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Kiss Peach Vanilla Cider",
    "type": "cider",
-   "ml": 500.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Kiss Wild Strawberry Cider",
    "type": "cider",
-   "ml": 500.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mac's Cloudy Apple Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Monteith's Crushed Apple Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Mussel Inn Apple Roughy Cider",
    "type": "cider",
-   "ml": 1300.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1300.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Mussel Inn Freckled Frog Feijoa Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Old Mout Scrumpy Berry",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 8.0,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Old Mout Scrumpy Tropical",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 8.3,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Orchard Thieves Apple Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Orchard Thieves Berry Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Orchard Thieves Feijoa Cider",
    "type": "cider",
-   "ml": 500.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 500.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Ranga Alcoholic Ginger Beer",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Rochdale Three Berries Cider",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Scrumpy Apple",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 8.2,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Scrumpy Ginger",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 8.2,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Scrumpy Raspberry",
    "type": "cider",
-   "ml": 1250.0,
    "abv": 8.2,
+   "units": [
+    {
+     "label": "bottle",
+     "ml": 1250.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Stoke Alcoholic Ginger Beer Lemon Lime & Bitters",
    "type": "cider",
-   "ml": 330.0,
    "abv": 4.2,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    },
+    {
+     "label": "handle",
+     "ml": 425.0
+    },
+    {
+     "label": "pint",
+     "ml": 568.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "-196 Double Lemon",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "-196 Lemon Passionfruit",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Absolut & Sprite",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Alba Sparkling Charred Pineapple Margarita",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.9,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Alba Sparkling Raspberry Margarita",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.9,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
-   "name": "Bacardi & Coca-Cola 7% (250 ml)",
+   "name": "Bacardi & Coca-Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
-   "source": "Liquorland"
-  },
-  {
-   "name": "Bacardi & Coca-Cola 7% (330 ml)",
-   "type": "rtd",
-   "ml": 330.0,
-   "abv": 7.0,
+   "units": [
+    {
+     "label": "can",
+     "ml": 250.0
+    },
+    {
+     "label": "can",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Bacardi & Coca-Cola Zero 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Billy Maverick & Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Brookvale Union Pineapple Coconut",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Canadian Club & Dry 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Canadian Club & Dry Zero 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Canadian Club Premium & Dry 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Canadian Club Soda & Lime 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cheeky Hard Iced Tea Peach",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Clean Collective Gin & Tonic with Lemon",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Clean Collective Pina Colada with Vodka",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Clean Collective Strawberry Blush Pink Gin",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Coruba & Cola 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Coruba & Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Crimson Badger Dark & Grizzly",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Crimson Badger Ginger Bear",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Double Grape Punch Low Sugar",
    "type": "rtd",
-   "ml": 440.0,
    "abv": 5.7,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Raspberry 4.8%",
    "type": "rtd",
-   "ml": 275.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 275.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Raspberry 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Sour Apple 4.8%",
    "type": "rtd",
-   "ml": 275.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 275.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Sour Blue Raspberry 4.8%",
    "type": "rtd",
-   "ml": 275.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 275.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Sour Blue Raspberry 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Cruiser Zero Sugar Raspberry 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Franky's Raspberry Cola",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Gordon's Gin & Tonic 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Gordon's Gin & Tonic Slimline 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Gordon's Pink Gin & Soda",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Hard Rated Lemon Pineapple",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Hard Rated Orange Low Sugar",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Jack Daniel's & Coca-Cola 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Jack Daniel's Double Jack & Coca-Cola Zero 7%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Jim Beam & Ginger Beer 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "KGB Black Russian",
    "type": "rtd",
-   "ml": 275.0,
    "abv": 4.6,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 275.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "KGB Vodka & Lemon Ice",
    "type": "rtd",
-   "ml": 275.0,
    "abv": 4.6,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 275.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Green Apple 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Lemon 4%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Lemon 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Mandarin 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Mango 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Peach 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Pineapple 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Kirin Hyoketsu Raspberry 6%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Malibu Passionfruit",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.5,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Odd Company Vodka Mandarin & Yuzu",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Odd Company Vodka Pineapple & Passionfruit",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 6.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Classic Margarita",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Peach Passionfruit & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Pineapple Lime & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Pink Lemon & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Red Peach Yuzu & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Ruby Raspberry & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Vodka Valencia Orange & Soda",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Pals Watermelon Margarita",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Scapegrace Black Gin & Tonic",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Scapegrace Gin & Yuzu Lemon",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Scapegrace Gin Hibiscus & Grapefruit",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Scapegrace Vodka & Lime",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Slight Twist Blood Orange Citrus Spritz",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "New World"
   },
   {
    "name": "Slight Twist Cherry Sling",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "New World"
   },
   {
    "name": "Slight Twist Mai Tai",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "New World"
   },
   {
    "name": "Smirnoff Ice Original",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Smirnoff Ice Peach Tea",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 5.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Smirnoff Vodka Crush Raspberry & Lemon",
    "type": "rtd",
-   "ml": 440.0,
    "abv": 5.7,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 440.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Tui Bourbon & Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Woodstock & Cola 4.8%",
    "type": "rtd",
-   "ml": 330.0,
    "abv": 4.8,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 330.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Woodstock & Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
    "name": "Woodstock & Zero Sugar Cola 7%",
    "type": "rtd",
-   "ml": 250.0,
    "abv": 7.0,
+   "units": [
+    {
+     "label": "can/bottle",
+     "ml": 250.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
-   "name": "19 Crimes Shiraz, glass",
+   "name": "19 Crimes Shiraz",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Awatere River Sauvignon Blanc, glass",
+   "name": "Awatere River Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Babydoll Prosecco, glass",
+   "name": "Babydoll Prosecco",
    "type": "wine",
-   "ml": 150.0,
    "abv": 11.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Brown Brothers Moscato Rosa, glass",
+   "name": "Brown Brothers Moscato",
    "type": "wine",
-   "ml": 150.0,
-   "abv": 6.0,
-   "source": "Woolworths"
-  },
-  {
-   "name": "Brown Brothers Moscato, glass",
-   "type": "wine",
-   "ml": 150.0,
    "abv": 5.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Brown Brothers Prosecco, glass",
+   "name": "Brown Brothers Moscato Rosa",
    "type": "wine",
-   "ml": 150.0,
+   "abv": 6.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
+   "source": "Woolworths"
+  },
+  {
+   "name": "Brown Brothers Prosecco",
+   "type": "wine",
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Brown Brothers Red Cienna (lower alcohol), glass",
+   "name": "Brown Brothers Red Cienna (lower alcohol)",
    "type": "wine",
-   "ml": 150.0,
    "abv": 7.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Brown Brothers Sparkling Moscato Rose, glass",
+   "name": "Brown Brothers Sparkling Moscato",
    "type": "wine",
-   "ml": 150.0,
-   "abv": 7.0,
-   "source": "Woolworths"
-  },
-  {
-   "name": "Brown Brothers Sparkling Moscato, glass",
-   "type": "wine",
-   "ml": 150.0,
    "abv": 6.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
-   "name": "Brown Brothers Tawny, port glass",
+   "name": "Brown Brothers Sparkling Moscato Rose",
    "type": "wine",
-   "ml": 60.0,
+   "abv": 7.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
+   "source": "Woolworths"
+  },
+  {
+   "name": "Brown Brothers Tawny",
+   "type": "wine",
    "abv": 18.0,
+   "units": [
+    {
+     "label": "port glass",
+     "ml": 60.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland"
   },
   {
-   "name": "Cleanskin Chardonnay, glass",
+   "name": "Bubbles / prosecco (generic)",
    "type": "wine",
-   "ml": 150.0,
+   "abv": 11.0,
+   "units": [
+    {
+     "label": "flute",
+     "ml": 120.0
+    },
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
+   "source": "generic"
+  },
+  {
+   "name": "Cleanskin Chardonnay",
+   "type": "wine",
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Cleanskin Pinot Noir, glass",
+   "name": "Cleanskin Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Corbans White Label Sauvignon Blanc, glass",
+   "name": "Corbans White Label Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Daniel Le Brun Brut, glass",
+   "name": "Daniel Le Brun Brut",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Fickle Mistress Pinot Noir, glass",
+   "name": "Fickle Mistress Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Grant Burge Barossa Ink Shiraz, glass",
+   "name": "Grant Burge Barossa Ink Shiraz",
    "type": "wine",
-   "ml": 150.0,
    "abv": 14.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Haha Pinot Noir, glass",
+   "name": "Haha Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Haha Syrah, glass",
+   "name": "Haha Syrah",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Jacob's Creek Sparkling Moscato Rose, glass",
+   "name": "Jacob's Creek Sparkling Moscato Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 7.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Lindauer Classic Brut, glass",
+   "name": "Lindauer Classic Brut",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Lindauer Classic Sparkling Brut (200 ml mini)",
    "type": "wine",
-   "ml": 200.0,
    "abv": 11.0,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 200.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Lindauer Classic Sparkling Pinot Gris (200 ml mini)",
    "type": "wine",
-   "ml": 200.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 200.0
+    }
+   ],
+   "pour": false,
+   "source": "Woolworths"
+  },
+  {
+   "name": "Lindauer Classic Sparkling Rose",
+   "type": "wine",
+   "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Lindauer Classic Sparkling Rose (200 ml mini)",
    "type": "wine",
-   "ml": 200.0,
    "abv": 11.0,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 200.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Lindauer Classic Sparkling Rose, glass",
+   "name": "Lindauer Classic Sparkling Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Lindauer Classic Sparkling Sauvignon Blanc (200 ml mini)",
    "type": "wine",
-   "ml": 200.0,
    "abv": 12.5,
-   "source": "Woolworths"
-  },
-  {
-   "name": "Lindauer Classic Sparkling Sauvignon Blanc, glass",
-   "type": "wine",
-   "ml": 150.0,
-   "abv": 12.0,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 200.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Lindauer Prosecco (200 ml mini)",
    "type": "wine",
-   "ml": 200.0,
    "abv": 11.0,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 200.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Lindauer Special Reserve Brut Cuvee, glass",
+   "name": "Lindauer Special Reserve Brut Cuvee",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Lindauer Special Reserve Sparkling Rose, glass",
+   "name": "Lindauer Special Reserve Sparkling Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Montana Affinity Sauvignon Blanc (low alcohol), glass",
+   "name": "Montana Affinity Sauvignon Blanc (low alcohol)",
    "type": "wine",
-   "ml": 150.0,
    "abv": 9.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Mt Difficulty Roaring Meg Pinot Noir, glass",
+   "name": "Mt Difficulty Roaring Meg Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Mud House Rose, glass",
+   "name": "Mud House Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Chardonnay, glass",
+   "name": "Oyster Bay Chardonnay",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Merlot, glass",
+   "name": "Oyster Bay Merlot",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Pinot Gris, glass",
+   "name": "Oyster Bay Pinot Gris",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Rose, glass",
+   "name": "Oyster Bay Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Sauvignon Blanc, glass",
+   "name": "Oyster Bay Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Oyster Bay Sparkling Cuvee Rose, glass",
+   "name": "Oyster Bay Sparkling Cuvee Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Rabbit Ranch Pinot Noir, glass",
+   "name": "Rabbit Ranch Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.4,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Rua Pinot Noir, glass",
+   "name": "Red wine (generic)",
    "type": "wine",
-   "ml": 150.0,
+   "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
+   "source": "generic"
+  },
+  {
+   "name": "Rua Pinot Noir",
+   "type": "wine",
    "abv": 14.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Saint Clair Vicar's Choice Sauvignon Blanc, glass",
+   "name": "Saint Clair Vicar's Choice Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Selaks Essentials Pinot Gris, glass",
+   "name": "Selaks Essentials Pinot Gris",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Selaks Essentials Rose, glass",
+   "name": "Selaks Essentials Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Selaks Essentials Sauvignon Blanc, glass",
+   "name": "Selaks Essentials Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Selaks Premium Selection Pinot Noir, glass",
+   "name": "Selaks Premium Selection Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Squealing Pig Pinot Gris, glass",
+   "name": "Squealing Pig Pinot Gris",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Squealing Pig Pinot Noir, glass",
+   "name": "Squealing Pig Pinot Noir",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
-   "name": "Squealing Pig Rose, glass",
+   "name": "Squealing Pig Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Squealing Pig Sauvignon Blanc, glass",
+   "name": "Squealing Pig Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "The Ned Chardonnay, glass",
+   "name": "The Ned Chardonnay",
    "type": "wine",
-   "ml": 150.0,
    "abv": 14.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "The Ned Pinot Gris, glass",
+   "name": "The Ned Pinot Gris",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "The Ned Rose, glass",
+   "name": "The Ned Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "The Ned Sauvignon Blanc, glass",
+   "name": "The Ned Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Toi Toi Merlot, glass",
+   "name": "Toi Toi Merlot",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Toi Toi Sauvignon Blanc, glass",
+   "name": "Toi Toi Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Villa Maria Private Bin Merlot Cabernet, glass",
+   "name": "Villa Maria Private Bin Merlot Cabernet",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Villa Maria Private Bin Sauvignon Blanc, glass",
+   "name": "Villa Maria Private Bin Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wairau River Sauvignon Blanc, glass",
+   "name": "Wairau River Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wither Hills Chardonnay, glass",
+   "name": "White wine (generic)",
    "type": "wine",
-   "ml": 150.0,
+   "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
+   "source": "generic"
+  },
+  {
+   "name": "Wither Hills Chardonnay",
+   "type": "wine",
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wither Hills Early Light Sauvignon Blanc, glass",
+   "name": "Wither Hills Early Light Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 9.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Liquorland, Woolworths"
   },
   {
-   "name": "Wither Hills Pinot Gris, glass",
+   "name": "Wither Hills Pinot Gris",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wither Hills Rose, glass",
+   "name": "Wither Hills Rose",
    "type": "wine",
-   "ml": 150.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wither Hills Sauvignon Blanc, glass",
+   "name": "Wither Hills Sauvignon Blanc",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wolf Blass Yellow Label Merlot, glass",
+   "name": "Wolf Blass Yellow Label Merlot",
    "type": "wine",
-   "ml": 150.0,
    "abv": 13.5,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Wyndham Estate Bin 444 Cabernet, glass",
+   "name": "Wyndham Estate Bin 444 Cabernet",
    "type": "wine",
-   "ml": 150.0,
    "abv": 14.4,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Yealands Merlot (187 ml mini)",
+   "name": "Yealands Merlot",
    "type": "wine",
-   "ml": 187.0,
    "abv": 13.0,
-   "source": "Woolworths"
-  },
-  {
-   "name": "Yealands Merlot, glass",
-   "type": "wine",
-   "ml": 150.0,
-   "abv": 13.0,
+   "units": [
+    {
+     "label": "glass",
+     "ml": 150.0
+    },
+    {
+     "label": "large glass",
+     "ml": 250.0
+    },
+    {
+     "label": "bottle",
+     "ml": 750.0
+    },
+    {
+     "label": "mini bottle",
+     "ml": 187.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
    "name": "Yealands Sauvignon Blanc (187 ml mini)",
    "type": "wine",
-   "ml": 187.0,
    "abv": 12.5,
+   "units": [
+    {
+     "label": "mini bottle",
+     "ml": 187.0
+    }
+   ],
+   "pour": false,
    "source": "Woolworths"
   },
   {
-   "name": "Appleton Estate Signature Rum, nip",
+   "name": "Appleton Estate Signature Rum",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Bacardi White Rum, nip",
+   "name": "Bacardi White Rum",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 37.5,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Bombay Sapphire Gin, nip",
+   "name": "Bombay Sapphire Gin",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Chatelle Napoleon Brandy, nip",
+   "name": "Chatelle Napoleon Brandy",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 37.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Jack Daniel's, nip",
+   "name": "Jack Daniel's",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Jameson Irish Whiskey, nip",
+   "name": "Jameson Irish Whiskey",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Jim Beam Bourbon, nip",
+   "name": "Jim Beam Bourbon",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 37.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Johnnie Walker Black Label, nip",
+   "name": "Johnnie Walker Black Label",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Johnnie Walker Red Label, nip",
+   "name": "Johnnie Walker Red Label",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "Smirnoff Vodka, nip",
+   "name": "Smirnoff Vodka",
    "type": "spirit",
-   "ml": 30.0,
    "abv": 37.5,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
   },
   {
-   "name": "St Remy VSOP Brandy, nip",
+   "name": "Spirit (generic)",
    "type": "spirit",
-   "ml": 30.0,
+   "abv": 37.5,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
+   "source": "generic"
+  },
+  {
+   "name": "St Remy VSOP Brandy",
+   "type": "spirit",
    "abv": 40.0,
+   "units": [
+    {
+     "label": "nip",
+     "ml": 30.0
+    },
+    {
+     "label": "double",
+     "ml": 60.0
+    }
+   ],
+   "pour": true,
    "source": "Liquorland"
-  },
-  {
-   "name": "Beer, handle (generic)",
-   "type": "generic",
-   "ml": 425.0,
-   "abv": 4.0,
-   "source": "generic"
-  },
-  {
-   "name": "Beer, pint (generic)",
-   "type": "generic",
-   "ml": 568.0,
-   "abv": 5.0,
-   "source": "generic"
-  },
-  {
-   "name": "Bubbles / prosecco, glass (generic)",
-   "type": "generic",
-   "ml": 120.0,
-   "abv": 11.0,
-   "source": "generic"
-  },
-  {
-   "name": "Spirit double (generic)",
-   "type": "generic",
-   "ml": 60.0,
-   "abv": 37.5,
-   "source": "generic"
-  },
-  {
-   "name": "Spirit nip (generic)",
-   "type": "generic",
-   "ml": 30.0,
-   "abv": 37.5,
-   "source": "generic"
-  },
-  {
-   "name": "Wine, bottle (generic)",
-   "type": "generic",
-   "ml": 750.0,
-   "abv": 13.0,
-   "source": "generic"
-  },
-  {
-   "name": "Wine, glass of Pinot Noir (generic)",
-   "type": "generic",
-   "ml": 150.0,
-   "abv": 13.5,
-   "source": "generic"
-  },
-  {
-   "name": "Wine, glass of Sauvignon Blanc (generic)",
-   "type": "generic",
-   "ml": 150.0,
-   "abv": 13.0,
-   "source": "generic"
   }
  ]
 }

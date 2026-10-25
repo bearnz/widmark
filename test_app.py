@@ -14,8 +14,27 @@ class CatalogueTest(unittest.TestCase):
         names = [d["name"] for d in drinks]
         self.assertEqual(len(names), len(set(names)))
         for d in drinks:
-            self.assertTrue(0 < d["ml"] <= 1500, d)
             self.assertTrue(0 < d["abv"] <= 60, d)
+            self.assertTrue(d["units"], d)
+            for u in d["units"]:
+                self.assertTrue(u["label"] and 0 < u["ml"] <= 1500, d)
+            self.assertEqual(d["pour"], d["type"] == "spirit", d)
+
+
+class DescribeTest(unittest.TestCase):
+    def test_units_pours_and_old_entries(self):
+        self.assertEqual(app.describe({"name": "Heineken", "unit": "pint", "ml": 568}), "Heineken, pint (568 ml)")
+        self.assertEqual(app.describe({"name": "Gin", "unit": "poured", "ml": 45, "mixer": 150}),
+                         "Gin, 45 ml + 150 ml mixer")
+        self.assertEqual(app.describe({"name": "Gin", "unit": "poured", "ml": 30, "mixer": 0}), "Gin, 30 ml")
+        self.assertEqual(app.describe({"name": "Lager", "ml": 330}), "Lager (330 ml)")
+
+    def test_amount_rejects_out_of_range(self):
+        self.assertEqual(app.amount("45", "Spirit", 500), 45)
+        self.assertEqual(app.amount("0", "Mixer", 2000, least=0), 0)
+        for text in ("", "abc", "0", "600"):
+            with self.assertRaises(ValueError, msg=text):
+                app.amount(text, "Spirit", 500)
 
 
 class StateTest(unittest.TestCase):
@@ -43,8 +62,12 @@ class StateTest(unittest.TestCase):
 class AppSmokeTest(unittest.TestCase):
     def setUp(self):
         try:
-            self.window = app.App(Path(tempfile.mkdtemp()) / "state.json",
-                                  catalogue=[{"name": "Test Lager", "ml": 330, "abv": 5.0}])
+            self.window = app.App(Path(tempfile.mkdtemp()) / "state.json", catalogue=[
+                {"name": "Test Lager", "type": "beer", "abv": 5.0, "pour": False,
+                 "units": [{"label": "can/bottle", "ml": 330}, {"label": "pint", "ml": 568}]},
+                {"name": "Test Gin", "type": "spirit", "abv": 40.0, "pour": True,
+                 "units": [{"label": "nip", "ml": 30}, {"label": "double", "ml": 60}]},
+            ])
         except tk.TclError as e:
             self.skipTest(f"no display: {e}")
         self.window.withdraw()
@@ -63,6 +86,7 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual(w.now_label["text"], "0.000%")
 
         w.listbox.selection_set(0)
+        w._show_serve()
         w.qty.set("2")
         w.when.set("30 min ago")
         w.add_drink()
@@ -81,10 +105,51 @@ class AppSmokeTest(unittest.TestCase):
         w.save_profile()
         w.search.set("500ml 6%")
         w.add_drink()
-        self.assertEqual(w.data["log"][0]["name"], "Custom 500 ml 6%")
+        self.assertEqual(w.data["log"][0]["name"], "Custom 6%")
+        self.assertEqual(w.data["log"][0]["ml"], 500)
         w.tree.selection_set("0")
         w.remove_selected()
         self.assertEqual(w.data["log"], [])
+
+    def pick(self, name):
+        w = self.window
+        w.search.set(name)
+        w.listbox.selection_set(0)
+        w._show_serve()
+
+    def test_choosing_a_unit_or_other_amount(self):
+        w = self.window
+        self.pick("lager")
+        self.assertEqual(list(w.unit_pick["values"]), ["can/bottle (330 ml)", "pint (568 ml)", app.OTHER])
+        self.assertEqual(str(w.other_entry["state"]), "disabled")
+        w.unit_pick.current(1)
+        w._unit_changed()
+        w.add_drink()
+        self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("pint", 568))
+        self.assertEqual(w.tree.item("0")["values"][1], "Test Lager, pint (568 ml)")
+
+        w.unit_pick.current(2)
+        w._unit_changed()
+        self.assertEqual(str(w.other_entry["state"]), "normal")
+        w.other_ml.set("400")
+        w.add_drink()
+        self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("other", 400))
+
+    def test_spirit_pour_counts_only_the_spirit(self):
+        w = self.window
+        self.pick("gin")
+        self.assertTrue(w.pour_row.winfo_manager())
+        self.assertFalse(w.unit_row.winfo_manager())
+        self.assertEqual(w.spirit_ml.get(), "30")
+        w.quick.winfo_children()[1].invoke()  # the "double 60" button
+        self.assertEqual(w.spirit_ml.get(), "60")
+        w.spirit_ml.set("45")
+        w.mixer_ml.set("150")
+        w.add_drink()
+        e = w.data["log"][-1]
+        self.assertEqual((e["unit"], e["ml"], e["mixer"]), ("poured", 45, 150))
+        self.assertAlmostEqual(app.entry_grams(e), 45 * 0.40 * 0.789)
+        self.assertEqual(w.tree.item("0")["values"][1], "Test Gin, 45 ml + 150 ml mixer")
 
 
 if __name__ == "__main__":

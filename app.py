@@ -17,6 +17,7 @@ STATE = Path.home() / ".boozer-calc" / "state.json"
 LOG_HOURS = 24  # drinks older than this drop off the log
 CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNORECASE)
 HINT = "#666"
+OTHER = "other amount"
 
 
 def load_catalogue(path=CATALOGUE):
@@ -112,6 +113,31 @@ class App(tk.Tk):
         ttk.Label(box, text="Search, or type a custom drink like 500ml 6%", foreground=HINT).pack(anchor="w")
         self.listbox = tk.Listbox(box, height=12, width=44, exportselection=False)
         self.listbox.pack(fill="both", expand=True, pady=4)
+        self.listbox.bind("<<ListboxSelect>>", lambda _: self._show_serve())
+
+        # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
+        serve = ttk.Frame(box)
+        serve.pack(fill="x", pady=(0, 4))
+        self.unit_row = ttk.Frame(serve)
+        self.unit = tk.StringVar()
+        self.other_ml = tk.StringVar()
+        ttk.Label(self.unit_row, text="Serve").pack(side="left")
+        self.unit_pick = ttk.Combobox(self.unit_row, textvariable=self.unit, state="readonly", width=24)
+        self.unit_pick.pack(side="left", padx=(4, 8))
+        self.unit_pick.bind("<<ComboboxSelected>>", lambda _: self._unit_changed())
+        self.other_entry = ttk.Entry(self.unit_row, textvariable=self.other_ml, width=6)
+        self.other_entry.pack(side="left")
+        ttk.Label(self.unit_row, text="ml").pack(side="left", padx=(2, 0))
+        self.pour_row = ttk.Frame(serve)
+        self.spirit_ml = tk.StringVar()
+        self.mixer_ml = tk.StringVar()
+        for i, (label, var) in enumerate((("Spirit", self.spirit_ml), ("Mixer", self.mixer_ml))):
+            ttk.Label(self.pour_row, text=label).grid(row=i, column=0, sticky="w", pady=1)
+            ttk.Entry(self.pour_row, textvariable=var, width=6).grid(row=i, column=1, padx=(4, 0), pady=1)
+            ttk.Label(self.pour_row, text="ml").grid(row=i, column=2, padx=(2, 6), pady=1)
+        self.quick = ttk.Frame(self.pour_row)
+        self.quick.grid(row=0, column=3, sticky="w")
+
         row = ttk.Frame(box)
         row.pack(fill="x")
         self.qty = tk.StringVar(value="1")
@@ -144,7 +170,7 @@ class App(tk.Tk):
         box.pack(fill="both", expand=True, pady=(8, 0))
         cols = ("time", "drink", "qty", "grams")
         self.tree = ttk.Treeview(box, columns=cols, show="headings", height=7)
-        for col, text, width in zip(cols, ("When", "Drink", "Qty", "Alcohol"), (90, 300, 40, 70)):
+        for col, text, width in zip(cols, ("When", "Drink", "Qty", "Alcohol"), (90, 360, 40, 70)):
             self.tree.heading(col, text=text)
             self.tree.column(col, width=width, anchor="w")
         self.tree.pack(fill="both", expand=True)
@@ -173,30 +199,32 @@ class App(tk.Tk):
         self._save()
 
     def add_drink(self):
-        selected = self.listbox.curselection()
+        d = self._selected()
         custom = CUSTOM_RE.fullmatch(self.search.get().strip())
-        if selected:
-            d = self.matches[selected[0]]
-            name, ml, abv = d["name"], d["ml"], d["abv"]
-        elif custom:
-            ml, abv = float(custom[1]), float(custom[2])
-            name = f"Custom {ml:g} ml {abv:g}%"
-        else:
-            messagebox.showinfo("Add a drink", "Pick a drink from the list, or type one like 500ml 6%.", parent=self)
-            return
         try:
-            count = int(self.qty.get())
-            if count < 1:
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Add a drink", "Qty must be a whole number, 1 or more.", parent=self)
-            return
-        try:
-            when = bac.parse_approx_time(self.when.get(), datetime.now())
+            if d and d["pour"]:
+                entry = {"name": d["name"], "abv": d["abv"], "unit": "poured",
+                         "ml": amount(self.spirit_ml.get(), "Spirit", 500),
+                         "mixer": amount(self.mixer_ml.get() or "0", "Mixer", 2000, least=0)}
+            elif d and self.unit.get() == OTHER:
+                entry = {"name": d["name"], "abv": d["abv"], "unit": "other",
+                         "ml": amount(self.other_ml.get(), "Amount", 3000)}
+            elif d:
+                unit = d["units"][self.unit_pick.current()]
+                entry = {"name": d["name"], "abv": d["abv"], "unit": unit["label"], "ml": unit["ml"]}
+            elif custom:
+                ml, abv = float(custom[1]), float(custom[2])
+                entry = {"name": f"Custom {abv:g}%", "abv": abv, "ml": ml}
+            else:
+                messagebox.showinfo("Add a drink", "Pick a drink from the list, or type one like 500ml 6%.",
+                                    parent=self)
+                return
+            entry["count"] = whole(self.qty.get())
+            entry["time"] = bac.parse_approx_time(self.when.get(), datetime.now()).isoformat()
         except ValueError as e:
             messagebox.showerror("Add a drink", str(e), parent=self)
             return
-        self.data["log"].append({"time": when.isoformat(), "name": name, "count": count, "ml": ml, "abv": abv})
+        self.data["log"].append(entry)
         self.data["log"].sort(key=lambda e: e["time"])
         self.qty.set("1")
         self.when.set("now")
@@ -222,7 +250,35 @@ class App(tk.Tk):
                         if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
         self.listbox.delete(0, "end")
         for d in self.matches:
-            self.listbox.insert("end", f"{d['name']}  ({d['ml']:g} ml, {d['abv']:g}%)")
+            self.listbox.insert("end", f"{d['name']}  ({d['abv']:g}%)")
+        self._show_serve()
+
+    def _selected(self):
+        selected = self.listbox.curselection()
+        return self.matches[selected[0]] if selected else None
+
+    def _show_serve(self):
+        """Show the serve choices for the selected drink: its units, or spirit and mixer mL."""
+        d = self._selected()
+        self.unit_row.pack_forget()
+        self.pour_row.pack_forget()
+        if d and d["pour"]:
+            for button in self.quick.winfo_children():
+                button.destroy()
+            for u in d["units"]:
+                ttk.Button(self.quick, text=f"{u['label']} {u['ml']:g}", width=10,
+                           command=lambda ml=u["ml"]: self.spirit_ml.set(f"{ml:g}")).pack(side="left", padx=1)
+            self.spirit_ml.set(f"{d['units'][0]['ml']:g}")
+            self.pour_row.pack(fill="x")
+        else:
+            units = d["units"] if d else []
+            self.unit_pick["values"] = [unit_text(u) for u in units] + [OTHER]
+            self.unit.set(unit_text(units[0]) if units else OTHER)
+            self.unit_row.pack(fill="x")
+            self._unit_changed()
+
+    def _unit_changed(self):
+        self.other_entry.configure(state="normal" if self.unit.get() == OTHER else "disabled")
 
     def _save(self):
         save_state(self.data, self.state_path)
@@ -240,7 +296,7 @@ class App(tk.Tk):
         self.tree.delete(*self.tree.get_children())
         for i, e in enumerate(self.data["log"]):
             self.tree.insert("", "end", iid=str(i), values=(
-                bac.fmt(datetime.fromisoformat(e["time"])), e["name"], e["count"], f"{entry_grams(e):.0f} g"))
+                bac.fmt(datetime.fromisoformat(e["time"])), describe(e), e["count"], f"{entry_grams(e):.0f} g"))
         self.chart.delete("all")
         p = self.data["profile"]
         if not p.get("weight"):
@@ -312,6 +368,41 @@ class App(tk.Tk):
 
 def fmt_num(value):
     return "" if value is None else f"{value:g}"
+
+
+def unit_text(unit):
+    return f"{unit['label']} ({unit['ml']:g} ml)"
+
+
+def describe(entry):
+    """How a logged drink reads in the log, e.g. 'Heineken, pint (568 ml)' or 'Gin, 45 ml + 150 ml mixer'."""
+    if entry.get("unit") == "poured":
+        mixer = f" + {entry['mixer']:g} ml mixer" if entry.get("mixer") else ""
+        return f"{entry['name']}, {entry['ml']:g} ml{mixer}"
+    if entry.get("unit"):
+        return f"{entry['name']}, {entry['unit']} ({entry['ml']:g} ml)"
+    return f"{entry['name']} ({entry['ml']:g} ml)"
+
+
+def amount(text, what, most, least=0.1):
+    """Parse a mL amount from a form field, or raise ValueError with a message for the user."""
+    try:
+        value = float(text)
+    except ValueError:
+        value = None
+    if value is None or not least <= value <= most:
+        raise ValueError(f"{what} must be an amount in ml, up to {most}.")
+    return value
+
+
+def whole(text):
+    try:
+        count = int(text)
+    except ValueError:
+        count = 0
+    if count < 1:
+        raise ValueError("Qty must be a whole number, 1 or more.")
+    return count
 
 
 if __name__ == "__main__":
