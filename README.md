@@ -12,10 +12,18 @@ uv run app.py
 
 Your profile and the last 24 hours of drinks are saved to
 `~/.boozer-calc/state.json`, outside the repo. Times can be rough: `now`,
-`9pm`, `~21:30`, `45 min ago`. The drink list is `drinks.json`; its sizes and
-ABVs are from memory and worth checking against labels. With age and height in
+`9pm`, `~21:30`, `45 min ago`. With age and height in
 the profile, body water comes from the Watson formula instead of the fixed
 Widmark factor.
+
+The drink list (`drinks.json`) is generated from `data/abv_sources.csv`, which
+has the ABV that Liquorland, Woolworths and New World each list per drink
+(collected October 2026), a `manual` column for checked values, and a `status`
+column flagging conflicts and drinks with no retailer ABV. Edit the CSV, then:
+
+```
+uv run build_drinks.py
+```
 
 One-off estimate from the command line:
 

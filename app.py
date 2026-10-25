@@ -218,7 +218,8 @@ class App(tk.Tk):
 
     def _filter(self):
         words = self.search.get().lower().split()
-        self.matches = [d for d in self.catalogue if all(w in d["name"].lower() for w in words)]
+        self.matches = [d for d in self.catalogue
+                        if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
         self.listbox.delete(0, "end")
         for d in self.matches:
             self.listbox.insert("end", f"{d['name']}  ({d['ml']:g} ml, {d['abv']:g}%)")
