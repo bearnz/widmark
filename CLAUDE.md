@@ -16,10 +16,15 @@ Your profile and the last 24 hours of drinks are saved to
 the profile, body water comes from the Watson formula instead of the fixed
 Widmark factor.
 
-The drink list (`drinks.json`) is generated from `data/abv_sources.csv`, which
-has the ABV that Liquorland, Woolworths and New World each list per drink
-(collected October 2026), a `manual` column for checked values, and a `status`
-column flagging conflicts and drinks with no retailer ABV. Edit the CSV, then:
+Pick a drink, then how it was served: one of its units (can/bottle, handle,
+pint, glass, bottle...) or any other amount in ml. Spirits are logged by the ml
+poured, with the mixer recorded alongside; only the spirit counts.
+
+The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
+per product with its serving units, the ABV that Liquorland, Woolworths and New
+World each list (collected October 2026), a `manual` column for checked values,
+and a `status` column flagging conflicts and drinks with no retailer ABV. Edit
+the CSV, then:
 
 ```
 uv run build_drinks.py

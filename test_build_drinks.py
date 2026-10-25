@@ -9,7 +9,8 @@ import build_drinks
 
 
 def row(**values):
-    base = {"type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "guess": "", "manual": ""}
+    base = {"drink": "Test", "type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "guess": "",
+            "manual": ""}
     return {**base, **values}
 
 
@@ -20,7 +21,7 @@ class ResolveTest(unittest.TestCase):
             (row(liquorland="4.5", woolworths="2.5"), ("conflict", 4.5)),
             (row(woolworths="4.2", guess="4"), ("one source", 4.2)),
             (row(liquorland="4.5", woolworths="2.5", manual="4.8"), ("manual", 4.8)),
-            (row(type="generic", guess="13"), ("generic", 13)),
+            (row(drink="Red wine (generic)", type="wine", guess="13"), ("generic", 13)),
             (row(guess="5"), ("guess only", None)),
             (row(), ("missing", None)),
         ]
@@ -29,6 +30,15 @@ class ResolveTest(unittest.TestCase):
 
     def test_close_values_agree(self):
         self.assertEqual(build_drinks.resolve(row(liquorland="4.6", woolworths="4.5"))[0], "agree")
+
+
+class UnitsTest(unittest.TestCase):
+    def test_parse(self):
+        self.assertEqual(build_drinks.parse_units("can/bottle 330; large glass 250"),
+                         [{"label": "can/bottle", "ml": 330}, {"label": "large glass", "ml": 250}])
+        for bad in ("330", "pint", "pint 568;", "pint lots"):
+            with self.assertRaises(ValueError, msg=bad):
+                build_drinks.parse_units(bad)
 
 
 class InSyncTest(unittest.TestCase):
