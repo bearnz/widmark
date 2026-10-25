@@ -29,7 +29,8 @@ def load_state(path=STATE):
         data = json.loads(path.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         data = {}
-    return {"profile": data.get("profile", {}), "log": data.get("log", []), "food": data.get("food", False)}
+    return {"profile": data.get("profile", {}), "log": data.get("log", []), "food": data.get("food", False),
+            "favourites": data.get("favourites", [])}
 
 
 def save_state(data, path=STATE):
@@ -114,6 +115,8 @@ class App(tk.Tk):
         self.listbox = tk.Listbox(box, height=12, width=44, exportselection=False)
         self.listbox.pack(fill="both", expand=True, pady=4)
         self.listbox.bind("<<ListboxSelect>>", lambda _: self._show_serve())
+        self.fav_button = ttk.Button(box, command=self.toggle_favourite)
+        self.fav_button.pack(anchor="w", pady=(0, 4))
 
         # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
         serve = ttk.Frame(box)
@@ -244,13 +247,32 @@ class App(tk.Tk):
         self.data["food"] = self.food.get()
         self._save()
 
-    def _filter(self):
+    def toggle_favourite(self):
+        d = self._selected()
+        if not d:
+            return
+        favourites = self.data["favourites"]
+        if d["name"] in favourites:
+            favourites.remove(d["name"])
+        else:
+            favourites.append(d["name"])
+        save_state(self.data, self.state_path)
+        self._filter(keep=d["name"])
+
+    def _filter(self, keep=None):
+        """List the drinks matching the search, favourites pinned first; reselect `keep` if listed."""
         words = self.search.get().lower().split()
-        self.matches = [d for d in self.catalogue
-                        if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
+        favourites = set(self.data["favourites"])
+        matches = [d for d in self.catalogue
+                   if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
+        self.matches = sorted(matches, key=lambda d: d["name"] not in favourites)
         self.listbox.delete(0, "end")
-        for d in self.matches:
-            self.listbox.insert("end", f"{d['name']}  ({d['abv']:g}%)")
+        for i, d in enumerate(self.matches):
+            star = "★ " if d["name"] in favourites else ""
+            self.listbox.insert("end", f"{star}{d['name']}  ({d['abv']:g}%)")
+            if d["name"] == keep:
+                self.listbox.selection_set(i)
+                self.listbox.see(i)
         self._show_serve()
 
     def _selected(self):
@@ -260,6 +282,9 @@ class App(tk.Tk):
     def _show_serve(self):
         """Show the serve choices for the selected drink: its units, or spirit and mixer mL."""
         d = self._selected()
+        favourite = d is not None and d["name"] in self.data["favourites"]
+        self.fav_button.configure(text="★ Unpin favourite" if favourite else "☆ Pin as favourite",
+                                  state="normal" if d else "disabled")
         self.unit_row.pack_forget()
         self.pour_row.pack_forget()
         if d and d["pour"]:
