@@ -68,7 +68,7 @@ class AppSmokeTest(unittest.TestCase):
                  "units": [{"label": "can/bottle", "ml": 330}, {"label": "pint", "ml": 568}]},
                 {"name": "Test Gin", "type": "spirit", "abv": 40.0, "pour": True,
                  "units": [{"label": "shot", "ml": 15}, {"label": "double", "ml": 30},
-                           {"label": "family", "ml": 40}]},
+                           {"label": "family", "ml": 37.5}]},
             ])
         except tk.TclError as e:
             self.skipTest(f"no display: {e}")
@@ -167,9 +167,9 @@ class AppSmokeTest(unittest.TestCase):
         self.assertTrue(w.pour_row.winfo_manager())
         self.assertFalse(w.unit_row.winfo_manager())
         self.assertEqual(w.spirit_ml.get(), "15")
-        self.assertEqual([b["text"] for b in w.quick.winfo_children()], ["shot 15", "double 30", "family 40"])
+        self.assertEqual([b["text"] for b in w.quick.winfo_children()], ["shot 15", "double 30", "family 37.5"])
         w.quick.winfo_children()[2].invoke()
-        self.assertEqual(w.spirit_ml.get(), "40")
+        self.assertEqual(w.spirit_ml.get(), "37.5")
         w.spirit_ml.set("45")
         w.mixer_ml.set("150")
         w.add_drink()
