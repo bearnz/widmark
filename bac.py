@@ -14,6 +14,8 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
+# These two reproduce the standard-drink counts DB Breweries prints on its labels
+# (e.g. 330 ml at 7% = 1.8), checked on db.co.nz in October 2026.
 ETHANOL_G_PER_ML = 0.789
 ML_PER_OZ = 29.5735
 STANDARD_DRINK_G = 10  # NZ/AU standard drink; the US uses 14 g

@@ -57,6 +57,13 @@ class ApproxTimeTest(unittest.TestCase):
                 parse_approx_time(text, self.NOW)
 
 
+class StandardDrinkTest(unittest.TestCase):
+    def test_matches_db_breweries_labels(self):
+        # (ml, ABV %, standard drinks as printed on db.co.nz, Oct 2026)
+        for ml, abv, label in ((330, 7, 1.8), (330, 5.2, 1.4), (330, 6.1, 1.6), (330, 4, 1.0)):
+            self.assertEqual(round(bac.alcohol_grams(ml, abv) / bac.STANDARD_DRINK_G, 1), label, (ml, abv))
+
+
 class WatsonTest(unittest.TestCase):
     def test_typical_adults_land_near_widmark_defaults(self):
         self.assertAlmostEqual(watson_r("male", 35, 180, 80), 0.709, places=3)
