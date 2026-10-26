@@ -45,13 +45,32 @@ class StateTest(unittest.TestCase):
         self.path = Path(tempfile.mkdtemp()) / "nested" / "state.json"
 
     def test_missing_file_gives_empty_state(self):
-        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "food": False, "favourites": []})
+        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "favourites": []})
 
     def test_round_trip(self):
-        data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00"}], "food": True,
+        data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
                 "favourites": ["Lion Red"]}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
+
+    def test_old_whole_log_meal_setting_moves_onto_each_drink(self):
+        app.save_state({"log": [{"time": "2026-10-25T21:00:00"}, {"time": "2026-10-25T22:00:00", "food": False}],
+                        "food": True}, self.path)
+        self.assertEqual([e["food"] for e in app.load_state(self.path)["log"]], [True, False])
+
+    def test_qty_spreads_evenly_and_meal_slows_absorption(self):
+        entry = {"time": "2026-10-25T20:00:00", "count": 3, "ml": 330, "abv": 5, "spread_minutes": 60, "food": True}
+        drinks = app.entry_drinks(entry)
+        self.assertEqual([d.time.strftime("%H:%M") for d in drinks], ["20:00", "20:30", "21:00"])
+        self.assertTrue(all(d.absorb_minutes == app.bac.ABSORB_MINUTES_FOOD for d in drinks))
+        self.assertAlmostEqual(sum(d.grams for d in drinks), app.entry_grams(entry))
+        old = {"time": "2026-10-25T20:00:00", "count": 3, "ml": 330, "abv": 5}  # logged before spreading existed
+        self.assertEqual({d.time for d in app.entry_drinks(old)}, {drinks[0].time})
+
+    def test_format_duration_reads_back(self):
+        for minutes, text in ((150, "2h30m"), (60, "1h"), (45, "45 min"), (0, "0 min")):
+            self.assertEqual(app.format_duration(minutes), text)
+            self.assertEqual(app.bac.parse_duration(text), timedelta(minutes=minutes))
 
     def test_recent_drops_entries_older_than_a_day(self):
         now = datetime(2026, 10, 26, 8, 0)
@@ -128,7 +147,8 @@ class AppSmokeTest(unittest.TestCase):
         w.add_drink()
         self.assertEqual(len(w.data["log"]), 1)
         self.assertEqual(len(w.tree.get_children()), 1)
-        self.assertRegex(w.now_label["text"], r"^0\.0[1-9]\d% now$")
+        self.assertRegex(w.now_label["text"], r"^0\.0\d\d% now$")
+        self.assertNotEqual(w.now_label["text"], "0.000% now")
         self.assertGreater(len(w.chart.find_all()), 3)
 
         saved = app.load_state(w.state_path)
@@ -192,6 +212,58 @@ class AppSmokeTest(unittest.TestCase):
         w.refresh()
         self.assertEqual(w.tree.selection(), ("1",))
 
+    def test_second_window_on_the_same_data_is_refused(self):
+        with self.assertRaises(app.AlreadyOpen):
+            app.App(self.window.state_path, catalogue=self.window.catalogue)
+        self.window.destroy()  # closing the first window frees the data for the next one
+        again = app.App(self.window.state_path, catalogue=self.window.catalogue)
+        again.withdraw()
+        self.window = again  # so tearDown closes it
+
+    def test_main_explains_instead_of_opening_a_second_window(self):
+        with mock.patch.object(app, "App", side_effect=app.AlreadyOpen("already open")):
+            self.assertEqual(app.main(), 1)
+        self.assertEqual(self.messages, ["already open"])
+
+    def test_qty_suggests_a_spread_and_logs_it(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        self.assertEqual(str(w.over_entry["state"]), "disabled")
+        w.qty.set("4")
+        self.assertEqual((str(w.over_entry["state"]), w.over.get()), ("normal", "1h30m"))
+        self.assertEqual(self.add_custom("330ml 5%", qty="4", when="2h ago"), 1)
+        e = w.data["log"][-1]
+        self.assertEqual((e["count"], e["spread_minutes"]), (4, 90))
+        self.assertIn("over 1h30m", w.tree.item("0")["values"][1])
+        self.assertEqual(w.over.get(), "")  # back to qty 1
+
+    def test_spread_running_past_now_is_refused(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        w._over_typed = True
+        w.over.set("3h")
+        self.assertEqual(self.add_custom("330ml 5%", qty="4", when="1h ago"), 0)
+        self.assertIn("after now", self.messages[0])
+        w.over.set("soon")
+        self.assertEqual(self.add_custom("330ml 5%", qty="4", when="1h ago"), 0)
+        self.assertIn("how long", self.messages[0])
+
+    def test_meal_is_per_drink_and_can_be_changed_later(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        w.food.set(True)
+        self.add_custom("330ml 5%", when="2h ago")
+        w.food.set(False)
+        self.add_custom("330ml 5%", when="1h ago")
+        self.assertEqual([e["food"] for e in w.data["log"]], [True, False])
+        self.assertTrue(w.tree.item("0")["values"][1].endswith(", with a meal"))
+        w.tree.selection_set("1")
+        w.toggle_meal()
+        self.assertEqual([e["food"] for e in app.load_state(w.state_path)["log"]], [True, True])
+
     def test_warns_when_saved_data_was_unreadable(self):
         path = Path(tempfile.mkdtemp()) / "state.json"
         path.write_text("not json", encoding="utf-8")
@@ -240,10 +312,7 @@ class AppSmokeTest(unittest.TestCase):
         w.search.set("")
         self.assertEqual(w.listbox.get(0, "end"), ("★ Test Gin  (40%)", "Test Lager  (5%)"))
 
-        reopened = app.App(w.state_path, catalogue=w.catalogue)
-        reopened.withdraw()
-        self.assertEqual(reopened.listbox.get(0), "★ Test Gin  (40%)")
-        reopened.destroy()
+        self.assertEqual(app.load_state(w.state_path)["favourites"], ["Test Gin"])
 
         self.pick("gin")
         w.fav_button.invoke()

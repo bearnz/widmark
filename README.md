@@ -11,8 +11,9 @@ uv run app.py
 ```
 
 Your profile and the last 24 hours of drinks are saved to
-`~/.boozer-calc/state.json`, outside the repo. Times can be rough: `now`,
-`9pm`, `~21:30`, `45 min ago`. With age and height in
+`~/.boozer-calc/state.json`, outside the repo. Only one window can be open at a
+time, so two can't overwrite each other's drinks. Times can be rough: `now`,
+`9pm`, `~21:30`, `noon`, `1h30m ago`, `an hour ago`. With age and height in
 the profile, body water comes from the Watson formula instead of the fixed
 Widmark factor.
 
@@ -20,6 +21,9 @@ Pick a drink, then how it was served: one of its units (can/bottle, handle,
 pint, glass, bottle...) or any other amount in ml. Spirits are logged by the ml
 poured, with the mixer recorded alongside; only the spirit counts.
 Pin drinks you have often as favourites: they stay at the top of the list.
+A qty above 1 is spread evenly from When over the time you give (one every 30
+minutes unless you change it). Tick "With a meal" for drinks had with food: they
+absorb more slowly. The log's With/without a meal button changes it afterwards.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths and New

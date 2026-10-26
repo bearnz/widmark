@@ -17,6 +17,7 @@ CATALOGUE = Path(__file__).with_name("drinks.json")
 STATE = Path.home() / ".boozer-calc" / "state.json"
 LOG_HOURS = 24  # drinks older than this drop off the log
 MAX_QTY = 24
+PACE_MINUTES = 30  # default gap between drinks when a qty of them is logged at once
 AGE = (18, 120)
 HEIGHT_CM = (100, 250)
 CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNORECASE)
@@ -26,6 +27,39 @@ OTHER = "other amount"
 
 class StateError(Exception):
     """state.json couldn't be read; it has been moved aside so nothing overwrites it."""
+
+
+class AlreadyOpen(Exception):
+    """Another window is already using this state.json."""
+
+
+class StateLock:
+    """An OS lock on state.json.lock, held while a window is open.
+
+    Two windows on the same state.json would each save their own copy, the last one
+    overwriting drinks added in the other, so a second window refuses to open. The OS
+    releases the lock when the process ends, even after a crash, so it can't go stale.
+    """
+
+    def __init__(self, state_path):
+        path = state_path.with_name(state_path.name + ".lock")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.file = open(path, "a+")  # noqa: SIM115 - held open for the life of the window
+        try:
+            if os.name == "nt":
+                import msvcrt
+                self.file.seek(0)
+                msvcrt.locking(self.file.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(self.file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            self.file.close()
+            raise AlreadyOpen("boozer-calc is already open. Use that window, or close it first, "
+                              "so the two don't overwrite each other's drinks.") from None
+
+    def release(self):
+        self.file.close()
 
 
 def load_catalogue(path=CATALOGUE):
@@ -44,8 +78,10 @@ def load_state(path=STATE):
         path.replace(backup)
         raise StateError(f"{path} couldn't be read ({e}), so it was moved to {backup.name} "
                          f"and the app started with an empty profile and log.") from e
-    return {"profile": data.get("profile", {}), "log": data.get("log", []), "food": data.get("food", False),
-            "favourites": data.get("favourites", [])}
+    log = data.get("log", [])
+    for entry in log:  # older versions had one meal setting for the whole log
+        entry.setdefault("food", data.get("food", False))
+    return {"profile": data.get("profile", {}), "log": log, "favourites": data.get("favourites", [])}
 
 
 def save_state(data, path=STATE):
@@ -70,6 +106,15 @@ def entry_grams(entry):
     return bac.alcohol_grams(entry["ml"], entry["abv"], entry["count"])
 
 
+def entry_drinks(entry):
+    """One log entry as bac.Drinks: qty drinks spread evenly from its time over spread_minutes."""
+    count = entry["count"]
+    gap = timedelta(minutes=entry.get("spread_minutes", 0)) / (count - 1) if count > 1 else timedelta(0)
+    absorb = bac.ABSORB_MINUTES_FOOD if entry.get("food") else bac.ABSORB_MINUTES
+    grams = bac.alcohol_grams(entry["ml"], entry["abv"])
+    return [bac.Drink(entry_time(entry) + i * gap, grams, absorb) for i in range(count)]
+
+
 def body_water(profile):
     """(Widmark r, how it was worked out) for a saved profile."""
     default = bac.WIDMARK_R[profile["sex"]]
@@ -85,18 +130,18 @@ def profile_r(profile):
     return body_water(profile)[0]
 
 
-def estimate(profile, log, food):
+def estimate(profile, log):
     """BAC series at typical, slow and fast elimination for the logged drinks."""
-    drinks = [bac.Drink(entry_time(e), entry_grams(e)) for e in log]
-    absorb = bac.ABSORB_MINUTES_FOOD if food else bac.ABSORB_MINUTES
+    drinks = [d for e in log for d in entry_drinks(e)]
     r = profile_r(profile)
-    return [bac.simulate(drinks, profile["weight"], r, bac.ELIM_RATES[k], absorb)
-            for k in ("typical", "slow", "fast")]
+    return [bac.simulate(drinks, profile["weight"], r, bac.ELIM_RATES[k]) for k in ("typical", "slow", "fast")]
 
 
 class App(tk.Tk):
     def __init__(self, state_path=STATE, catalogue=None):
+        lock = StateLock(state_path)  # raises AlreadyOpen before any window appears
         super().__init__()
+        self._lock = lock
         self.title("boozer-calc")
         self.state_path = state_path
         try:
@@ -181,20 +226,34 @@ class App(tk.Tk):
                 self.quick = ttk.Frame(self.pour_row)
                 self.quick.pack(anchor="w", pady=(0, 2))
 
+        # Qty over 1 spreads the drinks evenly from When across "over".
         row = ttk.Frame(box)
         row.pack(fill="x")
         self.qty = tk.StringVar(value="1")
+        self.over = tk.StringVar()
         self.when = tk.StringVar(value="now")
         ttk.Label(row, text="Qty").pack(side="left")
-        ttk.Spinbox(row, from_=1, to=MAX_QTY, textvariable=self.qty, width=4).pack(side="left", padx=(4, 12))
+        ttk.Spinbox(row, from_=1, to=MAX_QTY, textvariable=self.qty, width=4).pack(side="left", padx=(4, 8))
+        ttk.Label(row, text="over").pack(side="left")
+        self.over_entry = ttk.Entry(row, textvariable=self.over, width=9)
+        self.over_entry.pack(side="left", padx=4)
+        self._over_typed = False  # once the user types a span, stop suggesting one
+        self.over_entry.bind("<Key>", lambda _: setattr(self, "_over_typed", True))
+        self.qty.trace_add("write", lambda *_: self._qty_changed())
+        row = ttk.Frame(box)
+        row.pack(fill="x", pady=(2, 0))
         ttk.Label(row, text="When").pack(side="left")
         ttk.Entry(row, textvariable=self.when, width=16).pack(side="left", padx=4)
-        ttk.Label(box, text="e.g. now, 9pm, ~21:30, 45 min ago", foreground=HINT).pack(anchor="w")
+        ttk.Label(box, text="(the first one) e.g. now, 9pm, ~21:30, 1h30m ago", foreground=HINT).pack(anchor="w")
+        self.food = tk.BooleanVar(value=False)
+        ttk.Checkbutton(box, text="With a meal (slower absorption)", variable=self.food).pack(anchor="w", pady=(4, 0))
         ttk.Button(box, text="Add drink", command=self.add_drink).pack(fill="x", pady=(6, 0))
-        self.food = tk.BooleanVar(value=self.data["food"])
-        ttk.Checkbutton(box, text="Had a meal (slower absorption)", variable=self.food,
-                        command=self._food_changed).pack(anchor="w", pady=(6, 0))
+        self._qty_changed()
         self._filter()
+
+    def destroy(self):
+        super().destroy()
+        self._lock.release()
 
     def _build_estimate(self, parent):
         box = ttk.LabelFrame(parent, text="Estimate", padding=8)
@@ -220,7 +279,8 @@ class App(tk.Tk):
         row = ttk.Frame(box)
         row.pack(fill="x", pady=(6, 0))
         ttk.Button(row, text="Remove selected", command=self.remove_selected).pack(side="left")
-        ttk.Button(row, text="Clear all", command=self.clear_log).pack(side="left", padx=6)
+        ttk.Button(row, text="With/without a meal", command=self.toggle_meal).pack(side="left", padx=6)
+        ttk.Button(row, text="Clear all", command=self.clear_log).pack(side="left")
 
     # --- actions ---
 
@@ -272,14 +332,41 @@ class App(tk.Tk):
             if when < now - timedelta(hours=LOG_HOURS):
                 raise ValueError(f"That's more than {LOG_HOURS} hours ago, so it would drop straight off the log. "
                                  "Drinks that long ago no longer change the estimate much.")
+            if entry["count"] > 1:
+                spread = bac.parse_duration(self.over.get())
+                if spread is None or spread > timedelta(hours=LOG_HOURS):
+                    raise ValueError(f"Over must be how long the {entry['count']} drinks took, "
+                                     "e.g. 2h, 90 min or 1h30m (0 min if all at once).")
+                if when + spread > now + timedelta(minutes=1):
+                    raise ValueError(f"The last of those would be at {bac.fmt(when + spread)}, after now. "
+                                     "Set When to when the first one was, or shorten Over.")
+                entry["spread_minutes"] = spread / timedelta(minutes=1)
+            entry["food"] = self.food.get()
             entry["time"] = when.isoformat()
         except ValueError as e:
             messagebox.showerror("Add a drink", str(e), parent=self)
             return
         self.data["log"].append(entry)
         self.data["log"].sort(key=entry_time)
+        self._over_typed = False
         self.qty.set("1")
         self.when.set("now")
+        self._save()
+
+    def _qty_changed(self):
+        """Over only applies to a qty above 1; suggest one drink per PACE_MINUTES until the user types."""
+        try:
+            count = int(self.qty.get())
+        except ValueError:
+            count = 1
+        self.over_entry.configure(state="normal" if count > 1 else "disabled")
+        if not self._over_typed:
+            self.over.set(format_duration((count - 1) * PACE_MINUTES) if count > 1 else "")
+
+    def toggle_meal(self):
+        for iid in self.tree.selection():
+            entry = self.data["log"][int(iid)]
+            entry["food"] = not entry.get("food")
         self._save()
 
     def remove_selected(self):
@@ -291,10 +378,6 @@ class App(tk.Tk):
         if self.data["log"] and messagebox.askyesno("Clear all", "Remove every logged drink?", parent=self):
             self.data["log"] = []
             self._save()
-
-    def _food_changed(self):
-        self.data["food"] = self.food.get()
-        self._save()
 
     def toggle_favourite(self):
         d = self._selected()
@@ -390,7 +473,7 @@ class App(tk.Tk):
             self.detail_label["text"] = "No drinks in the last 24 hours."
             return
 
-        series, slow, fast = estimate(p, self.data["log"], self.data["food"])
+        series, slow, fast = estimate(p, self.data["log"])
         current = bac.bac_at(series, now)
         colour = "#c0392b" if current >= 0.08 else "#d35400" if current >= 0.05 else ""
         self.now_label.configure(text=f"{current:.3f}% now", foreground=colour)
@@ -453,13 +536,23 @@ def unit_text(unit):
 
 
 def describe(entry):
-    """How a logged drink reads in the log, e.g. 'Heineken, pint (568 ml)' or 'Gin, 45 ml + 150 ml mixer'."""
+    """How a logged drink reads in the log, e.g. 'Heineken, pint (568 ml) over 2h, with a meal'."""
     if entry.get("unit") == "poured":
         mixer = f" + {entry['mixer']:g} ml mixer" if entry.get("mixer") else ""
-        return f"{entry['name']}, {entry['ml']:g} ml{mixer}"
-    if entry.get("unit"):
-        return f"{entry['name']}, {entry['unit']} ({entry['ml']:g} ml)"
-    return f"{entry['name']} ({entry['ml']:g} ml)"
+        text = f"{entry['name']}, {entry['ml']:g} ml{mixer}"
+    elif entry.get("unit"):
+        text = f"{entry['name']}, {entry['unit']} ({entry['ml']:g} ml)"
+    else:
+        text = f"{entry['name']} ({entry['ml']:g} ml)"
+    if entry.get("count", 1) > 1 and entry.get("spread_minutes"):
+        text += f" over {format_duration(entry['spread_minutes'])}"
+    return text + (", with a meal" if entry.get("food") else "")
+
+
+def format_duration(minutes):
+    """150 -> '2h30m', 60 -> '1h', 45 -> '45 min' (parse_duration reads all of them back)."""
+    hours, mins = divmod(round(minutes), 60)
+    return f"{hours}h{mins}m" if hours and mins else f"{hours}h" if hours else f"{mins} min"
 
 
 def amount(text, what, most, least=0.1):
@@ -483,5 +576,18 @@ def whole(text):
     return count
 
 
+def main():
+    try:
+        window = App()
+    except AlreadyOpen as e:
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showinfo("boozer-calc", str(e), parent=root)
+        root.destroy()
+        return 1
+    window.mainloop()
+    return 0
+
+
 if __name__ == "__main__":
-    App().mainloop()
+    raise SystemExit(main())
