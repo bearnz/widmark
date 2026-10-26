@@ -944,7 +944,7 @@
   {
    "name": "Cassels Nectaron IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 6.1,
    "units": [
     {
      "label": "can/bottle",
@@ -960,7 +960,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Cassels Pilsner",
