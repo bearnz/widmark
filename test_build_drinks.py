@@ -9,7 +9,7 @@ import build_drinks
 
 
 def row(**values):
-    base = {"drink": "Test", "type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "paknsave": "", "guess": "",
+    base = {"drink": "Test", "type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "paknsave": "", "brewery": "", "guess": "",
             "manual": ""}
     return {**base, **values}
 
@@ -22,11 +22,21 @@ class ResolveTest(unittest.TestCase):
             (row(woolworths="4.2", guess="4"), ("one source", 4.2)),
             (row(liquorland="4.5", woolworths="2.5", manual="4.8"), ("manual", 4.8)),
             (row(drink="Red wine (generic)", type="wine", guess="13"), ("generic", 13)),
+            (row(liquorland="8.5", woolworths="8", brewery="8"), ("brewery", 8)),
+            (row(brewery="4.2"), ("brewery", 4.2)),
+            (row(liquorland="8.5", brewery="8", manual="8.2"), ("manual", 8.2)),
             (row(guess="5"), ("guess only", None)),
             (row(), ("missing", None)),
         ]
         for r, expected in cases:
             self.assertEqual(build_drinks.resolve(r), expected, r)
+
+    def test_retailers_that_differ_from_the_brewery_are_reported(self):
+        rows = [row(drink="Boss Level", liquorland="8.5", woolworths="8", brewery="8"),
+                row(drink="Pilsner", woolworths="4.8", brewery="4.8"),
+                row(drink="No brewery", liquorland="5", woolworths="4")]
+        self.assertEqual([(r["drink"], b, off) for r, b, off in build_drinks.retailers_differ(rows)],
+                         [("Boss Level", 8, {"Liquorland": 8.5})])
 
     def test_close_values_agree(self):
         self.assertEqual(build_drinks.resolve(row(liquorland="4.6", woolworths="4.5"))[0], "agree")

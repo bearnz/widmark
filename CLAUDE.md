@@ -27,7 +27,9 @@ absorb more slowly. The log's With/without a meal button changes it afterwards.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths, New
-World and PAK'nSAVE each list (collected October 2026), a `manual` column for checked values,
+World and PAK'nSAVE each list, the ABV the brewery itself lists (Garage Project,
+Sawmill, and DB Breweries' brands; it wins over the retailers), all collected
+October 2026, a `manual` column for checked values,
 and a `status` column flagging conflicts and drinks with no retailer ABV. Edit
 the CSV, then:
 
