@@ -1,4 +1,5 @@
 import json
+import shutil
 import tempfile
 import time
 import tkinter as tk
@@ -17,11 +18,93 @@ class CatalogueTest(unittest.TestCase):
         names = [d["name"] for d in drinks]
         self.assertEqual(len(names), len(set(names)))
         for d in drinks:
-            self.assertTrue(0 < d["abv"] <= 60, d)
+            self.assertTrue(d["abv"] is None or 0 < d["abv"] <= 60, d)
             self.assertTrue(d["units"], d)
             for u in d["units"]:
                 self.assertTrue(u["label"] and 0 < u["ml"] <= 1500, d)
             self.assertEqual(d["pour"], d["type"] == "spirit", d)
+
+
+class SetAbvTest(unittest.TestCase):
+    """Set ABV through the window, writing to a copy of the real ABV table."""
+
+    def setUp(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.sources, self.catalogue = tmp / "abv_sources.csv", tmp / "drinks.json"
+        shutil.copy(app.build_drinks.SOURCES, self.sources)
+        app.build_drinks.build(self.sources, self.catalogue)
+        try:
+            self.window = app.App(tmp / "state.json", catalogue_path=self.catalogue, sources=self.sources)
+        except tk.TclError as e:
+            self.skipTest(f"no display: {e}")
+        self.window.withdraw()
+        self.messages = []
+        self.answers = []  # what the Set ABV box will return, in order
+        for name, fake in (("showerror", lambda title, text, **_: self.messages.append(text)),
+                           ("showinfo", lambda title, text, **_: self.messages.append(text)),
+                           ("askyesno", lambda title, text, **_: True)):
+            patcher = mock.patch.object(app.messagebox, name, fake)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        patcher = mock.patch.object(app.simpledialog, "askstring", lambda *a, **k: self.answers.pop(0))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def tearDown(self):
+        self.window.destroy()
+
+    def pick(self, name):
+        w = self.window
+        w.search.set(name)
+        w.listbox.selection_set(0)
+        w._show_serve()
+
+    def manual(self, drink):
+        return {r["drink"]: r["manual"] for r in app.build_drinks.read(self.sources)[1]}[drink]
+
+    def test_no_abv_drink_is_listed_set_then_cleared(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        self.pick("big hoppa")
+        self.assertEqual(w.listbox.get(0), "Mac's Big Hoppa IPA  (no ABV yet)")
+        w.add_drink()
+        self.assertEqual(w.data["log"], [])
+        self.assertIn("has no ABV yet", self.messages[0])
+
+        self.answers.append("5.7%")
+        w.set_abv()
+        self.assertEqual(self.manual("Mac's Big Hoppa IPA"), "5.7")
+        saved = {d["name"]: d for d in app.load_catalogue(self.catalogue)}["Mac's Big Hoppa IPA"]
+        self.assertEqual((saved["abv"], saved["source"]), (5.7, "manual"))
+        self.assertEqual(w.listbox.get(w.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (5.7%)")
+        w.add_drink()
+        self.assertEqual(w.data["log"][0]["abv"], 5.7)
+
+        self.answers.append("")  # blank clears the manual value
+        w.set_abv()
+        self.assertEqual(self.manual("Mac's Big Hoppa IPA"), "")
+        self.assertEqual(w.listbox.get(w.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (no ABV yet)")
+
+    def test_correcting_an_abv_offers_to_update_logged_drinks(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        self.pick("heineken silver")
+        w.add_drink()
+        self.answers.append("4.5")
+        w.set_abv()
+        self.assertEqual(w.data["log"][0]["abv"], 4.5)
+        self.assertEqual(app.load_state(w.state_path)["log"][0]["abv"], 4.5)
+
+    def test_impossible_abv_is_refused_and_nothing_changes(self):
+        self.pick("big hoppa")
+        before = self.sources.read_text(encoding="utf-8")
+        for answer in ("150", "lots"):
+            self.answers.append(answer)
+            self.window.set_abv()
+        self.assertEqual(len(self.messages), 2)
+        self.assertEqual(self.sources.read_text(encoding="utf-8"), before)
 
 
 class DescribeTest(unittest.TestCase):

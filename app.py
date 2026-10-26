@@ -9,11 +9,12 @@ import re
 import tkinter as tk
 from datetime import datetime, timedelta
 from pathlib import Path
-from tkinter import messagebox, ttk
+from tkinter import messagebox, simpledialog, ttk
 
 import bac
+import build_drinks
 
-CATALOGUE = Path(__file__).with_name("drinks.json")
+CATALOGUE = build_drinks.CATALOGUE
 STATE = Path.home() / ".boozer-calc" / "state.json"
 LOG_HOURS = 24  # drinks older than this drop off the log
 MAX_QTY = 24
@@ -138,10 +139,14 @@ def estimate(profile, log):
 
 
 class App(tk.Tk):
-    def __init__(self, state_path=STATE, catalogue=None):
+    def __init__(self, state_path=STATE, catalogue=None, catalogue_path=CATALOGUE, sources=build_drinks.SOURCES):
+        """catalogue overrides the drinks read from catalogue_path (tests use it); Set ABV writes
+        to sources (the ABV table) and rebuilds catalogue_path."""
         lock = StateLock(state_path)  # raises AlreadyOpen before any window appears
         super().__init__()
         self._lock = lock
+        self.catalogue_path = catalogue_path
+        self.sources = sources
         self.title("boozer-calc")
         self.state_path = state_path
         try:
@@ -150,7 +155,7 @@ class App(tk.Tk):
             self.data = load_state(state_path)
             warning = str(e)
             self.after(200, lambda: messagebox.showwarning("Saved data", warning, parent=self))
-        self.catalogue = load_catalogue() if catalogue is None else catalogue
+        self.catalogue = load_catalogue(catalogue_path) if catalogue is None else catalogue
         left = ttk.Frame(self, padding=8)
         left.grid(row=0, column=0, sticky="ns")
         right = ttk.Frame(self, padding=8)
@@ -197,8 +202,12 @@ class App(tk.Tk):
         self.listbox = tk.Listbox(box, height=12, width=44, exportselection=False)
         self.listbox.pack(fill="both", expand=True, pady=4)
         self.listbox.bind("<<ListboxSelect>>", lambda _: self._show_serve())
-        self.fav_button = ttk.Button(box, command=self.toggle_favourite)
-        self.fav_button.pack(anchor="w", pady=(0, 4))
+        row = ttk.Frame(box)
+        row.pack(fill="x", pady=(0, 4))
+        self.fav_button = ttk.Button(row, command=self.toggle_favourite)
+        self.fav_button.pack(side="left")
+        self.abv_button = ttk.Button(row, text="Set ABV…", command=self.set_abv)
+        self.abv_button.pack(side="left", padx=6)
 
         # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
         serve = ttk.Frame(box)
@@ -308,6 +317,10 @@ class App(tk.Tk):
     def add_drink(self):
         d = self._selected()
         custom = CUSTOM_RE.fullmatch(self.search.get().strip())
+        if d and d["abv"] is None:
+            messagebox.showinfo("Add a drink", f"{d['name']} has no ABV yet. Use Set ABV… to enter the "
+                                "one on its label, then add it.", parent=self)
+            return
         try:
             if d and d["pour"]:
                 entry = {"name": d["name"], "abv": d["abv"], "unit": "poured",
@@ -379,6 +392,44 @@ class App(tk.Tk):
             self.data["log"] = []
             self._save()
 
+    def set_abv(self):
+        """Ask for the selected drink's ABV and save it in the ABV table's manual column."""
+        d = self._selected()
+        if not d:
+            return
+        if d["abv"] is None:
+            now = "no ABV yet" + (f" (old guess {d['guess']:g}%)" if d.get("guess") else "")
+        else:
+            now = f"{d['abv']:g}% ({d['source']})"
+        prompt = f"{d['name']}: {now}.\n\nABV % from the label:"
+        if d["source"] == "manual":
+            prompt += "\n(Leave blank to go back to the retailers' and brewery's values.)"
+        text = simpledialog.askstring("Set ABV", prompt, parent=self)
+        if text is None:
+            return
+        text = text.strip().rstrip("%").strip()
+        if not text and d["source"] != "manual":
+            return
+        try:
+            abv = bac.check_abv(float(text)) if text else None
+            build_drinks.set_manual(d["name"], abv, self.sources, self.catalogue_path)
+        except (ValueError, build_drinks.BuildError) as e:
+            messagebox.showerror("Set ABV", str(e) if text else f"Couldn't clear it: {e}", parent=self)
+            return
+        self.catalogue = load_catalogue(self.catalogue_path)
+        self._filter(keep=d["name"])
+        new = self._selected()
+        # Logged drinks keep the ABV they were logged with unless the user says otherwise,
+        # and never lose it (clearing a manual value can leave the drink with no ABV).
+        stale = [e for e in self.data["log"]
+                 if new and new["abv"] is not None and e["name"] == d["name"] and e["abv"] != new["abv"]]
+        if stale and messagebox.askyesno(
+                "Set ABV", f"Update the {len(stale)} {d['name']} already in the log to {new['abv']:g}% too?",
+                parent=self):
+            for e in stale:
+                e["abv"] = new["abv"]
+            self._save()
+
     def toggle_favourite(self):
         d = self._selected()
         if not d:
@@ -401,7 +452,10 @@ class App(tk.Tk):
         self.listbox.delete(0, "end")
         for i, d in enumerate(self.matches):
             star = "★ " if d["name"] in favourites else ""
-            self.listbox.insert("end", f"{star}{d['name']}  ({d['abv']:g}%)")
+            abv = "no ABV yet" if d["abv"] is None else f"{d['abv']:g}%"
+            self.listbox.insert("end", f"{star}{d['name']}  ({abv})")
+            if d["abv"] is None:
+                self.listbox.itemconfigure(i, foreground=HINT)
             if d["name"] == keep:
                 self.listbox.selection_set(i)
                 self.listbox.see(i)
@@ -417,6 +471,7 @@ class App(tk.Tk):
         favourite = d is not None and d["name"] in self.data["favourites"]
         self.fav_button.configure(text="★ Unpin favourite" if favourite else "☆ Pin as favourite",
                                   state="normal" if d else "disabled")
+        self.abv_button.configure(state="normal" if d else "disabled")
         self.unit_row.pack_forget()
         self.pour_row.pack_forget()
         if d and d["pour"]:
