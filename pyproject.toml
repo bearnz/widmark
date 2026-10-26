@@ -1,0 +1,7 @@
+[project]
+name = "boozer-calc"
+version = "0.1.0"
+description = "Python CLI that approximates blood alcohol (BAC) from the drinks you had"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
