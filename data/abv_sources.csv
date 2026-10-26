@@ -1,0 +1,441 @@
+drink,type,units,liquorland,woolworths,new_world,paknsave,brewery,guess,manual,status,note
+Heineken,beer,can/bottle 330; can 500; handle 425; pint 568,5,5,,5,,5,,agree,
+Heineken Silver Low Carb,beer,can/bottle 330; handle 425; pint 568,4,,,,,,,one source,Woolworths lists it with no ABV
+Steinlager Classic,beer,can/bottle 330; handle 425; pint 568,5,5,,,,5,,agree,
+Steinlager Pure,beer,can/bottle 330; handle 425; pint 568,,,,,,5,,guess only,No retailer ABV found
+Steinlager Pure Gold,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by all three; none lists ABV
+Steinlager Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,,4.2,,,,4.2,,one source,
+Steinlager Tokyo Dry,beer,can/bottle 500; handle 425; pint 568,,5,,,,,,one source,
+Export 33,beer,can/bottle 330; handle 425; pint 568,4.5,,,,4.5,,,brewery,
+Export Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,4.2,,,,4.2,,,brewery,
+Export Gold,beer,can/bottle 330; handle 425; pint 568,4,4,,,4,4,,brewery,
+Export Citrus (low alcohol),beer,can/bottle 330; handle 425; pint 568,,2,,,2,,,brewery,
+DB Draught,beer,can/bottle 330; handle 425; pint 568,4,,,,4,4,,brewery,
+Double Brown,beer,can/bottle 330; handle 425; pint 568,,4,,,4,,,brewery,
+Waikato Draught,beer,can/bottle 330; handle 425; pint 568,4,,,,,4,,one source,
+Lion Red,beer,can/bottle 330; handle 425; pint 568,4,4,,,,4,,agree,
+Lion Brown,beer,can/bottle 330; handle 425; pint 568,,,,,,4,,guess only,No retailer ABV found
+Tui,beer,can/bottle 330; handle 425; pint 568,4,4,,,4,4,,brewery,Tui East India Pale Ale
+Speight's Gold Medal Ale,beer,can/bottle 330; handle 425; pint 568,4,4,,,,4,,agree,
+Speight's Summit Ultra Low Carb,beer,can/bottle 330; can 500; handle 425; pint 568,,4.2,,,,,,one source,
+Speight's Summit Ultra Lime,beer,can/bottle 330; handle 425; pint 568,,4.2,,,,,,one source,
+Swifty,beer,can/bottle 330; handle 425; pint 568,4.2,,,,,,,one source,
+Mac's Gold,beer,can/bottle 330; handle 425; pint 568,4,4,,,,4,,agree,
+Mac's Maverick Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,,5,,,,,,one source,
+Mac's Too Easy Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.4,,,,,,one source,
+Mac's Three Wolves Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.7,,,,,,one source,
+Mac's Showboat Hazy NEIPA,beer,can/bottle 330; handle 425; pint 568,,5.2,,,,,,one source,
+Mac's Mid Vicious Pale Ale,beer,can/bottle 330; handle 425; pint 568,,2.5,,,,,,one source,
+Mac's Big Hoppa IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Liquorland and New World; neither lists ABV
+Mac's Slim Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Mac's Apparition Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Monteith's Classic Original,beer,can/bottle 330; handle 425; pint 568,,4,,,4,4,,brewery,
+Monteith's Gold Dust Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,5,,,,5,,,brewery,
+Monteith's Driftin IPA,beer,can/bottle 330; handle 425; pint 568,,5,,,5,,,brewery,
+Monteith's Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.5,,,4.5,,,brewery,assumed to be Monteith's Sounds Hazy Pale Ale (4.5%)
+Monteith's Radler,beer,can/bottle 330; handle 425; pint 568,,,,,4.2,,,brewery,neither lists ABV
+Emerson's Pilsner,beer,can/bottle 330; handle 425; pint 568,,4.9,,,,4.9,,one source,
+Panhead Supercharger APA,beer,can/bottle 330; handle 425; pint 568,,5.7,,,,5.7,,one source,
+Panhead Road Hog NZ IPA,beer,can/bottle 330; handle 425; pint 568,,5.8,,,,,,one source,
+Panhead Rat Rod Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Parrotdog Birdseye Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,5.8,,,,,,one source,
+Parrotdog Raptor APA,beer,can/bottle 330; handle 425; pint 568,,5.7,,,,,,one source,
+Parrotdog Yellowhammer Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.8,,,,,,one source,
+Parrotdog Greyhound Low Carb Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.3,,,,,,one source,
+Parrotdog Bitterbitch IPA,beer,can/bottle 330; handle 425; pint 568,,5.8,,,,,,one source,
+Garage Project Pernicious Weed,beer,can/bottle 330; handle 425; pint 568,8,8,,,8,,,brewery,
+Garage Project Hazy Pernicious Weed,beer,can/bottle 330; handle 425; pint 568,6,6,,,6,,,brewery,
+Garage Project Hapi Daze Pale Ale,beer,can/bottle 330; handle 425; pint 568,4.6,4.6,,,4.6,,,brewery,
+Garage Project Party & Bullshit IPA,beer,can/bottle 440; handle 425; pint 568,6.2,,,,6.2,,,brewery,
+Garage Project Boss Level Ultra IPA,beer,can/bottle 440; handle 425; pint 568,8.5,8,,,8,,,brewery,Garage Project lists 8.0%
+Lakeman Love Doctor Hazy IPA,beer,can/bottle 440; handle 425; pint 568,8.5,,,,,,,one source,
+Epic Hop Zombie,beer,can/bottle 330; handle 425; pint 568,8.5,,,,,,,one source,
+Liberty Oh Brother Pale Ale,beer,can/bottle 330; handle 425; pint 568,5.1,,,,,,,one source,
+Liberty Halo Pilsner,beer,can/bottle 330; handle 425; pint 568,5,,,,,,,one source,
+Liberty Jungle Juice Hazy IPA,beer,can/bottle 330; handle 425; pint 568,6.6,,,,,,,one source,
+Cassels Light Owl,beer,can/bottle 330; handle 425; pint 568,2.5,,,,,,,one source,
+Cassels Pilsner,beer,can/bottle 330; handle 425; pint 568,,4.8,,,,,,one source,
+Sawmill Pale Ale,beer,can/bottle 330; handle 425; pint 568,4.5,,,,,,,one source,Not in Sawmill's current range (Oct 2026); Liquorland's listing may be an older beer
+Sawmill Pilsner,beer,can/bottle 330; handle 425; pint 568,,4.8,,,4.8,,,brewery,
+Sawmill Bright IPA,beer,can/bottle 330; handle 425; pint 568,,5.5,,,5.5,,,brewery,
+Stoke Hazy,beer,can/bottle 330; handle 425; pint 568,,4.2,,,,,,one source,
+Stoke IPA,beer,can/bottle 330; handle 425; pint 568,,4.8,,,,,,one source,
+Stoke Pilsner,beer,can/bottle 330; handle 425; pint 568,,4.8,,,,,,one source,
+Stoke Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,4.2,,,,,,one source,
+BRB Bouncing Pilsner,beer,can/bottle 330; handle 425; pint 568,,5.2,,,,,,one source,
+BRB Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,5,,,,,,one source,
+BRB 18th Amendment APA,beer,can/bottle 330; handle 425; pint 568,,6,,,,,,one source,
+Corona Extra (bottle),beer,bottle 355; handle 425; pint 568,4.6,,,4.5,,4.5,,agree,Liquorland lists 4.6% for the bottle but 4.5% for the can; PAK'nSAVE lists its 330 ml bottles at 4.5%
+Corona Extra (can),beer,can 330; handle 425; pint 568,4.5,,,,,,,one source,
+Asahi Super Dry,beer,can/bottle 330; handle 425; pint 568,5,5,,,,5,,agree,
+Peroni Nastro Azzurro,beer,can/bottle 330; handle 425; pint 568,5.1,,,,,5.1,,one source,
+Kronenbourg 1664,beer,can/bottle 330; handle 425; pint 568,5.5,,,,,,,one source,
+Bavaria Holland,beer,can/bottle 440; handle 425; pint 568,4.3,,,,,,,one source,
+Kirin Ichiban,beer,can/bottle 330; handle 425; pint 568,,5,,,,,,one source,
+Victoria Bitter,beer,can/bottle 375; handle 425; pint 568,,4.9,,,,,,one source,
+Haagen Lager,beer,can/bottle 330; handle 425; pint 568,,4,,,,,,one source,
+Coopers Best Extra Stout,beer,bottle 750; handle 425; pint 568,,6.3,,,,,,one source,
+Coopers Sparkling Ale,beer,bottle 750; handle 425; pint 568,,5.8,,,,,,one source,
+Coopers Original Pale Ale,beer,bottle 750; handle 425; pint 568,,,,,,,,missing,Stocked by Liquorland; no ABV listed
+Guinness Draught (can),beer,can/bottle 440; handle 425; pint 568,,,,4.2,,4.2,,one source,
+Stella Artois,beer,can/bottle 330; handle 425; pint 568,,,,,,4.8,,guess only,No retailer ABV found
+Tiger Lager,beer,can/bottle 330; handle 425; pint 568,,,,,5,,,brewery,neither lists ABV
+Tiger Crystal Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,,,,,4.2,,,brewery,none lists ABV
+Kingfisher Strong,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Carlsberg Elephant,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Sapporo Premium,beer,can/bottle 355; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Michelob Ultra,beer,can/bottle 355; handle 425; pint 568,,,,,,,,missing,Stocked by Liquorland and Woolworths; neither lists ABV
+Pure Blonde Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Boundary Road Laid Back,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths; no ABV listed
+Sawmill Nimble 2.5 Pale Ale,beer,can/bottle 330; handle 425; pint 568,,2.5,,,2.5,,,brewery,Woolworths' '2.5% Sawmill pale ale'
+Sawmill Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,5.9,,,brewery,
+Sawmill Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,5,,,brewery,
+Sawmill IPA,beer,can/bottle 330; handle 425; pint 568,,,,,5.8,,,brewery,
+Sawmill Homegrown Lager,beer,can/bottle 330; handle 425; pint 568,,,,,4,,,brewery,
+Monteith's Black,beer,can/bottle 330; handle 425; pint 568,,,,,5.2,,,brewery,
+Monteith's Golden Lager,beer,can/bottle 330; handle 425; pint 568,,,,,4.5,,,brewery,
+Monteith's Summer Ale,beer,can/bottle 330; handle 425; pint 568,,,,,4.2,,,brewery,
+Monteith's Brewster Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,4.9,,,brewery,
+Monteith's West Coastin' Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,5.5,,,brewery,
+Monteith's Navigator Low Carb Hazy,beer,can/bottle 330; handle 425; pint 568,,,,,4.2,,,brewery,
+Monteith's Phoenix IPA,beer,can/bottle 330; handle 425; pint 568,,,,,5,,,brewery,
+Export Crushed Lemon,beer,can/bottle 330; handle 425; pint 568,,,,,4,,,brewery,
+Export Crushed Pineapple,beer,can/bottle 330; handle 425; pint 568,,,,,4,,,brewery,
+Tuatara Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,5.5,,,brewery,
+Tuatara Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,5.7,,,brewery,
+Tuatara Regenerate Hoppy Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,5,,,brewery,
+Tuatara Optical Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,6.6,,,brewery,
+Tuatara Interstellar IPA,beer,can/bottle 330; handle 425; pint 568,,,,,6.1,,,brewery,
+Flame,beer,can/bottle 330; handle 425; pint 568,,,,,5.2,,,brewery,Lager
+Murphy's Irish Stout,beer,handle 425; pint 568,,,,,4,,,brewery,Sold on tap only
+Paderborner Pilsner,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Bitburger Lager,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Isbjorn Low Carb Pilsner,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project BEER Pale Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Wakachangi Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lowenbrau Lager,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Dragon Slayer Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Dry Hopped Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Double Cream Milk Stout,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Lid Ripper Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Brain Smiles Hazy Pale Ale,beer,can/bottle 330; can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Triple Chocolate Milk Stout,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Cactus Juice Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Here's Churly West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Music City Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Juice Wayne Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Epic Blue Low Carb Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Kingsland Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Stoke Dark Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Panhead Pickup Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+McLeod's Tropical Cyclone Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Get Busy Hopping West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Del Mar Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Sundowner Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Stoke Nelson Pale Ale (NPA),beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Milk Stout,beer,can/bottle 330; can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Panarama Low Carb Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Motueka Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+McLeod's Far North Chilli Pilsner,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Superdelic IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Atlanta Bright IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Haze Juice Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+McLeod's Billycan Milk Stout,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Cordoba Hazy Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Altamira Double Bright IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Porch Pounder APA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Better Beer Zero Carb,beer,can/bottle 355; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Boundary Road Ultra Low Carb Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Tropical Mo Fo Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Rays Of Glory NZ IPA,beer,bottle 946; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Black Milk Imperial Stout,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+State of Play IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Good Shout Hazy Low Carb,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Speight's Old Dark,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Fugazi IPA (lower alcohol),beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed; Super Liquor's product name says 2.2%"
+Parrotdog Sundog Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Bach Supajuice Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+McLeod's Forest Of Giants West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Spicy Pickle Sour,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Parrotdog Thunderbird Bright IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Angry Peaches,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Deckchair Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Fog City Hazy IPA,beer,can/bottle 330; bottle 946; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Panhead Sandman Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Chipper Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Epic Crush Low Carb Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Double Vision Mouth Party Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Mac's Black Dark Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Tutaki Haze Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Maipile German Style Craft Beer,beer,bottle 1000; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Kingstar Watermelon Craft Beer,beer,bottle 1000; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Kingstar Pomegranate Craft Beer,beer,bottle 1000; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Kingstar Peach Craft Beer,beer,bottle 1000; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Bavaria 8.6 Black Intense Stout,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Bavaria 8.6 Extreme Intense Strong,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Bush Moa Mid Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Emerson's Hazed & Confused IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Something Hazy IPA,beer,can/bottle 330; can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Something Hoppy IPA,beer,can/bottle 330; can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Copacabana Brut IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Toasted Marshmallow Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Hops Double IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Beat Street Low Carb Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Diamond Head Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Stoke Bright IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Getaway IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Frankton Bright IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Parrotdog Limited Release 39 Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut 420 Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Nine Mile NZ IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Boundary Road Mumbo Jumbo IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Dump The Trump American IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman 5 O'Clock Somewhere Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Me Time Mosaic Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Nectaron IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Boundary Road Tropical Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth In Ya Face Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Voodoo Juice DDH Hazy Double IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Rouge Hog West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Maximus Hazius X.I Triple Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Resin Head West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut New Wave 07 Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman The West Coaster NZ IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Favourite Things West Coast IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Generous Hop Sprinkle Hazy IPA,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Social League Low Carb Hazy IPA,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Moa Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels Woolston Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Chur NZ Pale Ale,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Vic Park Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Boundary Road Chocka Riwaka Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Epic Joose Party Hazy Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Cassels American Pale Ale,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Bent Penny Hoppy Pale Ale,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Hawke's Bay Brewing Peak Pilsner,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Sawmill Fresh Hop Pilsner 2.0,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut East Coast Hazy Pilsner,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Czech Pilsner,beer,can/bottle 500; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Parrotdog Italian Pilsner Number 45,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Parrotdog Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Uptown Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Volfas Engelman Lager,beer,can/bottle 568; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Southern Alps Ultra Low Carb Lager,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Chur-Toberfest Festival Lager,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Behemoth Earn It Ultra Low Carb Lager,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Great Northern Super Crisp Lager,beer,can/bottle 375; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Parrotdog Black Stout,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Lakeman Stout,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Garage Project Iron Pig Stout,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Three Sisters Lush Smoothie Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Three Sisters Banana Smoothie Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Three Sisters Dragonfruit Smoothie Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Three Sisters Passionfruit Smoothie Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Sawmill Boysenberry & Lime Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Urbanaut Alcoholic Karma Cola Sour,beer,can/bottle 440; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Monteith's Crushed Apple Cider,cider,can/bottle 330; handle 425; pint 568,,4.5,,,4.5,,,brewery,
+Mac's Cloudy Apple Cider,cider,can/bottle 330; handle 425; pint 568,4.2,,,,,,,one source,
+Orchard Thieves Apple Cider,cider,can/bottle 330; handle 425; pint 568,,4.5,,,4.5,,,brewery,
+Orchard Thieves Berry Cider,cider,can/bottle 330; handle 425; pint 568,,4,,,4,,,brewery,
+Orchard Thieves Feijoa Cider,cider,can/bottle 500; handle 425; pint 568,,4,,,4,,,brewery,Feijoa & Lime
+Kiss Peach Vanilla Cider,cider,can/bottle 500; handle 425; pint 568,,4.5,,,,,,one source,
+Kiss Wild Strawberry Cider,cider,can/bottle 500; handle 425; pint 568,,4.5,,,,,,one source,
+Rochdale Three Berries Cider,cider,can/bottle 330; handle 425; pint 568,,4,,,,,,one source,
+Scrumpy Apple,cider,bottle 1250; handle 425; pint 568,,8.2,,8.2,,8,,agree,
+Scrumpy Raspberry,cider,bottle 1250; handle 425; pint 568,,8.2,,,,,,one source,
+Scrumpy Ginger,cider,bottle 1250; handle 425; pint 568,,8.2,,,,,,one source,
+Old Mout Scrumpy Berry,cider,bottle 1250; handle 425; pint 568,,8,,,,,,one source,
+Old Mout Scrumpy Tropical,cider,bottle 1250; handle 425; pint 568,,8.3,,,,,,one source,
+Old Mout Cider (500 ml),cider,can/bottle 500; handle 425; pint 568,,,,,,4,,guess only,No retailer ABV found
+Good George Extra Dry Apple Cider,cider,bottle 946; handle 425; pint 568,,4,,,,,,one source,
+Good George Doris Plum Cider,cider,bottle 946; handle 425; pint 568,,4.5,,,,,,one source,
+Mussel Inn Apple Roughy Cider,cider,bottle 1300; handle 425; pint 568,4,,,,,,,one source,
+Mussel Inn Freckled Frog Feijoa Cider,cider,can/bottle 330; handle 425; pint 568,4,,,,,,,one source,
+Somersby Apple Cider,cider,can/bottle 330; handle 425; pint 568,,,,,,4.5,,guess only,Stocked by all three; none lists ABV
+Zeffer Crisp Apple Cider,cider,can/bottle 330; handle 425; pint 568,,,,5,,5,,one source,
+Rekorderlig Cider,cider,can/bottle 500; handle 425; pint 568,,,,,4,,,brewery,"neither lists ABV; Forest Berries, Raspberry-Lime, Strawberry-Lime and Watermelon-Strawberry are all 4%"
+Peckham's Boysenberry Cider,cider,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Liquorland and New World; neither lists ABV
+Zeden Crisp Apple Cider,cider,can/bottle 440; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Orchard Storm Crush'd Cider,cider,bottle 1250; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
+Stoke Alcoholic Ginger Beer Lemon Lime & Bitters,cider,can/bottle 330; handle 425; pint 568,,4.2,,,,,,one source,
+Ranga Alcoholic Ginger Beer,cider,bottle 1250; handle 425; pint 568,,4.5,,,,,,one source,
+Monteith's Hazy Lemonade,cider,can/bottle 330,,,,,4.2,,,brewery,Alcoholic lemonade
+Monteith's Alcoholic Ginger Beer,cider,can/bottle 330,,,,,4,,,brewery,
+Orchard Thieves Peach & Passionfruit Cider,cider,can/bottle 500,,,,,4,,,brewery,
+Orchard Thieves Red Berries Cider,cider,can/bottle 500,,,,,4,,,brewery,
+Ranga Alcoholic Ginger Beer with Chilli & Lime,cider,bottle 1250; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Good George Old School Alcoholic Ginger Beer,cider,can/bottle 330; handle 425; pint 568,,,,,,,,missing,"Stocked at PAK'nSAVE Royal Oak (Grocer, Oct 2026); no ABV listed"
+Kirin Hyoketsu Green Apple 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Mango 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Raspberry 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Pineapple 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Lemon 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Lemon 4%,rtd,can/bottle 330,4,,,,,,,one source,
+Kirin Hyoketsu Peach 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Kirin Hyoketsu Mandarin 6%,rtd,can/bottle 330,6,,,,,,,one source,
+Pals Vodka Ruby Raspberry & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Vodka Peach Passionfruit & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Vodka Pink Lemon & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Vodka Valencia Orange & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Vodka Red Peach Yuzu & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Vodka Pineapple Lime & Soda,rtd,can/bottle 330,5,,,,,,,one source,
+Pals Classic Margarita,rtd,can/bottle 250,5.8,,,,,,,one source,
+Pals Watermelon Margarita,rtd,can/bottle 250,5.8,,,,,,,one source,
+Gordon's Pink Gin & Soda,rtd,can/bottle 250,4,,,,,,,one source,
+Gordon's Gin & Tonic 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Gordon's Gin & Tonic Slimline 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Cheeky Hard Iced Tea Peach,rtd,can/bottle 330,5,,,,,,,one source,
+Coruba & Cola 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Coruba & Cola 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Canadian Club & Dry 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Canadian Club Premium & Dry 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Canadian Club & Dry Zero 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Canadian Club Soda & Lime 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Jack Daniel's & Coca-Cola 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Jack Daniel's Double Jack & Coca-Cola Zero 7%,rtd,can/bottle 330,7,,,,,,,one source,
+Jim Beam & Ginger Beer 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Woodstock & Cola 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Woodstock & Cola 7%,rtd,can/bottle 250,7,,,,,7,,one source,Old guess had a 440 ml can; Liquorland lists 250 ml
+Woodstock & Zero Sugar Cola 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Tui Bourbon & Cola 7%,rtd,can/bottle 250,7,,,,7,,,brewery,
+Billy Maverick & Cola 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Cody's Bourbon & Cola 7%,rtd,can/bottle 440,,,,,,7,,guess only,Not in Liquorland's top RTDs; size and ABV are guesses
+Bacardi & Coca-Cola 7%,rtd,can 250; can 330,7,,,,,,,one source,
+Bacardi & Coca-Cola Zero 4.8%,rtd,can/bottle 330,4.8,,,,,,,one source,
+Scapegrace Gin Hibiscus & Grapefruit,rtd,can/bottle 330,5,,,,,,,one source,
+Scapegrace Vodka & Lime,rtd,can/bottle 330,5,,,,,,,one source,
+Scapegrace Gin & Yuzu Lemon,rtd,can/bottle 330,5,,,,,,,one source,
+Scapegrace Black Gin & Tonic,rtd,can/bottle 330,5,,,,,,,one source,
+KGB Vodka & Lemon Ice,rtd,can/bottle 275,4.6,,,,,,,one source,
+KGB Black Russian,rtd,can/bottle 275,4.6,,,,,,,one source,
+Clean Collective Pina Colada with Vodka,rtd,can/bottle 250,5,,,,,,,one source,
+Clean Collective Strawberry Blush Pink Gin,rtd,can/bottle 250,5,,,,,,,one source,
+Clean Collective Gin & Tonic with Lemon,rtd,can/bottle 250,5,,,,,,,one source,
+Odd Company Vodka Mandarin & Yuzu,rtd,can/bottle 330,6,,,,6,,,brewery,
+Odd Company Vodka Pineapple & Passionfruit,rtd,can/bottle 330,6,,,,6,,,brewery,
+Crimson Badger Ginger Bear,rtd,can/bottle 330,4,,,,,,,one source,
+Crimson Badger Dark & Grizzly,rtd,can/bottle 330,5.8,,,,,,,one source,
+Cruiser Raspberry 4.8%,rtd,can/bottle 275,4.8,,,,,4.6,,one source,Old guess was 4.6%
+Cruiser Raspberry 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Cruiser Zero Sugar Raspberry 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Cruiser Sour Blue Raspberry 4.8%,rtd,can/bottle 275,4.8,,,,,,,one source,
+Cruiser Sour Blue Raspberry 7%,rtd,can/bottle 250,7,,,,,,,one source,
+Cruiser Sour Apple 4.8%,rtd,can/bottle 275,4.8,,,,,,,one source,
+Cruiser Double Grape Punch Low Sugar,rtd,can/bottle 440,5.7,,,,,,,one source,
+Suntory -196 Lemon Passionfruit,rtd,can/bottle 330,6,,,,,,,one source,
+Suntory -196 Double Lemon,rtd,can/bottle 330,6,,,,,,,one source,
+Malibu Passionfruit,rtd,can/bottle 330,4.5,,,,,,,one source,
+Franky's Raspberry Cola,rtd,can/bottle 330,6,,,,,,,one source,
+Alba Sparkling Raspberry Margarita,rtd,can/bottle 250,5.9,,,,,,,one source,
+Alba Sparkling Charred Pineapple Margarita,rtd,can/bottle 250,5.9,,,,,,,one source,
+Absolut & Sprite,rtd,can/bottle 250,5,,,,,,,one source,
+Smirnoff Ice Original,rtd,can/bottle 250,5,,,,,5,,one source,Old guess had a 335 ml bottle
+Smirnoff Ice Peach Tea,rtd,can/bottle 250,5,,,,,,,one source,
+Smirnoff Vodka Crush Raspberry & Lemon,rtd,can/bottle 440,5.7,,,,,,,one source,
+Hard Rated Lemon Pineapple,rtd,can/bottle 330,6,,,,,,,one source,
+Hard Rated Orange Low Sugar,rtd,can/bottle 330,6,,,,,,,one source,
+Brookvale Union Pineapple Coconut,rtd,can/bottle 330,4,,,,,,,one source,
+Slight Twist Cherry Sling,rtd,can/bottle 250,,,5.8,,,,,one source,ABV from New World's product name
+Slight Twist Blood Orange Citrus Spritz,rtd,can/bottle 250,,,5.8,,,,,one source,ABV from New World's product name
+Slight Twist Mai Tai,rtd,can/bottle 250,,,5.8,,,,,one source,ABV from New World's product name
+Long White Vodka & Soda,rtd,can/bottle 320,,,,,,5,,guess only,No retailer ABV found
+White Claw Hard Seltzer,rtd,can/bottle 330,,,,,,5,,guess only,No retailer ABV found
+Tui Vodka Passionfruit & Soda 7%,rtd,can/bottle 250,,,,,7,,,brewery,
+Tui Vodka Raspberry & Soda 7%,rtd,can/bottle 250,,,,,7,,,brewery,
+Tui Vodka Blackcurrant & Soda 7%,rtd,can/bottle 250,,,,,7,,,brewery,
+Tui Vodka Lime & Soda 7%,rtd,can/bottle 250,,,,,7,,,brewery,
+Tui Vodka Sour Cherry & Soda 7%,rtd,can/bottle 250,,,,,7,,,brewery,
+Barrel 51 Bourbon & Cola 7%,rtd,can/bottle 330,,,,,7,,,brewery,
+Oyster Bay Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Oyster Bay Chardonnay,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Oyster Bay Pinot Gris,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Oyster Bay Merlot,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Oyster Bay Rose,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Oyster Bay Sparkling Cuvee Rose,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+The Ned Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+The Ned Pinot Gris,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+The Ned Chardonnay,wine,glass 150; large glass 250; bottle 750,,14,,,,,,one source,
+The Ned Rose,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Squealing Pig Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Squealing Pig Pinot Gris,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Squealing Pig Rose,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Squealing Pig Pinot Noir,wine,glass 150; large glass 250; bottle 750,13.5,13,,,,,,conflict,Liquorland's is the Central Otago label; may be a different wine or vintage
+Villa Maria Private Bin Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Villa Maria Private Bin Merlot Cabernet,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Wither Hills Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Wither Hills Pinot Gris,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Wither Hills Chardonnay,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Wither Hills Rose,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Wither Hills Early Light Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,9.5,9.5,,,,,,agree,
+Wairau River Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Saint Clair Vicar's Choice Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Corbans White Label Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Awatere River Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Selaks Essentials Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Selaks Essentials Pinot Gris,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Selaks Essentials Rose,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Selaks Premium Selection Pinot Noir,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Toi Toi Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Toi Toi Merlot,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Haha Pinot Noir,wine,glass 150; large glass 250; bottle 750,,13,,,,,,one source,
+Haha Syrah,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Mud House Rose,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Montana Affinity Sauvignon Blanc (low alcohol),wine,glass 150; large glass 250; bottle 750,,9,,,,,,one source,
+Cleanskin Chardonnay,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Cleanskin Pinot Noir,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Yealands Merlot,wine,glass 150; large glass 250; bottle 750; mini bottle 187,,13,,,,,,one source,
+Mt Difficulty Roaring Meg Pinot Noir,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Rua Pinot Noir,wine,glass 150; large glass 250; bottle 750,,14,,,,,,one source,
+Rabbit Ranch Pinot Noir,wine,glass 150; large glass 250; bottle 750,,13.4,,,,,,one source,
+Fickle Mistress Pinot Noir,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Grant Burge Barossa Ink Shiraz,wine,glass 150; large glass 250; bottle 750,,14,,,,,,one source,
+19 Crimes Shiraz,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Wyndham Estate Bin 444 Cabernet,wine,glass 150; large glass 250; bottle 750,,14.4,,,,,,one source,
+Wolf Blass Yellow Label Merlot,wine,glass 150; large glass 250; bottle 750,,13.5,,,,,,one source,
+Brown Brothers Red Cienna (lower alcohol),wine,glass 150; large glass 250; bottle 750,,7.5,,,,,,one source,
+Lindauer Classic Brut,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Lindauer Special Reserve Brut Cuvee,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Lindauer Classic Sparkling Rose,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,Woolworths lists the 200 ml mini at 11%
+Lindauer Special Reserve Sparkling Rose,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Lindauer Classic Sparkling Sauvignon Blanc,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,Woolworths lists the 200 ml mini at 12.5%
+Daniel Le Brun Brut,wine,glass 150; large glass 250; bottle 750,,12.5,,,,,,one source,
+Babydoll Prosecco,wine,glass 150; large glass 250; bottle 750,,11,,,,,,one source,
+Brown Brothers Prosecco,wine,glass 150; large glass 250; bottle 750,,12,,,,,,one source,
+Brown Brothers Sparkling Moscato,wine,glass 150; large glass 250; bottle 750,6.5,6.5,,,,,,agree,
+Brown Brothers Sparkling Moscato Rose,wine,glass 150; large glass 250; bottle 750,,7,,,,,,one source,
+Brown Brothers Moscato Rosa,wine,glass 150; large glass 250; bottle 750,,6,,,,,,one source,
+Brown Brothers Moscato,wine,glass 150; large glass 250; bottle 750,,5.5,,,,,,one source,
+Jacob's Creek Sparkling Moscato Rose,wine,glass 150; large glass 250; bottle 750,,7.5,,,,,,one source,
+Brown Brothers Tawny,wine,port glass 60; bottle 750,18,,,,,,,one source,
+Lindauer Classic Sparkling Brut (200 ml mini),wine,mini bottle 200,,11,,,,,,one source,
+Lindauer Classic Sparkling Rose (200 ml mini),wine,mini bottle 200,,11,,,,,,one source,
+Lindauer Classic Sparkling Sauvignon Blanc (200 ml mini),wine,mini bottle 200,,12.5,,,,,,one source,
+Lindauer Classic Sparkling Pinot Gris (200 ml mini),wine,mini bottle 200,,12.5,,,,,,one source,
+Lindauer Prosecco (200 ml mini),wine,mini bottle 200,,11,,,,,,one source,
+Yealands Sauvignon Blanc (187 ml mini),wine,mini bottle 187,,12.5,,,,,,one source,
+Smirnoff Vodka,spirit,shot 15; double 30; family 37.5,37.5,,,,,,,one source,
+Bombay Sapphire Gin,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Jameson Irish Whiskey,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Johnnie Walker Red Label,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Johnnie Walker Black Label,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Jack Daniel's,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Jim Beam Bourbon,spirit,shot 15; double 30; family 37.5,37,,,,,,,one source,
+Bacardi White Rum,spirit,shot 15; double 30; family 37.5,37.5,,,,,,,one source,
+Appleton Estate Signature Rum,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Chatelle Napoleon Brandy,spirit,shot 15; double 30; family 37.5,37,,,,,,,one source,
+St Remy VSOP Brandy,spirit,shot 15; double 30; family 37.5,40,,,,,,,one source,
+Coruba Dark Rum,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Coruba Gold Rum,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Gordon's London Dry Gin,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Absolut Vodka,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Grey Goose Vodka,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Woodford Reserve Bourbon,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Whyte & Mackay Scotch,spirit,shot 15; double 30; family 37.5,,,,,,,,missing,Liquorland stocks it but lists no ABV
+Jagermeister,spirit,shot 15; double 30; family 37.5,,,,,,35,,guess only,No retailer ABV found
+Beer (generic),beer,can/bottle 330; handle 425; pint 568,,,,,,5,,generic,Typical full-strength beer
+White wine (generic),wine,glass 150; large glass 250; bottle 750,,,,,,13,,generic,
+Red wine (generic),wine,glass 150; large glass 250; bottle 750,,,,,,13.5,,generic,
+Bubbles / prosecco (generic),wine,flute 120; glass 150; bottle 750,,,,,,11,,generic,
+Spirit (generic),spirit,shot 15; double 30; family 37.5,,,,,,37.5,,generic,
