@@ -33,8 +33,26 @@ class ApproxTimeTest(unittest.TestCase):
         self.check("1", datetime(2026, 10, 26, 1, 0))
         self.check("9.15", datetime(2026, 10, 25, 21, 15))
 
+    def test_combined_and_spoken_durations(self):
+        for text in ("1h30m ago", "1h 30m ago", "1h30 ago", "1 hour 30 min ago", "1 hour and 30 minutes ago",
+                     "1.5 hours ago", "~90 min ago"):
+            self.check(text, datetime(2026, 10, 25, 23, 50))
+        self.check("an hour ago", datetime(2026, 10, 26, 0, 20))
+        self.check("half an hour ago", datetime(2026, 10, 26, 0, 50))
+
+    def test_noon_and_midnight(self):
+        self.check("noon", datetime(2026, 10, 25, 12, 0))
+        self.check("about midnight", datetime(2026, 10, 26, 0, 0))
+
+    def test_parse_duration(self):
+        self.assertEqual(bac.parse_duration("2h30m"), timedelta(hours=2, minutes=30))
+        self.assertEqual(bac.parse_duration("45 min"), timedelta(minutes=45))
+        self.assertEqual(bac.parse_duration("0 min"), timedelta(0))
+        for text in ("90", "", "soon", "2 days"):
+            self.assertIsNone(bac.parse_duration(text), text)
+
     def test_rejects_nonsense(self):
-        for text in ("25:00", "13pm", "9:75", "yesterday", "0am"):
+        for text in ("25:00", "13pm", "9:75", "yesterday", "0am", "90 ago", "ago", "a while ago"):
             with self.assertRaises(ValueError, msg=text):
                 parse_approx_time(text, self.NOW)
 
@@ -129,20 +147,32 @@ class SimulateTest(unittest.TestCase):
     def test_peak_matches_widmark(self):
         # 54.4 g into 80 kg at r=0.68 -> 54.4 / (0.68 * 80000) * 100 = 0.1%,
         # less one minute of elimination when absorbed over one minute.
-        drinks = [Drink(datetime(2026, 1, 1, 20, 0), 54.4)]
-        series = simulate(drinks, 80, 0.68, 0.015, 1)
+        drinks = [Drink(datetime(2026, 1, 1, 20, 0), 54.4, absorb_minutes=1)]
+        series = simulate(drinks, 80, 0.68, 0.015)
         self.assertAlmostEqual(max(b for _, b in series), 0.1 - 0.015 / 60, places=9)
 
     def test_rejects_zero_elimination(self):
         with self.assertRaises(ValueError):
-            simulate([Drink(datetime(2026, 1, 1, 20, 0), 10)], 80, 0.68, 0.0, 45)
+            simulate([Drink(datetime(2026, 1, 1, 20, 0), 10)], 80, 0.68, 0.0)
 
     def test_clears_at_elimination_rate(self):
-        drinks = [Drink(datetime(2026, 1, 1, 20, 0), 54.4)]
-        series = simulate(drinks, 80, 0.68, 0.015, 1)
+        drinks = [Drink(datetime(2026, 1, 1, 20, 0), 54.4, absorb_minutes=1)]
+        series = simulate(drinks, 80, 0.68, 0.015)
         hours = (series[-1][0] - series[0][0]).total_seconds() / 3600
         self.assertAlmostEqual(hours, 0.1 / 0.015, delta=0.05)
         self.assertIsNone(time_below(series, 0.2))
+
+    def test_each_drink_has_its_own_absorption_time(self):
+        start = datetime(2026, 1, 1, 20, 0)
+        empty = simulate([Drink(start, 20)], 80, 0.68, 0.015)
+        fed = simulate([Drink(start, 20, absorb_minutes=bac.ABSORB_MINUTES_FOOD)], 80, 0.68, 0.015)
+
+        def peak_minute(series):
+            return max(range(len(series)), key=lambda i: series[i][1])
+
+        self.assertEqual(peak_minute(empty), bac.ABSORB_MINUTES)
+        self.assertEqual(peak_minute(fed), bac.ABSORB_MINUTES_FOOD)
+        self.assertLess(max(b for _, b in fed), max(b for _, b in empty))
 
 
 if __name__ == "__main__":

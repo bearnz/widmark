@@ -45,7 +45,16 @@ DRINK_RE = re.compile(
     re.IGNORECASE,
 )
 APPROX_PREFIX_RE = re.compile(r"^(?:~|about|around|approx\.?)\s*")
-AGO_RE = re.compile(r"^(\d+(?:\.\d+)?)\s*(h|hrs?|hours?|m|mins?|minutes?)\s+ago$")
+# Words people use for times, rewritten into forms the patterns below read.
+TIME_WORDS = (
+    (re.compile(r"\bhalf an? hour\b"), "30 min"),
+    (re.compile(r"\ban? hour\b"), "1 hour"),
+    (re.compile(r"\bnoon\b"), "12pm"),
+    (re.compile(r"\bmidnight\b"), "12am"),
+)
+DURATION_RE = re.compile(
+    r"^(?:(?P<hours>\d+(?:\.\d+)?)\s*(?:h|hrs?|hours?)\s*(?:and\s*)?)?"
+    r"(?:(?P<mins>\d+(?:\.\d+)?)\s*(?P<unit>m|mins?|minutes?)?)?$")
 CLOCK_RE = re.compile(r"^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?$")
 MINUTE = timedelta(minutes=1)
 
@@ -54,6 +63,7 @@ MINUTE = timedelta(minutes=1)
 class Drink:
     time: datetime
     grams: float
+    absorb_minutes: int = ABSORB_MINUTES  # ABSORB_MINUTES_FOOD when drunk with a meal
 
 
 def parse_clock(text):
@@ -83,20 +93,38 @@ def most_recent(now, hour, minute):
     return at_clock(local_date(now) - timedelta(days=1), hour, minute) if t > now else t
 
 
+def normalise_time_text(text):
+    s = APPROX_PREFIX_RE.sub("", text.strip().lower())
+    for pattern, replacement in TIME_WORDS:
+        s = pattern.sub(replacement, s)
+    return s
+
+
+def parse_duration(text):
+    """'1h30m', '1 hour 30 min', '1h 30', '90 min', '1.5h', 'half an hour' -> timedelta, else None.
+
+    A bare number ('90') isn't read as minutes unless it follows hours.
+    """
+    m = DURATION_RE.match(normalise_time_text(text))
+    if not m or not (m["hours"] or m["mins"]) or (m["mins"] and not m["unit"] and not m["hours"]):
+        return None
+    return timedelta(hours=float(m["hours"] or 0), minutes=float(m["mins"] or 0))
+
+
 def parse_approx_time(text, now):
-    """'now', '9pm', '~21:30', 'about 9', '1h ago', '45 min ago' -> an aware local datetime.
+    """'now', '9pm', '~21:30', 'noon', '1h30m ago', 'an hour ago' -> an aware local datetime.
 
     Clock times are the most recent time that clock time came round; a bare hour
     with no am/pm picks whichever of the two came round most recently.
     """
     now = now.astimezone()
-    s = APPROX_PREFIX_RE.sub("", text.strip().lower())
+    s = normalise_time_text(text)
     if s in ("", "now"):
         return now.replace(second=0, microsecond=0)
-    m = AGO_RE.match(s)
-    if m:
-        amount = float(m[1])
-        delta = timedelta(hours=amount) if m[2].startswith("h") else timedelta(minutes=amount)
+    if s.endswith("ago"):
+        delta = parse_duration(s[:-3].strip())
+        if delta is None:
+            raise ValueError(f"can't read time {text!r}; try 45 min ago, 1h30m ago or an hour ago")
         return (now - delta).replace(second=0, microsecond=0).astimezone()
     m = CLOCK_RE.match(s)
     hour, minute = (int(m[1]), int(m[2] or 0)) if m else (99, 99)
@@ -107,7 +135,7 @@ def parse_approx_time(text, now):
     else:
         hours = []
     if not hours or minute > 59:
-        raise ValueError(f"can't read time {text!r}; try now, 9pm, ~21:30 or 45 min ago")
+        raise ValueError(f"can't read time {text!r}; try now, 9pm, ~21:30, noon or 1h30m ago")
     return max(most_recent(now, h, minute) for h in hours)
 
 
@@ -187,22 +215,23 @@ def roll_forward(clock, after):
     return at_clock(local_date(after) + timedelta(days=1), *clock) if t < after else t
 
 
-def simulate(drinks, weight_kg, r, elim_per_hour, absorb_minutes):
+def simulate(drinks, weight_kg, r, elim_per_hour):
     """Minute-by-minute BAC (%) as a list of (datetime, bac), until back to zero.
 
-    Each drink is absorbed at a steady rate over absorb_minutes; the body clears
-    a fixed elim_per_hour whenever BAC is above zero.
+    Each drink is absorbed at a steady rate over its own absorb_minutes; the body
+    clears a fixed elim_per_hour whenever BAC is above zero.
     """
-    if elim_per_hour <= 0 or absorb_minutes < 1:
+    if elim_per_hour <= 0 or any(d.absorb_minutes < 1 for d in drinks):
         raise ValueError("elimination rate must be positive and absorption at least 1 minute")
     bac_per_gram = 100 / (r * weight_kg * 1000)
-    absorb = timedelta(minutes=absorb_minutes)
-    absorb_end = max(d.time for d in drinks) + absorb
+    # (start, end, grams absorbed per minute) for each drink
+    windows = [(d.time, d.time + d.absorb_minutes * MINUTE, d.grams / d.absorb_minutes) for d in drinks]
+    absorb_end = max(end for _, end, _ in windows)
     t = min(d.time for d in drinks)
     bac = 0.0
     series = [(t, bac)]
     while t < absorb_end or bac > 0:
-        grams = sum(d.grams for d in drinks if d.time <= t < d.time + absorb) / absorb_minutes
+        grams = sum(rate for start, end, rate in windows if start <= t < end)
         bac = max(0.0, bac + grams * bac_per_gram - elim_per_hour / 60)
         t += MINUTE
         series.append((t, bac))
@@ -268,11 +297,12 @@ def main(argv=None):
     drinks = place_drinks(parsed, now)
     at = roll_forward(args.at, drinks[0].time) if args.at else now
     r = WIDMARK_R[args.sex] if args.r is None else args.r
-    absorb = ABSORB_MINUTES_FOOD if args.food else ABSORB_MINUTES
-    series = simulate(drinks, args.weight, r, args.elim, absorb)
+    for d in drinks:
+        d.absorb_minutes = ABSORB_MINUTES_FOOD if args.food else ABSORB_MINUTES
+    series = simulate(drinks, args.weight, r, args.elim)
     # Same night at the slow and fast ends of normal elimination, for a range.
-    slow = simulate(drinks, args.weight, r, ELIM_RATES["slow"], absorb)
-    fast = simulate(drinks, args.weight, r, ELIM_RATES["fast"], absorb)
+    slow = simulate(drinks, args.weight, r, ELIM_RATES["slow"])
+    fast = simulate(drinks, args.weight, r, ELIM_RATES["fast"])
 
     grams = sum(d.grams for d in drinks)
     peak_t, peak = max(series, key=lambda s: s[1])
