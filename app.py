@@ -13,6 +13,7 @@ from tkinter import messagebox, simpledialog, ttk
 
 import bac
 import build_drinks
+import copstop
 
 CATALOGUE = build_drinks.CATALOGUE
 STATE = Path.home() / ".boozer-calc" / "state.json"
@@ -82,7 +83,8 @@ def load_state(path=STATE):
     log = data.get("log", [])
     for entry in log:  # older versions had one meal setting for the whole log
         entry.setdefault("food", data.get("food", False))
-    return {"profile": data.get("profile", {}), "log": log, "favourites": data.get("favourites", [])}
+    return {"profile": data.get("profile", {}), "log": log, "favourites": data.get("favourites", []),
+            "cop_stop": data.get("cop_stop", True)}
 
 
 def save_state(data, path=STATE):
@@ -271,6 +273,15 @@ class App(tk.Tk):
         self.now_label.pack(anchor="w")
         self.detail_label = ttk.Label(box, justify="left")
         self.detail_label.pack(anchor="w")
+
+        # Cop stop: what NZ law would do if you were pulled over driving at the current BAC.
+        cop = ttk.Frame(box)
+        cop.pack(fill="x", pady=(8, 0))
+        self.cop_on = tk.BooleanVar(value=self.data["cop_stop"])
+        ttk.Checkbutton(cop, text="Cop stop: what if you were pulled over driving now?", variable=self.cop_on,
+                        command=self._cop_changed).pack(anchor="w")
+        self.cop_headline = ttk.Label(cop, font=("Segoe UI", 10, "bold"), wraplength=590, justify="left")
+        self.cop_details = ttk.Label(cop, wraplength=590, justify="left")
         self.chart = tk.Canvas(box, width=600, height=230, background="white", highlightthickness=0)
         self.chart.pack(anchor="w", pady=(8, 0))
         ttk.Label(box, text="Estimate only. Individual BAC varies widely; don't drive on these numbers.",
@@ -520,12 +531,14 @@ class App(tk.Tk):
             self.r_label["text"] = "Fill in at least sex and weight, then save."
             self.now_label.configure(text="--", foreground="")
             self.detail_label["text"] = "Set up your profile to get an estimate."
+            self._show_cop(None)
             return
         r, how = body_water(p)
         self.r_label["text"] = f"Body water factor r = {r:.2f} ({how})"
         if not self.data["log"]:
             self.now_label.configure(text="0.000%", foreground="")
             self.detail_label["text"] = "No drinks in the last 24 hours."
+            self._show_cop(0.0)
             return
 
         series, slow, fast = estimate(p, self.data["log"])
@@ -545,7 +558,26 @@ class App(tk.Tk):
                 lines.append(f"Below {th:.2f}%: {bac.fmt(t)}")
         lines.append(f"Zero: {bac.fmt(series[-1][0])}  (fast {bac.fmt(fast[-1][0])}, slow {bac.fmt(slow[-1][0])})")
         self.detail_label["text"] = "\n".join(lines)
+        self._show_cop(current)
         self.draw_chart(series, now)
+
+    def _show_cop(self, bac_percent):
+        """Show what a stop would mean at bac_percent, or hide it (toggle off, or no profile yet)."""
+        self.cop_headline.pack_forget()
+        self.cop_details.pack_forget()
+        if bac_percent is None or not self.cop_on.get():
+            return
+        stop = copstop.cop_stop(bac_percent, self.data["profile"].get("age"))
+        colour = {"clear": "#2e7d32", "infringement": "#d35400", "court": "#c0392b"}[stop.level]
+        self.cop_headline.configure(text=stop.headline, foreground=colour)
+        self.cop_details["text"] = "\n".join(
+            stop.details + ["NZ law as of October 2026, for a first offence. Not legal advice."])
+        self.cop_headline.pack(anchor="w", pady=(2, 0))
+        self.cop_details.pack(anchor="w")
+
+    def _cop_changed(self):
+        self.data["cop_stop"] = self.cop_on.get()
+        self._save()
 
     def draw_chart(self, series, now):
         c = self.chart

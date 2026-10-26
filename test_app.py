@@ -128,11 +128,11 @@ class StateTest(unittest.TestCase):
         self.path = Path(tempfile.mkdtemp()) / "nested" / "state.json"
 
     def test_missing_file_gives_empty_state(self):
-        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "favourites": []})
+        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "favourites": [], "cop_stop": True})
 
     def test_round_trip(self):
         data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
-                "favourites": ["Lion Red"]}
+                "favourites": ["Lion Red"], "cop_stop": False}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
 
@@ -402,6 +402,28 @@ class AppSmokeTest(unittest.TestCase):
         w.search.set("")
         self.assertEqual(w.data["favourites"], [])
         self.assertEqual(w.listbox.get(0), "Test Lager  (5%)")
+
+    def test_cop_stop_is_on_by_default_and_follows_the_bac(self):
+        w = self.window
+        self.assertTrue(w.cop_on.get())
+        self.assertFalse(w.cop_headline.winfo_manager())  # no profile yet: nothing to say
+        w.weight.set("80")
+        w.age.set("35")
+        w.save_profile()
+        self.assertEqual(w.cop_headline["text"], "No alcohol: free to go.")
+        self.add_custom("1000ml 40%", when="1h ago")  # a litre of spirits: well over 80 mg
+        self.assertTrue(w.cop_headline["text"].startswith("Court:"))
+        self.assertIn("28 days", w.cop_details["text"])
+        self.assertIn("Not legal advice", w.cop_details["text"])
+
+    def test_cop_stop_can_be_turned_off_and_stays_off(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        w.cop_on.set(False)
+        w._cop_changed()
+        self.assertFalse(w.cop_headline.winfo_manager())
+        self.assertFalse(app.load_state(w.state_path)["cop_stop"])
 
     def test_spirit_pour_counts_only_the_spirit(self):
         w = self.window
