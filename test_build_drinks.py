@@ -9,7 +9,7 @@ import build_drinks
 
 
 def row(**values):
-    base = {"drink": "Test", "type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "guess": "",
+    base = {"drink": "Test", "type": "beer", "liquorland": "", "woolworths": "", "new_world": "", "paknsave": "", "guess": "",
             "manual": ""}
     return {**base, **values}
 
