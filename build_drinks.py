@@ -13,8 +13,12 @@ drinks.json uses:
     conflict    retailers disagree: the higher one, until a manual value is set
     one source  only one retailer lists an ABV: that value
     generic     a row named "... (generic)": the typical value in the guess column
-    guess only  only the old guess: left out of drinks.json
-    missing     no ABV anywhere: left out of drinks.json
+    guess only  only the old guess: listed with no ABV (the guess shown as a hint)
+    missing     no ABV anywhere: listed with no ABV
+
+Drinks with no ABV still go into drinks.json, with "abv": null, so the app can
+list them and ask for one. The app's Set ABV button writes into the manual column
+through set_manual() and rebuilds, the same as editing the CSV by hand.
 
 Run it after editing the CSV:  uv run build_drinks.py
 """
@@ -23,10 +27,10 @@ import json
 import sys
 from pathlib import Path
 
-import app
 import bac
 
 SOURCES = Path(__file__).parent / "data" / "abv_sources.csv"
+CATALOGUE = Path(__file__).parent / "drinks.json"
 RETAILERS = {"liquorland": "Liquorland", "woolworths": "Woolworths", "new_world": "New World", "paknsave": "PAK'nSAVE"}
 COLUMNS = ("drink", "type", "units", *RETAILERS, "brewery", "guess", "manual", "status", "note")
 ABV_COLUMNS = (*RETAILERS, "brewery", "guess", "manual")
@@ -142,25 +146,31 @@ def source(row, status):
     return ", ".join(label for r, label in RETAILERS.items() if num(row[r]) is not None)
 
 
-def build(sources=SOURCES, out=app.CATALOGUE):
+def read(sources):
+    # utf-8-sig also reads the byte-order mark Excel adds when it saves "CSV UTF-8".
+    with sources.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        return reader.fieldnames, list(reader)
+
+
+def build(sources=SOURCES, out=CATALOGUE):
     """Rewrite the status column and drinks.json; return the rows with their status set.
 
     Raises BuildError, writing nothing, if any row has a problem.
     """
-    # utf-8-sig also reads the byte-order mark Excel adds when it saves "CSV UTF-8".
-    with sources.open(newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
-        fields, rows = reader.fieldnames, list(reader)
+    fields, rows = read(sources)
     found = problems(fields, rows)
     if found:
         raise BuildError("\n".join(found))
     drinks = []
     for row in rows:
         row["status"], abv = resolve(row)
-        if abv is not None:
-            drinks.append({"name": row["drink"], "type": row["type"], "abv": abv,
-                           "units": parse_units(row["units"]), "pour": row["type"] == "spirit",
-                           "source": source(row, row["status"])})
+        drink = {"name": row["drink"], "type": row["type"], "abv": abv,
+                 "units": parse_units(row["units"]), "pour": row["type"] == "spirit",
+                 "source": source(row, row["status"]) if abv is not None else row["status"]}
+        if abv is None and num(row["guess"]) is not None:
+            drink["guess"] = num(row["guess"])
+        drinks.append(drink)
     drinks.sort(key=lambda d: (TYPE_ORDER.index(d["type"]), d["name"].lower()))
     with sources.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fields, lineterminator="\n")
@@ -168,6 +178,29 @@ def build(sources=SOURCES, out=app.CATALOGUE):
         writer.writerows(rows)
     out.write_text(json.dumps({"_note": NOTE, "drinks": drinks}, indent=1) + "\n", encoding="utf-8")
     return rows
+
+
+def set_manual(drink, abv, sources=SOURCES, out=CATALOGUE):
+    """Put abv (or None to clear it) in a drink's manual column, then rebuild.
+
+    The CSV is only rewritten if the whole table still builds; otherwise BuildError
+    is raised and nothing changes.
+    """
+    if abv is not None:
+        bac.check_abv(abv)
+    fields, rows = read(sources)
+    matches = [row for row in rows if row["drink"] == drink]
+    if not matches:
+        raise BuildError(f"{drink!r} isn't in {sources.name}")
+    found = problems(fields, rows)
+    if found:
+        raise BuildError("\n".join(found))
+    matches[0]["manual"] = "" if abv is None else f"{abv:g}"
+    with sources.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fields, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    build(sources, out)
 
 
 def main():
@@ -179,7 +212,8 @@ def main():
     counts = {}
     for row in rows:
         counts[row["status"]] = counts.get(row["status"], 0) + 1
-    print(f"drinks.json: {sum(n for s, n in counts.items() if s not in LEFT_OUT)} drinks")
+    without = sum(n for s, n in counts.items() if s in LEFT_OUT)
+    print(f"drinks.json: {len(rows)} drinks, {without} of them with no ABV yet")
     print("  " + ", ".join(f"{s} {n}" for s, n in sorted(counts.items())))
     for status in NEEDS_REVIEW:
         flagged = [r for r in rows if r["status"] == status]

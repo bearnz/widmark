@@ -106,6 +106,33 @@ class ProblemsTest(unittest.TestCase):
         self.assertEqual([(r["drink"], abv) for r, abv in build_drinks.unusual(rows)], [("Heineken", 55)])
 
 
+class SetManualTest(unittest.TestCase):
+    def test_sets_and_clears_and_rebuilds(self):
+        src, out = copy_sources()
+        build_drinks.set_manual("Tiger Lager", 5.1, src, out)
+        drinks = {d["name"]: d for d in json.loads(out.read_text(encoding="utf-8"))["drinks"]}
+        self.assertEqual((drinks["Tiger Lager"]["abv"], drinks["Tiger Lager"]["source"]), (5.1, "manual"))
+        build_drinks.set_manual("Tiger Lager", None, src, out)
+        drinks = {d["name"]: d for d in json.loads(out.read_text(encoding="utf-8"))["drinks"]}
+        self.assertEqual((drinks["Tiger Lager"]["abv"], drinks["Tiger Lager"]["source"]), (5, "brewery"))
+
+    def test_refuses_unknown_drinks_and_impossible_abvs(self):
+        src, out = copy_sources()
+        with self.assertRaises(build_drinks.BuildError):
+            build_drinks.set_manual("Not A Beer", 5, src, out)
+        with self.assertRaises(ValueError):
+            build_drinks.set_manual("Tiger Lager", 150, src, out)
+        self.assertFalse(out.exists())
+
+    def test_drinks_with_no_abv_are_listed_with_their_guess(self):
+        src, out = copy_sources()
+        build_drinks.build(src, out)
+        drinks = {d["name"]: d for d in json.loads(out.read_text(encoding="utf-8"))["drinks"]}
+        self.assertEqual((drinks["Steinlager Pure"]["abv"], drinks["Steinlager Pure"]["guess"]), (None, 5))
+        self.assertEqual(drinks["Mac's Big Hoppa IPA"]["source"], "missing")
+        self.assertNotIn("guess", drinks["Mac's Big Hoppa IPA"])
+
+
 class InSyncTest(unittest.TestCase):
     def test_drinks_json_matches_the_csv(self):
         tmp = Path(tempfile.mkdtemp())
