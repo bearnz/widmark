@@ -58,6 +58,8 @@ DURATION_RE = re.compile(
     r"^(?:(?P<hours>\d+(?:\.\d+)?)\s*(?:h|hrs?|hours?)\s*(?:and\s*)?)?"
     r"(?:(?P<mins>\d+(?:\.\d+)?)\s*(?P<unit>m|mins?|minutes?)?)?$")
 CLOCK_RE = re.compile(r"^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?$")
+DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+DAY_RE = re.compile(r"^(today|tonight|tomorrow|mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?\s+(.+)$")
 MINUTE = timedelta(minutes=1)
 
 
@@ -128,6 +130,12 @@ def parse_approx_time(text, now):
         if delta is None:
             raise ValueError(f"can't read time {text!r}; try 45 min ago, 1h30m ago or an hour ago")
         return (now - delta).replace(second=0, microsecond=0).astimezone()
+    hours, minute = clock_hours(s, f"can't read time {text!r}; try now, 9pm, ~21:30, noon or 1h30m ago")
+    return max(most_recent(now, h, minute) for h in hours)
+
+
+def clock_hours(s, error):
+    """'9pm' -> ([21], 0); a bare '9' could be either -> ([9, 21], 0). Raises ValueError(error)."""
     m = CLOCK_RE.match(s)
     hour, minute = (int(m[1]), int(m[2] or 0)) if m else (99, 99)
     if m and m[3] and 1 <= hour <= 12:
@@ -137,8 +145,37 @@ def parse_approx_time(text, now):
     else:
         hours = []
     if not hours or minute > 59:
-        raise ValueError(f"can't read time {text!r}; try now, 9pm, ~21:30, noon or 1h30m ago")
-    return max(most_recent(now, h, minute) for h in hours)
+        raise ValueError(error)
+    return hours, minute
+
+
+def parse_future_time(text, now):
+    """'now', '9pm', 'sat 8pm', 'tomorrow 6pm', 'in 2h' -> an aware local datetime, for planning.
+
+    A clock time on its own is the next time it comes round. With a day ('today', 'tonight',
+    'tomorrow' or a weekday, the next one from today) it's on that day, the first of am/pm
+    not yet past ('tonight' takes pm).
+    """
+    now = now.astimezone().replace(second=0, microsecond=0)
+    s = normalise_time_text(text)
+    error = f"can't read time {text!r}; try now, 9pm, sat 8pm, tomorrow 6pm or in 2h"
+    if s in ("", "now"):
+        return now
+    if s.startswith("in ") or s.endswith("from now"):
+        delta = parse_duration(s.removeprefix("in ").removesuffix("from now").strip())
+        if delta is None:
+            raise ValueError(error)
+        return (now + delta).astimezone()
+    m = DAY_RE.match(s)
+    if m:
+        hours, minute = clock_hours(m[2], error)
+        if m[1] == "tonight":
+            hours = [h for h in hours if h >= 12] or hours
+        ahead = 1 if m[1] == "tomorrow" else (DAYS.index(m[1]) - now.weekday()) % 7 if m[1] in DAYS else 0
+        times = sorted(at_clock(local_date(now) + timedelta(days=ahead), h, minute) for h in hours)
+        return next((t for t in times if t >= now), times[-1])
+    hours, minute = clock_hours(s, error)
+    return min(roll_forward((h, minute), now) for h in hours)
 
 
 def alcohol_grams(ml, abv, count=1):

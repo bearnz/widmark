@@ -55,9 +55,9 @@ class SetAbvTest(unittest.TestCase):
 
     def pick(self, name):
         w = self.window
-        w.search.set(name)
-        w.listbox.selection_set(0)
-        w._show_serve()
+        w.current.search.set(name)
+        w.current.listbox.selection_set(0)
+        w.current._show_serve()
 
     def manual(self, drink):
         return {r["drink"]: r["manual"] for r in app.build_drinks.read(self.sources)[1]}[drink]
@@ -67,33 +67,33 @@ class SetAbvTest(unittest.TestCase):
         w.weight.set("80")
         w.save_profile()
         self.pick("big hoppa")
-        self.assertEqual(w.listbox.get(0), "Mac's Big Hoppa IPA  (no ABV yet)")
-        w.add_drink()
+        self.assertEqual(w.current.listbox.get(0), "Mac's Big Hoppa IPA  (no ABV yet)")
+        w.current.add_drink()
         self.assertEqual(w.data["log"], [])
         self.assertIn("has no ABV yet", self.messages[0])
 
         self.answers.append("5.7%")
-        w.set_abv()
+        w.current.set_abv()
         self.assertEqual(self.manual("Mac's Big Hoppa IPA"), "5.7")
         saved = {d["name"]: d for d in app.load_catalogue(self.catalogue)}["Mac's Big Hoppa IPA"]
         self.assertEqual((saved["abv"], saved["source"]), (5.7, "manual"))
-        self.assertEqual(w.listbox.get(w.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (5.7%)")
-        w.add_drink()
+        self.assertEqual(w.current.listbox.get(w.current.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (5.7%)")
+        w.current.add_drink()
         self.assertEqual(w.data["log"][0]["abv"], 5.7)
 
         self.answers.append("")  # blank clears the manual value
-        w.set_abv()
+        w.current.set_abv()
         self.assertEqual(self.manual("Mac's Big Hoppa IPA"), "")
-        self.assertEqual(w.listbox.get(w.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (no ABV yet)")
+        self.assertEqual(w.current.listbox.get(w.current.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (no ABV yet)")
 
     def test_correcting_an_abv_offers_to_update_logged_drinks(self):
         w = self.window
         w.weight.set("80")
         w.save_profile()
         self.pick("heineken silver")
-        w.add_drink()
+        w.current.add_drink()
         self.answers.append("4.5")
-        w.set_abv()
+        w.current.set_abv()
         self.assertEqual(w.data["log"][0]["abv"], 4.5)
         self.assertEqual(app.load_state(w.state_path)["log"][0]["abv"], 4.5)
 
@@ -102,7 +102,7 @@ class SetAbvTest(unittest.TestCase):
         before = self.sources.read_text(encoding="utf-8")
         for answer in ("150", "lots"):
             self.answers.append(answer)
-            self.window.set_abv()
+            self.window.current.set_abv()
         self.assertEqual(len(self.messages), 2)
         self.assertEqual(self.sources.read_text(encoding="utf-8"), before)
 
@@ -128,11 +128,12 @@ class StateTest(unittest.TestCase):
         self.path = Path(tempfile.mkdtemp()) / "nested" / "state.json"
 
     def test_missing_file_gives_empty_state(self):
-        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "favourites": [], "cop_stop": True})
+        self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "plan": [], "favourites": [],
+                                                     "cop_stop": True})
 
     def test_round_trip(self):
         data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
-                "favourites": ["Lion Red"], "cop_stop": False}
+                "plan": [], "favourites": ["Lion Red"], "cop_stop": False}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
 
@@ -191,6 +192,47 @@ class StateTest(unittest.TestCase):
         self.assertAlmostEqual(app.profile_r({"sex": "male", "weight": 80, "age": 35, "height": 180}), 0.709, places=3)
 
 
+class LegalToDriveTest(unittest.TestCase):
+    START = datetime(2026, 10, 31, 20, 0).astimezone()
+
+    def series(self, grams):
+        """(typical, slow) BAC series for one drink of `grams` at START, for an 80 kg man."""
+        return [app.bac.simulate([app.bac.Drink(self.START, grams)], 80, 0.68, app.bac.ELIM_RATES[k])
+                for k in ("typical", "slow")]
+
+    def test_a_plan_over_the_limit_gives_when_and_the_slow_time(self):
+        typical, slow = self.series(60)
+        t, text, colour = app.legal_to_drive(typical, slow, 35)
+        self.assertEqual(t, app.bac.time_below(typical, 0.05))
+        fmt = app.bac.fmt
+        self.assertEqual(text, f"Legal to drive again from about {fmt(t)} "
+                               f"({fmt(app.bac.time_below(slow, 0.05))} if you clear alcohol slowly)")
+        self.assertEqual(colour, app.RED)
+
+    def test_under_20_means_back_to_zero(self):
+        typical, slow = self.series(10)
+        t, text, _ = app.legal_to_drive(typical, slow, 19)
+        self.assertEqual(t, typical[-1][0])
+        self.assertIn(app.bac.fmt(slow[-1][0]), text)
+
+    def test_never_over_the_limit(self):
+        t, text, colour = app.legal_to_drive(*self.series(10), None)
+        self.assertIsNone(t)
+        self.assertEqual(text, "Legal to drive the whole time: under the 0.05% adult limit "
+                               "(assuming you're 20 or over)")
+        self.assertEqual(colour, app.GREEN)
+
+    def test_now_against_the_typical_and_slow_times(self):
+        typical, slow = self.series(60)
+        t, t_slow = app.bac.time_below(typical, 0.05), app.bac.time_below(slow, 0.05)
+        for now, start, colour in ((self.START + timedelta(hours=1), "Legal to drive again", app.RED),
+                                   (t + (t_slow - t) / 2, "Probably legal to drive now", app.ORANGE),
+                                   (t_slow, "Legal to drive now", app.GREEN)):
+            _, text, got = app.legal_to_drive(typical, slow, 35, now)
+            self.assertTrue(text.startswith(start), text)
+            self.assertEqual(got, colour)
+
+
 class AppSmokeTest(unittest.TestCase):
     def setUp(self):
         try:
@@ -215,24 +257,24 @@ class AppSmokeTest(unittest.TestCase):
 
     def test_profile_then_drink_gives_an_estimate(self):
         w = self.window
-        self.assertEqual(w.now_label["text"], "--")
+        self.assertEqual(w.current.now_label["text"], "--")
         w.weight.set("80")
         w.age.set("35")
         w.height.set("180")
         w.save_profile()
         self.assertIn("Watson", w.r_label["text"])
-        self.assertEqual(w.now_label["text"], "0.000%")
+        self.assertEqual(w.current.now_label["text"], "0.000%")
 
-        w.listbox.selection_set(0)
-        w._show_serve()
-        w.qty.set("2")
-        w.when.set("30 min ago")
-        w.add_drink()
+        w.current.listbox.selection_set(0)
+        w.current._show_serve()
+        w.current.qty.set("2")
+        w.current.when.set("30 min ago")
+        w.current.add_drink()
         self.assertEqual(len(w.data["log"]), 1)
-        self.assertEqual(len(w.tree.get_children()), 1)
-        self.assertRegex(w.now_label["text"], r"^0\.0\d\d% now$")
-        self.assertNotEqual(w.now_label["text"], "0.000% now")
-        self.assertGreater(len(w.chart.find_all()), 3)
+        self.assertEqual(len(w.current.tree.get_children()), 1)
+        self.assertRegex(w.current.now_label["text"], r"^0\.0\d\d% now$")
+        self.assertNotEqual(w.current.now_label["text"], "0.000% now")
+        self.assertGreater(len(w.current.chart.find_all()), 3)
 
         saved = app.load_state(w.state_path)
         self.assertEqual(saved["profile"]["weight"], 80)
@@ -242,22 +284,22 @@ class AppSmokeTest(unittest.TestCase):
         w = self.window
         w.weight.set("70")
         w.save_profile()
-        w.search.set("500ml 6%")
-        w.add_drink()
+        w.current.search.set("500ml 6%")
+        w.current.add_drink()
         self.assertEqual(w.data["log"][0]["name"], "Custom 6%")
         self.assertEqual(w.data["log"][0]["ml"], 500)
-        w.tree.selection_set("0")
-        w.remove_selected()
+        w.current.tree.selection_set("0")
+        w.current.remove_selected()
         self.assertEqual(w.data["log"], [])
 
     def add_custom(self, text, qty="1", when="now"):
         w = self.window
         before = len(w.data["log"])
         self.messages.clear()
-        w.search.set(text)
-        w.qty.set(qty)
-        w.when.set(when)
-        w.add_drink()
+        w.current.search.set(text)
+        w.current.qty.set(qty)
+        w.current.when.set(when)
+        w.current.add_drink()
         return len(w.data["log"]) - before
 
     def test_rejects_impossible_drinks_with_a_message(self):
@@ -291,9 +333,9 @@ class AppSmokeTest(unittest.TestCase):
         w.save_profile()
         self.add_custom("330ml 5%", when="2h ago")
         self.add_custom("330ml 5%", when="1h ago")
-        w.tree.selection_set("1")
+        w.current.tree.selection_set("1")
         w.refresh()
-        self.assertEqual(w.tree.selection(), ("1",))
+        self.assertEqual(w.current.tree.selection(), ("1",))
 
     def test_second_window_on_the_same_data_is_refused(self):
         with self.assertRaises(app.AlreadyOpen):
@@ -312,24 +354,24 @@ class AppSmokeTest(unittest.TestCase):
         w = self.window
         w.weight.set("80")
         w.save_profile()
-        self.assertEqual(str(w.over_entry["state"]), "disabled")
-        w.qty.set("4")
-        self.assertEqual((str(w.over_entry["state"]), w.over.get()), ("normal", "1h30m"))
+        self.assertEqual(str(w.current.over_entry["state"]), "disabled")
+        w.current.qty.set("4")
+        self.assertEqual((str(w.current.over_entry["state"]), w.current.over.get()), ("normal", "1h30m"))
         self.assertEqual(self.add_custom("330ml 5%", qty="4", when="2h ago"), 1)
         e = w.data["log"][-1]
         self.assertEqual((e["count"], e["spread_minutes"]), (4, 90))
-        self.assertIn("over 1h30m", w.tree.item("0")["values"][1])
-        self.assertEqual(w.over.get(), "")  # back to qty 1
+        self.assertIn("over 1h30m", w.current.tree.item("0")["values"][1])
+        self.assertEqual(w.current.over.get(), "")  # back to qty 1
 
     def test_spread_running_past_now_is_refused(self):
         w = self.window
         w.weight.set("80")
         w.save_profile()
-        w._over_typed = True
-        w.over.set("3h")
+        w.current._over_typed = True
+        w.current.over.set("3h")
         self.assertEqual(self.add_custom("330ml 5%", qty="4", when="1h ago"), 0)
         self.assertIn("after now", self.messages[0])
-        w.over.set("soon")
+        w.current.over.set("soon")
         self.assertEqual(self.add_custom("330ml 5%", qty="4", when="1h ago"), 0)
         self.assertIn("how long", self.messages[0])
 
@@ -337,14 +379,14 @@ class AppSmokeTest(unittest.TestCase):
         w = self.window
         w.weight.set("80")
         w.save_profile()
-        w.food.set(True)
+        w.current.food.set(True)
         self.add_custom("330ml 5%", when="2h ago")
-        w.food.set(False)
+        w.current.food.set(False)
         self.add_custom("330ml 5%", when="1h ago")
         self.assertEqual([e["food"] for e in w.data["log"]], [True, False])
-        self.assertTrue(w.tree.item("0")["values"][1].endswith(", with a meal"))
-        w.tree.selection_set("1")
-        w.toggle_meal()
+        self.assertTrue(w.current.tree.item("0")["values"][1].endswith(", with a meal"))
+        w.current.tree.selection_set("1")
+        w.current.toggle_meal()
         self.assertEqual([e["food"] for e in app.load_state(w.state_path)["log"]], [True, True])
 
     def test_warns_when_saved_data_was_unreadable(self):
@@ -360,61 +402,61 @@ class AppSmokeTest(unittest.TestCase):
 
     def pick(self, name):
         w = self.window
-        w.search.set(name)
-        w.listbox.selection_set(0)
-        w._show_serve()
+        w.current.search.set(name)
+        w.current.listbox.selection_set(0)
+        w.current._show_serve()
 
     def test_choosing_a_unit_or_other_amount(self):
         w = self.window
         self.pick("lager")
-        self.assertEqual(list(w.unit_pick["values"]), ["can/bottle (330 ml)", "pint (568 ml)", app.OTHER])
-        self.assertEqual(str(w.other_entry["state"]), "disabled")
-        w.unit_pick.current(1)
-        w._unit_changed()
-        w.add_drink()
+        self.assertEqual(list(w.current.unit_pick["values"]), ["can/bottle (330 ml)", "pint (568 ml)", app.OTHER])
+        self.assertEqual(str(w.current.other_entry["state"]), "disabled")
+        w.current.unit_pick.current(1)
+        w.current._unit_changed()
+        w.current.add_drink()
         self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("pint", 568))
-        self.assertEqual(w.tree.item("0")["values"][1], "Test Lager, pint (568 ml)")
+        self.assertEqual(w.current.tree.item("0")["values"][1], "Test Lager, pint (568 ml)")
 
-        w.unit_pick.current(2)
-        w._unit_changed()
-        self.assertEqual(str(w.other_entry["state"]), "normal")
-        w.other_ml.set("400")
-        w.add_drink()
+        w.current.unit_pick.current(2)
+        w.current._unit_changed()
+        self.assertEqual(str(w.current.other_entry["state"]), "normal")
+        w.current.other_ml.set("400")
+        w.current.add_drink()
         self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("other", 400))
 
     def test_favourites_are_pinned_and_remembered(self):
         w = self.window
-        self.assertEqual(str(w.fav_button["state"]), "disabled")
+        self.assertEqual(str(w.current.fav_button["state"]), "disabled")
         self.pick("gin")
-        self.assertEqual(w.fav_button["text"], "☆ Pin as favourite")
-        w.fav_button.invoke()
+        self.assertEqual(w.current.fav_button["text"], "☆ Pin as favourite")
+        w.current.fav_button.invoke()
         self.assertEqual(w.data["favourites"], ["Test Gin"])
-        self.assertEqual(w.fav_button["text"], "★ Unpin favourite")
-        self.assertEqual(w._selected()["name"], "Test Gin")  # still selected after re-listing
+        self.assertEqual(w.current.fav_button["text"], "★ Unpin favourite")
+        self.assertEqual(w.current._selected()["name"], "Test Gin")  # still selected after re-listing
 
-        w.search.set("")
-        self.assertEqual(w.listbox.get(0, "end"), ("★ Test Gin  (40%)", "Test Lager  (5%)"))
+        w.current.search.set("")
+        self.assertEqual(w.current.listbox.get(0, "end"), ("★ Test Gin  (40%)", "Test Lager  (5%)"))
 
         self.assertEqual(app.load_state(w.state_path)["favourites"], ["Test Gin"])
 
         self.pick("gin")
-        w.fav_button.invoke()
-        w.search.set("")
+        w.current.fav_button.invoke()
+        w.current.search.set("")
         self.assertEqual(w.data["favourites"], [])
-        self.assertEqual(w.listbox.get(0), "Test Lager  (5%)")
+        self.assertEqual(w.current.listbox.get(0), "Test Lager  (5%)")
 
     def test_cop_stop_is_on_by_default_and_follows_the_bac(self):
         w = self.window
         self.assertTrue(w.cop_on.get())
-        self.assertFalse(w.cop_headline.winfo_manager())  # no profile yet: nothing to say
+        self.assertFalse(w.current.cop_headline.winfo_manager())  # no profile yet: nothing to say
         w.weight.set("80")
         w.age.set("35")
         w.save_profile()
-        self.assertEqual(w.cop_headline["text"], "No alcohol: free to go.")
+        self.assertEqual(w.current.cop_headline["text"], "No alcohol: free to go.")
         self.add_custom("1000ml 40%", when="1h ago")  # a litre of spirits: well over 80 mg
-        self.assertTrue(w.cop_headline["text"].startswith("Court:"))
-        self.assertIn("28 days", w.cop_details["text"])
-        self.assertIn("Not legal advice", w.cop_details["text"])
+        self.assertTrue(w.current.cop_headline["text"].startswith("Court:"))
+        self.assertIn("28 days", w.current.cop_details["text"])
+        self.assertIn("Not legal advice", w.current.cop_details["text"])
 
     def test_cop_stop_can_be_turned_off_and_stays_off(self):
         w = self.window
@@ -422,25 +464,139 @@ class AppSmokeTest(unittest.TestCase):
         w.save_profile()
         w.cop_on.set(False)
         w._cop_changed()
-        self.assertFalse(w.cop_headline.winfo_manager())
+        self.assertFalse(w.current.cop_headline.winfo_manager())
         self.assertFalse(app.load_state(w.state_path)["cop_stop"])
+
+    def test_plan_is_a_separate_session(self):
+        w, p = self.window, self.window.plan
+        w.weight.set("80")
+        w.age.set("35")
+        w.save_profile()
+        self.assertEqual(p.now_label["text"], "--")
+        p.search.set("500ml 5%")
+        p.qty.set("2")
+        p.when.set("tomorrow 9pm")
+        p.add_drink()
+        self.assertEqual(self.messages, [])
+        self.assertEqual((len(w.data["plan"]), w.data["log"]), (1, []))
+        self.assertTrue(p.now_label["text"].startswith("Peak 0.0"), p.now_label["text"])
+        self.assertTrue(p.legal_label["text"].startswith("Legal to drive again from about"))
+        self.assertEqual(p.when.get(), "tomorrow 9pm")  # kept for the next planned drink
+        self.assertEqual(w.current.now_label["text"], "0.000%")  # the plan isn't drunk yet
+        self.assertEqual(w.current.legal_label["text"], "")
+        self.assertEqual(w.current.tree.get_children(), ())
+
+        plan_estimate = p.detail_label["text"]
+        self.add_custom("500ml 5%", when="1h ago")
+        self.assertEqual(len(w.data["plan"]), 1)
+        self.assertEqual(p.detail_label["text"], plan_estimate)  # tonight's drinks don't join the plan
+        self.assertTrue(w.current.legal_label["text"].startswith("Legal to drive"))
+        saved = app.load_state(w.state_path)
+        self.assertEqual((len(saved["log"]), len(saved["plan"])), (1, 1))
+
+    def test_plan_times_run_forward(self):
+        w, p = self.window, self.window.plan
+        w.weight.set("80")
+        w.save_profile()
+        p.search.set("330ml 5%")
+        p.qty.set("4")
+        p.when.set("in 1h")  # the last of these is hours from now: fine for a plan
+        p.add_drink()
+        self.assertEqual(len(w.data["plan"]), 1)
+        p.when.set("in 200h")
+        p.add_drink()
+        self.assertIn("more than 7 days", self.messages[0])
+        self.assertEqual(len(w.data["plan"]), 1)
+
+    def test_edit_saves_over_the_drink(self):
+        w, s = self.window, self.window.current
+        w.weight.set("80")
+        w.save_profile()
+        self.pick("lager")
+        s.unit_pick.current(1)
+        s._unit_changed()
+        s.when.set("2h ago")
+        s.add_drink()
+        self.add_custom("330ml 5%", when="1h ago")
+        w.data["log"][0]["abv"] = 4.0  # logged before an ABV correction: editing keeps it
+        before = dict(w.data["log"][0])
+
+        s.tree.selection_set("0")
+        s.edit_selected()
+        self.assertEqual((s.add_box["text"], s.add_button["text"]), ("Edit a drink", "Save changes"))
+        self.assertEqual((s._selected()["name"], s.unit.get()), ("Test Lager", "pint (568 ml)"))
+        self.assertEqual(s.when.get(), app.entry_time(before).strftime("%H:%M"))
+        s.add_drink()
+        self.assertEqual(w.data["log"][0], before)  # saved unchanged, not added again
+        self.assertEqual(len(w.data["log"]), 2)
+
+        s.tree.selection_set("0")
+        s.edit_selected()
+        s.qty.set("2")
+        s.over.set("30 min")
+        s.food.set(True)
+        s.add_drink()
+        self.assertEqual(self.messages, [])
+        e = app.load_state(w.state_path)["log"][0]
+        self.assertEqual((e["count"], e["spread_minutes"], e["food"], e["unit"], e["abv"]), (2, 30, True, "pint", 4.0))
+        self.assertEqual(len(w.data["log"]), 2)
+        self.assertEqual((s.add_box["text"], s.add_button["text"], s.qty.get()), ("Add a drink", "Add drink", "1"))
+
+    def test_edit_reads_back_pours_custom_drinks_and_plan_days(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        self.pick("gin")
+        w.current.spirit_ml.set("45")
+        w.current.mixer_ml.set("150")
+        w.current.add_drink()
+        self.add_custom("500ml 6%", qty="3", when="2h ago")
+        w.plan.search.set("440ml 7%")
+        w.plan.when.set("tomorrow 9pm")
+        w.plan.add_drink()
+        for s, row in ((w.current, "0"), (w.current, "1"), (w.plan, "0")):
+            before = [dict(e) for e in s.entries]
+            s.tree.selection_set(row)
+            s.edit_selected()
+            s.add_drink()
+            self.assertEqual(s.entries, before, (row, s.when.get()))
+        self.assertEqual(self.messages, [])
+        self.assertRegex(w.plan.when.get(), r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) 21:00$")
+
+    def test_cancel_or_remove_ends_an_edit(self):
+        w, s = self.window, self.window.current
+        w.weight.set("80")
+        w.save_profile()
+        s.edit_selected()
+        self.assertIn("Select one", self.messages[0])
+        self.add_custom("330ml 5%", when="1h ago")
+        before = dict(w.data["log"][0])
+        s.tree.selection_set("0")
+        s.edit_selected()
+        s.cancel_edit()
+        self.assertEqual((s.editing, s.add_button["text"]), (None, "Add drink"))
+        self.assertEqual(w.data["log"], [before])
+        s.tree.selection_set("0")
+        s.edit_selected()
+        s.remove_selected()
+        self.assertEqual((s.editing, w.data["log"]), (None, []))
 
     def test_spirit_pour_counts_only_the_spirit(self):
         w = self.window
         self.pick("gin")
-        self.assertTrue(w.pour_row.winfo_manager())
-        self.assertFalse(w.unit_row.winfo_manager())
-        self.assertEqual(w.spirit_ml.get(), "15")
-        self.assertEqual([b["text"] for b in w.quick.winfo_children()], ["shot 15", "double 30", "family 37.5"])
-        w.quick.winfo_children()[2].invoke()
-        self.assertEqual(w.spirit_ml.get(), "37.5")
-        w.spirit_ml.set("45")
-        w.mixer_ml.set("150")
-        w.add_drink()
+        self.assertTrue(w.current.pour_row.winfo_manager())
+        self.assertFalse(w.current.unit_row.winfo_manager())
+        self.assertEqual(w.current.spirit_ml.get(), "15")
+        self.assertEqual([b["text"] for b in w.current.quick.winfo_children()], ["shot 15", "double 30", "family 37.5"])
+        w.current.quick.winfo_children()[2].invoke()
+        self.assertEqual(w.current.spirit_ml.get(), "37.5")
+        w.current.spirit_ml.set("45")
+        w.current.mixer_ml.set("150")
+        w.current.add_drink()
         e = w.data["log"][-1]
         self.assertEqual((e["unit"], e["ml"], e["mixer"]), ("poured", 45, 150))
         self.assertAlmostEqual(app.entry_grams(e), 45 * 0.40 * 0.789)
-        self.assertEqual(w.tree.item("0")["values"][1], "Test Gin, 45 ml + 150 ml mixer")
+        self.assertEqual(w.current.tree.item("0")["values"][1], "Test Gin, 45 ml + 150 ml mixer")
 
 
 if __name__ == "__main__":

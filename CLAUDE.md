@@ -10,7 +10,7 @@ Desktop app (profile, NZ drink list, live estimate and chart):
 uv run app.py
 ```
 
-Your profile and the last 24 hours of drinks are saved to
+Your profile, the last 24 hours of drinks and your plan are saved to
 `~/.boozer-calc/state.json`, outside the repo. Only one window can be open at a
 time, so two can't overwrite each other's drinks. Times can be rough: `now`,
 `9pm`, `~21:30`, `noon`, `1h30m ago`, `an hour ago`. With age and height in
@@ -31,6 +31,15 @@ from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
 A qty above 1 is spread evenly from When over the time you give (one every 30
 minutes unless you change it). Tick "With a meal" for drinks had with food: they
 absorb more slowly. The log's With/without a meal button changes it afterwards.
+
+The window has two tabs, each its own session. Current session is the drinks
+you've had; Plan a session is drinks you mean to have, at times like `9pm`,
+`sat 8pm`, `tomorrow 6pm` or `in 2h` (up to a week ahead). Their drinks never
+mix: a plan doesn't add to your BAC now, and tonight's drinks don't join the
+plan. Edit selected loads a drink back into the form to change it; edited drinks
+keep the ABV they were logged with. Both tabs say when you'd be legal to drive
+again: back under the 0.05% adult limit (zero under 20) at the typical
+elimination rate, with the later time for a slow one.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths, New

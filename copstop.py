@@ -42,6 +42,11 @@ def breath_ug(bac_percent):
     return blood_mg(bac_percent) * 5
 
 
+def legal_limit(age=None):
+    """The highest BAC % you can legally drive at: zero under 20, else the adult limit."""
+    return 0.0 if age is not None and age < ADULT_AGE else ADULT_LIMIT_MG / 1000
+
+
 def cop_stop(bac_percent, age=None):
     """What a first-time offender faces if stopped now. age None is treated as 20 or over."""
     blood, breath = blood_mg(bac_percent), breath_ug(bac_percent)

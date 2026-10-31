@@ -57,6 +57,39 @@ class ApproxTimeTest(unittest.TestCase):
                 parse_approx_time(text, self.NOW)
 
 
+class FutureTimeTest(unittest.TestCase):
+    NOW = datetime(2026, 10, 26, 1, 20, 33)  # Monday 01:20
+
+    def check(self, text, expected):
+        self.assertEqual(bac.parse_future_time(text, self.NOW), expected.astimezone(), text)
+
+    def test_now_and_in(self):
+        self.check("now", datetime(2026, 10, 26, 1, 20))
+        self.check("in 2h", datetime(2026, 10, 26, 3, 20))
+        self.check("1h30m from now", datetime(2026, 10, 26, 2, 50))
+        self.check("in half an hour", datetime(2026, 10, 26, 1, 50))
+
+    def test_clock_times_are_the_next_to_come_round(self):
+        self.check("9pm", datetime(2026, 10, 26, 21, 0))
+        self.check("1am", datetime(2026, 10, 27, 1, 0))
+        self.check("1:20", datetime(2026, 10, 26, 1, 20))  # this minute still counts
+        self.check("9", datetime(2026, 10, 26, 9, 0))
+
+    def test_days(self):
+        self.check("tomorrow 6pm", datetime(2026, 10, 27, 18, 0))
+        self.check("sat 8pm", datetime(2026, 10, 31, 20, 0))
+        self.check("Saturday 20:00", datetime(2026, 10, 31, 20, 0))
+        self.check("Mon 21:30", datetime(2026, 10, 26, 21, 30))  # today is Monday
+        self.check("today 1am", datetime(2026, 10, 26, 1, 0))  # already past: a plan can say so
+        self.check("tonight 9", datetime(2026, 10, 26, 21, 0))
+        self.check("fri 9", datetime(2026, 10, 30, 9, 0))
+
+    def test_rejects_nonsense(self):
+        for text in ("in soon", "sat", "25:00", "blursday 9pm", "9pm ago", "in"):
+            with self.assertRaises(ValueError, msg=text):
+                bac.parse_future_time(text, self.NOW)
+
+
 class StandardDrinkTest(unittest.TestCase):
     def test_matches_db_breweries_labels(self):
         # (ml, ABV %, standard drinks as printed on db.co.nz, Oct 2026)
