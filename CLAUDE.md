@@ -25,6 +25,9 @@ Drinks with no known ABV are listed greyed out; select one and use Set ABV to
 enter the ABV from its label (any drink's ABV can be corrected the same way).
 That writes the manual column in data/abv_sources.csv and rebuilds drinks.json,
 so the change shows up in git as an edit to commit.
+Cop stop (on by default) shows what NZ law would do if you were pulled over
+driving at your current BAC: the infringement or court penalty for your age,
+from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
 A qty above 1 is spread evenly from When over the time you give (one every 30
 minutes unless you change it). Tick "With a meal" for drinks had with food: they
 absorb more slowly. The log's With/without a meal button changes it afterwards.
