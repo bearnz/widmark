@@ -1,6 +1,7 @@
-"""Desktop app: save your profile, log drinks as you go, watch your estimated BAC.
+"""Desktop app: save your profile, log drinks as you go, watch your estimated BAC, and plan
+a session on its own tab.
 
-Your profile and the last 24 hours of drinks are kept in ~/.boozer-calc/state.json.
+Your profile, the last 24 hours of drinks and your plan are kept in ~/.boozer-calc/state.json.
 Estimate only: never use it to decide whether you're fit to drive.
 """
 import json
@@ -18,12 +19,14 @@ import copstop
 CATALOGUE = build_drinks.CATALOGUE
 STATE = Path.home() / ".boozer-calc" / "state.json"
 LOG_HOURS = 24  # drinks older than this drop off the log
+PLAN_DAYS = 7  # how far ahead a session can be planned
 MAX_QTY = 24
 PACE_MINUTES = 30  # default gap between drinks when a qty of them is logged at once
 AGE = (18, 120)
 HEIGHT_CM = (100, 250)
 CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNORECASE)
 HINT = "#666"
+GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
 OTHER = "other amount"
 
 
@@ -83,8 +86,8 @@ def load_state(path=STATE):
     log = data.get("log", [])
     for entry in log:  # older versions had one meal setting for the whole log
         entry.setdefault("food", data.get("food", False))
-    return {"profile": data.get("profile", {}), "log": log, "favourites": data.get("favourites", []),
-            "cop_stop": data.get("cop_stop", True)}
+    return {"profile": data.get("profile", {}), "log": log, "plan": data.get("plan", []),
+            "favourites": data.get("favourites", []), "cop_stop": data.get("cop_stop", True)}
 
 
 def save_state(data, path=STATE):
@@ -140,7 +143,32 @@ def estimate(profile, log):
     return [bac.simulate(drinks, profile["weight"], r, bac.ELIM_RATES[k]) for k in ("typical", "slow", "fast")]
 
 
+def legal_to_drive(series, slow, age, now=None):
+    """(time, text, colour): when BAC is back under the NZ limit for your age at the typical
+    elimination rate, and how to say it, giving the slow rate's later time too.
+
+    now is None for a plan, which hasn't happened yet. time is None if never over the limit.
+    """
+    limit = copstop.legal_limit(age)
+    what = "zero, the limit under 20" if not limit else (
+        f"the {limit:.2f}% adult limit" + (" (assuming you're 20 or over)" if age is None else ""))
+    t, t_slow = bac.time_below(series, limit), bac.time_below(slow, limit)
+    when = "now" if now is not None else "the whole time"
+    if t_slow is None or (now is not None and t_slow <= now):
+        return t, f"Legal to drive {when}: under {what}", GREEN
+    if t is None or (now is not None and t <= now):
+        return t, (f"Probably legal to drive {when}, under {what}, but not until "
+                   f"{bac.fmt(t_slow)} if you clear alcohol slowly"), ORANGE
+    return t, f"Legal to drive again from about {bac.fmt(t)} ({bac.fmt(t_slow)} if you clear alcohol slowly)", RED
+
+
 class App(tk.Tk):
+    """The window: your profile, then a tab for the drinks you're having and a tab for a plan.
+
+    The two tabs are separate sessions: each has its own drinks (the "log" and "plan" lists
+    in the state) and its own estimate, so a plan never adds to tonight's BAC or vice versa.
+    """
+
     def __init__(self, state_path=STATE, catalogue=None, catalogue_path=CATALOGUE, sources=build_drinks.SOURCES):
         """catalogue overrides the drinks read from catalogue_path (tests use it); Set ABV writes
         to sources (the ABV table) and rebuilds catalogue_path."""
@@ -158,45 +186,125 @@ class App(tk.Tk):
             warning = str(e)
             self.after(200, lambda: messagebox.showwarning("Saved data", warning, parent=self))
         self.catalogue = load_catalogue(catalogue_path) if catalogue is None else catalogue
-        left = ttk.Frame(self, padding=8)
-        left.grid(row=0, column=0, sticky="ns")
-        right = ttk.Frame(self, padding=8)
-        right.grid(row=0, column=1, sticky="nsew")
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
-        self._build_profile(left)
-        self._build_add(left)
-        self._build_estimate(right)
-        self._build_log(right)
+        self.cop_on = tk.BooleanVar(value=self.data["cop_stop"])
+        self._build_profile()
+        self.tabs = ttk.Notebook(self)
+        self.tabs.pack(fill="both", expand=True, padx=8, pady=(0, 8))
+        self.current = Session(self.tabs, self, "log")
+        self.plan = Session(self.tabs, self, "plan")
+        self.tabs.add(self.current, text="Current session")
+        self.tabs.add(self.plan, text="Plan a session")
+        self.sessions = (self.current, self.plan)
         self._tick()
 
-    # --- layout ---
-
-    def _build_profile(self, parent):
-        box = ttk.LabelFrame(parent, text="Profile", padding=8)
-        box.pack(fill="x")
+    def _build_profile(self):
+        box = ttk.LabelFrame(self, text="Profile", padding=8)
+        box.pack(fill="x", padx=8, pady=8)
         p = self.data["profile"]
         self.sex = tk.StringVar(value=p.get("sex", "male"))
         self.age = tk.StringVar(value=fmt_num(p.get("age")))
         self.weight = tk.StringVar(value=fmt_num(p.get("weight")))
         self.height = tk.StringVar(value=fmt_num(p.get("height")))
         rows = [
-            ("Sex", ttk.Combobox(box, textvariable=self.sex, values=list(bac.WIDMARK_R), state="readonly", width=12)),
-            ("Age", ttk.Entry(box, textvariable=self.age, width=14)),
-            ("Weight (kg)", ttk.Entry(box, textvariable=self.weight, width=14)),
-            ("Height (cm)", ttk.Entry(box, textvariable=self.height, width=14)),
+            ("Sex", ttk.Combobox(box, textvariable=self.sex, values=list(bac.WIDMARK_R), state="readonly", width=8)),
+            ("Age", ttk.Entry(box, textvariable=self.age, width=6)),
+            ("Weight (kg)", ttk.Entry(box, textvariable=self.weight, width=6)),
+            ("Height (cm)", ttk.Entry(box, textvariable=self.height, width=6)),
         ]
         for i, (label, widget) in enumerate(rows):
-            ttk.Label(box, text=label).grid(row=i, column=0, sticky="w", pady=2, padx=(0, 8))
-            widget.grid(row=i, column=1, sticky="ew", pady=2)
-        ttk.Button(box, text="Save profile", command=self.save_profile).grid(
-            row=len(rows), column=0, columnspan=2, sticky="ew", pady=(6, 0))
-        self.r_label = ttk.Label(box, foreground=HINT, wraplength=260)
-        self.r_label.grid(row=len(rows) + 1, column=0, columnspan=2, sticky="w", pady=(4, 0))
+            ttk.Label(box, text=label).grid(row=0, column=2 * i, sticky="w", padx=(12 if i else 0, 4))
+            widget.grid(row=0, column=2 * i + 1, sticky="w")
+        ttk.Button(box, text="Save profile", command=self.save_profile).grid(row=0, column=2 * len(rows), padx=(12, 0))
+        self.r_label = ttk.Label(box, foreground=HINT)
+        self.r_label.grid(row=1, column=0, columnspan=2 * len(rows) + 1, sticky="w", pady=(4, 0))
+
+    def destroy(self):
+        super().destroy()
+        self._lock.release()
+
+    def save_profile(self):
+        try:
+            weight = float(self.weight.get())
+            age = float(self.age.get()) if self.age.get().strip() else None
+            height = float(self.height.get()) if self.height.get().strip() else None
+        except ValueError:
+            messagebox.showerror("Profile", "Age, weight and height must be numbers.", parent=self)
+            return
+        problems = []
+        if not bac.WEIGHT_KG[0] <= weight <= bac.WEIGHT_KG[1]:
+            problems.append(f"Weight is in kg, between {bac.WEIGHT_KG[0]} and {bac.WEIGHT_KG[1]}.")
+        if age is not None and not AGE[0] <= age <= AGE[1]:
+            problems.append(f"Age must be between {AGE[0]} and {AGE[1]}.")
+        if height is not None and not HEIGHT_CM[0] <= height <= HEIGHT_CM[1]:
+            problems.append(f"Height is in cm, between {HEIGHT_CM[0]} and {HEIGHT_CM[1]}.")
+        if problems:
+            messagebox.showerror("Profile", "\n".join(problems), parent=self)
+            return
+        self.data["profile"] = {"sex": self.sex.get(), "age": age, "weight": weight, "height": height}
+        self.save()
+
+    def refilter(self):
+        """Re-list the drinks on every tab (after a favourite or ABV change), keeping each selection."""
+        for s in self.sessions:
+            selected = s._selected()
+            s._filter(keep=selected and selected["name"])
+
+    def _cop_changed(self):
+        self.data["cop_stop"] = self.cop_on.get()
+        self.save()
+
+    def save(self):
+        save_state(self.data, self.state_path)
+        self.refresh()
+
+    def _tick(self):
+        self.refresh()
+        self.after(60_000, self._tick)
+
+    def refresh(self):
+        p = self.data["profile"]
+        if p.get("weight"):
+            r, how = body_water(p)
+            self.r_label["text"] = f"Body water factor r = {r:.2f} ({how})"
+        else:
+            self.r_label["text"] = "Fill in at least sex and weight, then save."
+        for s in self.sessions:
+            s.refresh()
+
+
+class Session(ttk.Frame):
+    """One tab: a form to add drinks, the estimate and chart, and the session's drinks.
+
+    key is the state list it keeps its drinks in: "log" for drinks you've had (times in the
+    past), "plan" for drinks you mean to have (times usually in the future).
+    """
+
+    def __init__(self, parent, app, key):
+        super().__init__(parent, padding=8)
+        self.app = app
+        self.key = key
+        self.planning = key == "plan"
+        self.editing = None  # the entry the form is editing, or None when it adds a new one
+        left = ttk.Frame(self)
+        left.grid(row=0, column=0, sticky="ns")
+        right = ttk.Frame(self, padding=(8, 0, 0, 0))
+        right.grid(row=0, column=1, sticky="nsew")
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self._build_add(left)
+        self._build_estimate(right)
+        self._build_log(right)
+
+    @property
+    def entries(self):
+        return self.app.data[self.key]
+
+    # --- layout ---
 
     def _build_add(self, parent):
-        box = ttk.LabelFrame(parent, text="Add a drink", padding=8)
-        box.pack(fill="both", expand=True, pady=(8, 0))
+        self.add_box = ttk.LabelFrame(parent, text=self._add_title(), padding=8)
+        box = self.add_box
+        box.pack(fill="both", expand=True)
         self.search = tk.StringVar()
         self.search.trace_add("write", lambda *_: self._filter())
         ttk.Entry(box, textvariable=self.search).pack(fill="x")
@@ -255,31 +363,38 @@ class App(tk.Tk):
         row.pack(fill="x", pady=(2, 0))
         ttk.Label(row, text="When").pack(side="left")
         ttk.Entry(row, textvariable=self.when, width=16).pack(side="left", padx=4)
-        ttk.Label(box, text="(the first one) e.g. now, 9pm, ~21:30, 1h30m ago", foreground=HINT).pack(anchor="w")
+        examples = "9pm, sat 8pm, tomorrow 6pm, in 2h" if self.planning else "now, 9pm, ~21:30, 1h30m ago"
+        ttk.Label(box, text=f"(the first one) e.g. {examples}", foreground=HINT).pack(anchor="w")
         self.food = tk.BooleanVar(value=False)
         ttk.Checkbutton(box, text="With a meal (slower absorption)", variable=self.food).pack(anchor="w", pady=(4, 0))
-        ttk.Button(box, text="Add drink", command=self.add_drink).pack(fill="x", pady=(6, 0))
+        row = ttk.Frame(box)
+        row.pack(fill="x", pady=(6, 0))
+        self.add_button = ttk.Button(row, text="Add drink", command=self.add_drink)
+        self.add_button.pack(side="left", fill="x", expand=True)
+        self.cancel_button = ttk.Button(row, text="Cancel edit", command=self.cancel_edit)
         self._qty_changed()
         self._filter()
 
-    def destroy(self):
-        super().destroy()
-        self._lock.release()
+    def _add_title(self):
+        return "Edit a drink" if self.editing else "Add a planned drink" if self.planning else "Add a drink"
 
     def _build_estimate(self, parent):
-        box = ttk.LabelFrame(parent, text="Estimate", padding=8)
+        box = ttk.LabelFrame(parent, text="Plan estimate" if self.planning else "Estimate", padding=8)
         box.pack(fill="x")
         self.now_label = ttk.Label(box, font=("Segoe UI", 22, "bold"))
         self.now_label.pack(anchor="w")
+        self.legal_label = ttk.Label(box, font=("Segoe UI", 11, "bold"), wraplength=590, justify="left")
+        self.legal_label.pack(anchor="w", pady=(0, 4))
         self.detail_label = ttk.Label(box, justify="left")
         self.detail_label.pack(anchor="w")
 
-        # Cop stop: what NZ law would do if you were pulled over driving at the current BAC.
+        # Cop stop: what NZ law would do if you were pulled over driving at the current
+        # BAC, or for a plan at its peak.
         cop = ttk.Frame(box)
         cop.pack(fill="x", pady=(8, 0))
-        self.cop_on = tk.BooleanVar(value=self.data["cop_stop"])
-        ttk.Checkbutton(cop, text="Cop stop: what if you were pulled over driving now?", variable=self.cop_on,
-                        command=self._cop_changed).pack(anchor="w")
+        moment = "at your peak" if self.planning else "now"
+        ttk.Checkbutton(cop, text=f"Cop stop: what if you were pulled over driving {moment}?",
+                        variable=self.app.cop_on, command=self.app._cop_changed).pack(anchor="w")
         self.cop_headline = ttk.Label(cop, font=("Segoe UI", 10, "bold"), wraplength=590, justify="left")
         self.cop_details = ttk.Label(cop, wraplength=590, justify="left")
         self.chart = tk.Canvas(box, width=600, height=230, background="white", highlightthickness=0)
@@ -288,7 +403,7 @@ class App(tk.Tk):
                   foreground="#a33").pack(anchor="w", pady=(6, 0))
 
     def _build_log(self, parent):
-        box = ttk.LabelFrame(parent, text="Last 24 hours", padding=8)
+        box = ttk.LabelFrame(parent, text="Planned drinks" if self.planning else "Last 24 hours", padding=8)
         box.pack(fill="both", expand=True, pady=(8, 0))
         cols = ("time", "drink", "qty", "grams")
         self.tree = ttk.Treeview(box, columns=cols, show="headings", height=7)
@@ -298,61 +413,50 @@ class App(tk.Tk):
         self.tree.pack(fill="both", expand=True)
         row = ttk.Frame(box)
         row.pack(fill="x", pady=(6, 0))
-        ttk.Button(row, text="Remove selected", command=self.remove_selected).pack(side="left")
-        ttk.Button(row, text="With/without a meal", command=self.toggle_meal).pack(side="left", padx=6)
-        ttk.Button(row, text="Clear all", command=self.clear_log).pack(side="left")
+        ttk.Button(row, text="Edit selected", command=self.edit_selected).pack(side="left")
+        ttk.Button(row, text="Remove selected", command=self.remove_selected).pack(side="left", padx=6)
+        ttk.Button(row, text="With/without a meal", command=self.toggle_meal).pack(side="left")
+        ttk.Button(row, text="Clear all", command=self.clear_log).pack(side="left", padx=6)
 
     # --- actions ---
 
-    def save_profile(self):
-        try:
-            weight = float(self.weight.get())
-            age = float(self.age.get()) if self.age.get().strip() else None
-            height = float(self.height.get()) if self.height.get().strip() else None
-        except ValueError:
-            messagebox.showerror("Profile", "Age, weight and height must be numbers.", parent=self)
-            return
-        problems = []
-        if not bac.WEIGHT_KG[0] <= weight <= bac.WEIGHT_KG[1]:
-            problems.append(f"Weight is in kg, between {bac.WEIGHT_KG[0]} and {bac.WEIGHT_KG[1]}.")
-        if age is not None and not AGE[0] <= age <= AGE[1]:
-            problems.append(f"Age must be between {AGE[0]} and {AGE[1]}.")
-        if height is not None and not HEIGHT_CM[0] <= height <= HEIGHT_CM[1]:
-            problems.append(f"Height is in cm, between {HEIGHT_CM[0]} and {HEIGHT_CM[1]}.")
-        if problems:
-            messagebox.showerror("Profile", "\n".join(problems), parent=self)
-            return
-        self.data["profile"] = {"sex": self.sex.get(), "age": age, "weight": weight, "height": height}
-        self._save()
-
     def add_drink(self):
+        """Add the drink in the form, or save it over the one being edited."""
         d = self._selected()
         custom = CUSTOM_RE.fullmatch(self.search.get().strip())
-        if d and d["abv"] is None:
+        abv = d["abv"] if d else None
+        if d and self.editing and d["name"] == self.editing["name"]:
+            abv = self.editing["abv"]  # an edited drink keeps the ABV it was logged with
+        if d and abv is None:
             messagebox.showinfo("Add a drink", f"{d['name']} has no ABV yet. Use Set ABV… to enter the "
-                                "one on its label, then add it.", parent=self)
+                                "one on its label, then add it.", parent=self.app)
             return
         try:
             if d and d["pour"]:
-                entry = {"name": d["name"], "abv": d["abv"], "unit": "poured",
+                entry = {"name": d["name"], "abv": abv, "unit": "poured",
                          "ml": amount(self.spirit_ml.get(), "Spirit", 500),
                          "mixer": amount(self.mixer_ml.get() or "0", "Mixer", 2000, least=0)}
             elif d and self.unit.get() == OTHER:
-                entry = {"name": d["name"], "abv": d["abv"], "unit": "other",
+                entry = {"name": d["name"], "abv": abv, "unit": "other",
                          "ml": amount(self.other_ml.get(), "Amount", 3000)}
             elif d:
                 unit = d["units"][self.unit_pick.current()]
-                entry = {"name": d["name"], "abv": d["abv"], "unit": unit["label"], "ml": unit["ml"]}
+                entry = {"name": d["name"], "abv": abv, "unit": unit["label"], "ml": unit["ml"]}
             elif custom:
                 abv = bac.check_abv(float(custom[2]))
                 entry = {"name": f"Custom {abv:g}%", "abv": abv, "ml": amount(custom[1], "Drink size", 3000)}
             else:
                 messagebox.showinfo("Add a drink", "Pick a drink from the list, or type one like 500ml 6%.",
-                                    parent=self)
+                                    parent=self.app)
                 return
             entry["count"] = whole(self.qty.get())
             now = bac.now_local()
-            when = bac.parse_approx_time(self.when.get(), now)
+            if self.planning:
+                when = bac.parse_future_time(self.when.get(), now)
+                if when > now + timedelta(days=PLAN_DAYS):
+                    raise ValueError(f"That's more than {PLAN_DAYS} days away. Plan up to a week ahead.")
+            else:
+                when = bac.parse_approx_time(self.when.get(), now)
             if when < now - timedelta(hours=LOG_HOURS):
                 raise ValueError(f"That's more than {LOG_HOURS} hours ago, so it would drop straight off the log. "
                                  "Drinks that long ago no longer change the estimate much.")
@@ -361,21 +465,70 @@ class App(tk.Tk):
                 if spread is None or spread > timedelta(hours=LOG_HOURS):
                     raise ValueError(f"Over must be how long the {entry['count']} drinks took, "
                                      "e.g. 2h, 90 min or 1h30m (0 min if all at once).")
-                if when + spread > now + timedelta(minutes=1):
+                if not self.planning and when + spread > now + timedelta(minutes=1):
                     raise ValueError(f"The last of those would be at {bac.fmt(when + spread)}, after now. "
                                      "Set When to when the first one was, or shorten Over.")
                 entry["spread_minutes"] = spread / timedelta(minutes=1)
             entry["food"] = self.food.get()
             entry["time"] = when.isoformat()
         except ValueError as e:
-            messagebox.showerror("Add a drink", str(e), parent=self)
+            messagebox.showerror("Edit a drink" if self.editing else "Add a drink", str(e), parent=self.app)
             return
-        self.data["log"].append(entry)
-        self.data["log"].sort(key=entry_time)
+        at = next((i for i, e in enumerate(self.entries) if e is self.editing), None)
+        if at is None:
+            self.entries.append(entry)
+        else:
+            self.entries[at] = entry
+        self.entries.sort(key=entry_time)
+        self._reset_form()
+        self.app.save()
+
+    def edit_selected(self):
+        """Load the selected drink into the form, where Save changes puts it back changed."""
+        selected = self.tree.selection()
+        if len(selected) != 1:
+            messagebox.showinfo("Edit a drink", "Select one drink to edit.", parent=self.app)
+            return
+        e = self.editing = self.entries[int(selected[0])]
+        known = any(d["name"] == e["name"] for d in self.app.catalogue)
+        self.search.set(e["name"] if known else f"{e['ml']:g}ml {e['abv']:g}%")
+        self._filter(keep=e["name"])
+        d = self._selected()
+        if d and d["pour"]:
+            self.spirit_ml.set(f"{e['ml']:g}")
+            self.mixer_ml.set(f"{e['mixer']:g}" if e.get("mixer") else "")
+        elif d:
+            labels = [(u["label"], u["ml"]) for u in d["units"]]
+            if (e.get("unit"), e["ml"]) in labels:
+                self.unit_pick.current(labels.index((e["unit"], e["ml"])))
+            else:
+                self.unit.set(OTHER)
+                self.other_ml.set(f"{e['ml']:g}")
+            self._unit_changed()
+        self._over_typed = True
+        self.qty.set(str(e["count"]))
+        self.over.set(format_duration(e.get("spread_minutes", 0)) if e["count"] > 1 else "")
+        t = entry_time(e)
+        # Written so this tab's When reads it back: a plan's day, or the most recent HH:MM.
+        self.when.set(f"{bac.DAYS[t.weekday()].title()} {t:%H:%M}" if self.planning else f"{t:%H:%M}")
+        self.food.set(bool(e.get("food")))
+        self.add_box["text"] = self._add_title()
+        self.add_button["text"] = "Save changes"
+        self.cancel_button.pack(side="left", padx=(6, 0))
+
+    def cancel_edit(self):
+        self._reset_form()
+
+    def _reset_form(self):
+        """Back to adding a new drink. A plan keeps its When, as the next drink is often near it."""
+        self.editing = None
+        self.add_box["text"] = self._add_title()
+        self.add_button["text"] = "Add drink"
+        self.cancel_button.pack_forget()
         self._over_typed = False
         self.qty.set("1")
-        self.when.set("now")
-        self._save()
+        if not self.planning:
+            self.when.set("now")
 
     def _qty_changed(self):
         """Over only applies to a qty above 1; suggest one drink per PACE_MINUTES until the user types."""
@@ -389,19 +542,24 @@ class App(tk.Tk):
 
     def toggle_meal(self):
         for iid in self.tree.selection():
-            entry = self.data["log"][int(iid)]
+            entry = self.entries[int(iid)]
             entry["food"] = not entry.get("food")
-        self._save()
+        self.app.save()
 
     def remove_selected(self):
         for iid in sorted(self.tree.selection(), key=int, reverse=True):
-            del self.data["log"][int(iid)]
-        self._save()
+            if self.entries[int(iid)] is self.editing:
+                self._reset_form()
+            del self.entries[int(iid)]
+        self.app.save()
 
     def clear_log(self):
-        if self.data["log"] and messagebox.askyesno("Clear all", "Remove every logged drink?", parent=self):
-            self.data["log"] = []
-            self._save()
+        what = "planned" if self.planning else "logged"
+        if self.entries and messagebox.askyesno("Clear all", f"Remove every {what} drink?", parent=self.app):
+            self.entries.clear()
+            if self.editing:
+                self._reset_form()
+            self.app.save()
 
     def set_abv(self):
         """Ask for the selected drink's ABV and save it in the ABV table's manual column."""
@@ -415,7 +573,7 @@ class App(tk.Tk):
         prompt = f"{d['name']}: {now}.\n\nABV % from the label:"
         if d["source"] == "manual":
             prompt += "\n(Leave blank to go back to the retailers' and brewery's values.)"
-        text = simpledialog.askstring("Set ABV", prompt, parent=self)
+        text = simpledialog.askstring("Set ABV", prompt, parent=self.app)
         if text is None:
             return
         text = text.strip().rstrip("%").strip()
@@ -423,41 +581,46 @@ class App(tk.Tk):
             return
         try:
             abv = bac.check_abv(float(text)) if text else None
-            build_drinks.set_manual(d["name"], abv, self.sources, self.catalogue_path)
+            build_drinks.set_manual(d["name"], abv, self.app.sources, self.app.catalogue_path)
         except (ValueError, build_drinks.BuildError) as e:
-            messagebox.showerror("Set ABV", str(e) if text else f"Couldn't clear it: {e}", parent=self)
+            messagebox.showerror("Set ABV", str(e) if text else f"Couldn't clear it: {e}", parent=self.app)
             return
-        self.catalogue = load_catalogue(self.catalogue_path)
-        self._filter(keep=d["name"])
+        self.app.catalogue = load_catalogue(self.app.catalogue_path)
+        self.app.refilter()
         new = self._selected()
-        # Logged drinks keep the ABV they were logged with unless the user says otherwise,
-        # and never lose it (clearing a manual value can leave the drink with no ABV).
-        stale = [e for e in self.data["log"]
+        # Logged and planned drinks keep the ABV they were added with unless the user says
+        # otherwise, and never lose it (clearing a manual value can leave the drink with no ABV).
+        stale = [e for e in self.app.data["log"] + self.app.data["plan"]
                  if new and new["abv"] is not None and e["name"] == d["name"] and e["abv"] != new["abv"]]
         if stale and messagebox.askyesno(
-                "Set ABV", f"Update the {len(stale)} {d['name']} already in the log to {new['abv']:g}% too?",
-                parent=self):
+                "Set ABV", f"Update the {len(stale)} {d['name']} already logged or planned to {new['abv']:g}% too?",
+                parent=self.app):
             for e in stale:
                 e["abv"] = new["abv"]
-            self._save()
+            self.app.save()
 
     def toggle_favourite(self):
         d = self._selected()
         if not d:
             return
-        favourites = self.data["favourites"]
+        favourites = self.app.data["favourites"]
         if d["name"] in favourites:
             favourites.remove(d["name"])
         else:
             favourites.append(d["name"])
-        save_state(self.data, self.state_path)
-        self._filter(keep=d["name"])
+        save_state(self.app.data, self.app.state_path)
+        self.app.refilter()
 
     def _filter(self, keep=None):
-        """List the drinks matching the search, favourites pinned first; reselect `keep` if listed."""
+        """List the drinks matching the search, favourites pinned first; reselect `keep` if listed.
+
+        The serve choices reset only if that changes which drink is selected, so re-listing
+        (after a favourite or ABV change) doesn't undo a half-filled form.
+        """
+        before = self._selected()
         words = self.search.get().lower().split()
-        favourites = set(self.data["favourites"])
-        matches = [d for d in self.catalogue
+        favourites = set(self.app.data["favourites"])
+        matches = [d for d in self.app.catalogue
                    if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
         self.matches = sorted(matches, key=lambda d: d["name"] not in favourites)
         self.listbox.delete(0, "end")
@@ -470,19 +633,27 @@ class App(tk.Tk):
             if d["name"] == keep:
                 self.listbox.selection_set(i)
                 self.listbox.see(i)
-        self._show_serve()
+        after = self._selected()
+        if before and after and before["name"] == after["name"]:
+            self._show_buttons()
+        else:
+            self._show_serve()
 
     def _selected(self):
         selected = self.listbox.curselection()
         return self.matches[selected[0]] if selected else None
 
-    def _show_serve(self):
-        """Show the serve choices for the selected drink: its units, or spirit and mixer mL."""
+    def _show_buttons(self):
         d = self._selected()
-        favourite = d is not None and d["name"] in self.data["favourites"]
+        favourite = d is not None and d["name"] in self.app.data["favourites"]
         self.fav_button.configure(text="★ Unpin favourite" if favourite else "☆ Pin as favourite",
                                   state="normal" if d else "disabled")
         self.abv_button.configure(state="normal" if d else "disabled")
+
+    def _show_serve(self):
+        """Show the serve choices for the selected drink: its units, or spirit and mixer mL."""
+        self._show_buttons()
+        d = self._selected()
         self.unit_row.pack_forget()
         self.pour_row.pack_forget()
         if d and d["pour"]:
@@ -503,83 +674,81 @@ class App(tk.Tk):
     def _unit_changed(self):
         self.other_entry.configure(state="normal" if self.unit.get() == OTHER else "disabled")
 
-    def _save(self):
-        save_state(self.data, self.state_path)
-        self.refresh()
-
-    def _tick(self):
-        self.refresh()
-        self.after(60_000, self._tick)
-
     # --- display ---
 
     def refresh(self):
         now = bac.now_local()
-        # The log is rebuilt every minute; keep whatever rows were selected for Remove.
-        log = self.data["log"]
+        # The list is rebuilt every minute; keep whatever rows were selected for Remove.
+        log = self.entries
         selected = [log[int(iid)] for iid in self.tree.selection() if int(iid) < len(log)]
-        self.data["log"] = recent(log, now)
+        self.app.data[self.key] = log = recent(log, now)
         self.tree.delete(*self.tree.get_children())
-        for i, e in enumerate(self.data["log"]):
+        for i, e in enumerate(log):
             self.tree.insert("", "end", iid=str(i), values=(
                 bac.fmt(entry_time(e)), describe(e), e["count"], f"{entry_grams(e):.0f} g"))
             if any(e is s for s in selected):
                 self.tree.selection_add(str(i))
         self.chart.delete("all")
-        p = self.data["profile"]
+        self.legal_label["text"] = ""
+        p = self.app.data["profile"]
         if not p.get("weight"):
-            self.r_label["text"] = "Fill in at least sex and weight, then save."
             self.now_label.configure(text="--", foreground="")
             self.detail_label["text"] = "Set up your profile to get an estimate."
             self._show_cop(None)
             return
-        r, how = body_water(p)
-        self.r_label["text"] = f"Body water factor r = {r:.2f} ({how})"
-        if not self.data["log"]:
+        if not log and self.planning:
+            self.now_label.configure(text="--", foreground="")
+            self.detail_label["text"] = "Add the drinks you plan to have, e.g. 2 pints from 9pm."
+            self._show_cop(None)
+            return
+        if not log:
             self.now_label.configure(text="0.000%", foreground="")
             self.detail_label["text"] = "No drinks in the last 24 hours."
             self._show_cop(0.0)
             return
 
-        series, slow, fast = estimate(p, self.data["log"])
+        series, slow, fast = estimate(p, log)
         current = bac.bac_at(series, now)
-        colour = "#c0392b" if current >= 0.08 else "#d35400" if current >= 0.05 else ""
-        self.now_label.configure(text=f"{current:.3f}% now", foreground=colour)
-        grams = sum(entry_grams(e) for e in self.data["log"])
+        grams = sum(entry_grams(e) for e in log)
         peak_t, peak = max(series, key=lambda s: s[1])
-        lines = [
-            f"{grams:.0f} g alcohol ({grams / bac.STANDARD_DRINK_G:.1f} standard drinks)",
-            f"Now, slow to fast elimination: {bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
-            f"Peak {peak:.3f}% around {bac.fmt(peak_t)}",
-        ]
+        shown = peak if self.planning else current  # what the headline and cop stop are about
+        colour = RED if shown >= 0.08 else ORANGE if shown >= 0.05 else ""
+        lines = [f"{grams:.0f} g alcohol ({grams / bac.STANDARD_DRINK_G:.1f} standard drinks)"]
+        if self.planning:
+            self.now_label.configure(text=f"Peak {peak:.3f}% around {bac.fmt(peak_t)}", foreground=colour)
+            lines.append(f"Peak, fast to slow elimination: {max(b for _, b in fast):.3f}"
+                         f"-{max(b for _, b in slow):.3f}%")
+        else:
+            self.now_label.configure(text=f"{current:.3f}% now", foreground=colour)
+            lines += [f"Now, slow to fast elimination: {bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
+                      f"Peak {peak:.3f}% around {bac.fmt(peak_t)}"]
+        legal, text, legal_colour = legal_to_drive(series, slow, p.get("age"), None if self.planning else now)
+        self.legal_label.configure(text=text, foreground=legal_colour)
+        limit = copstop.legal_limit(p.get("age"))
         for th in (0.08, 0.05):
             t = bac.time_below(series, th)
-            if t:
+            if t and th != limit:  # the legal limit is in the line above
                 lines.append(f"Below {th:.2f}%: {bac.fmt(t)}")
         lines.append(f"Zero: {bac.fmt(series[-1][0])}  (fast {bac.fmt(fast[-1][0])}, slow {bac.fmt(slow[-1][0])})")
         self.detail_label["text"] = "\n".join(lines)
-        self._show_cop(current)
-        self.draw_chart(series, now)
+        self._show_cop(shown)
+        self.draw_chart(series, now, legal)
 
     def _show_cop(self, bac_percent):
         """Show what a stop would mean at bac_percent, or hide it (toggle off, or no profile yet)."""
         self.cop_headline.pack_forget()
         self.cop_details.pack_forget()
-        if bac_percent is None or not self.cop_on.get():
+        if bac_percent is None or not self.app.cop_on.get():
             return
-        stop = copstop.cop_stop(bac_percent, self.data["profile"].get("age"))
-        colour = {"clear": "#2e7d32", "infringement": "#d35400", "court": "#c0392b"}[stop.level]
+        stop = copstop.cop_stop(bac_percent, self.app.data["profile"].get("age"))
+        colour = {"clear": GREEN, "infringement": ORANGE, "court": RED}[stop.level]
         self.cop_headline.configure(text=stop.headline, foreground=colour)
         self.cop_details["text"] = "\n".join(
             stop.details + ["NZ law as of October 2026, for a first offence. Not legal advice."])
         self.cop_headline.pack(anchor="w", pady=(2, 0))
         self.cop_details.pack(anchor="w")
 
-    def _cop_changed(self):
-        self.data["cop_stop"] = self.cop_on.get()
-        self._save()
-
-    def draw_chart(self, series, now):
+    def draw_chart(self, series, now, legal=None):
         c = self.chart
         w, h = int(c["width"]), int(c["height"])
         left, right, top, bottom = 44, w - 12, 12, h - 22
@@ -597,7 +766,7 @@ class App(tk.Tk):
         c.create_line(left, bottom, right, bottom, fill="#999")
         c.create_line(left, top, left, bottom, fill="#999")
         c.create_text(left - 4, bottom, text="0", anchor="e", font=small, fill=HINT)
-        for th, colour in ((0.08, "#c0392b"), (0.05, "#d35400")):
+        for th, colour in ((0.08, RED), (0.05, ORANGE)):
             if th < ymax:
                 c.create_line(left, y(th), right, y(th), fill=colour, dash=(4, 3))
                 c.create_text(left - 4, y(th), text=f"{th:.2f}", anchor="e", font=small, fill=colour)
@@ -609,6 +778,9 @@ class App(tk.Tk):
             tick += step
         points = series[::5] + [series[-1]]
         c.create_line(*[v for t, b in points for v in (x(t), y(b))], fill="#2c6fbb", width=2)
+        if legal and t0 <= legal <= t1:
+            c.create_line(x(legal), top, x(legal), bottom, fill=GREEN, dash=(2, 2))
+            c.create_text(x(legal) + 3, top + 12, text="legal to drive", anchor="nw", font=small, fill=GREEN)
         if t0 <= now <= t1:
             c.create_line(x(now), top, x(now), bottom, fill="#333", dash=(2, 2))
             c.create_text(x(now) + 3, top, text="now", anchor="nw", font=small)

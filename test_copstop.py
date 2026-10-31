@@ -1,6 +1,6 @@
 import unittest
 
-from copstop import breath_ug, cop_stop
+from copstop import breath_ug, cop_stop, legal_limit
 
 
 class CopStopTest(unittest.TestCase):
@@ -29,6 +29,11 @@ class CopStopTest(unittest.TestCase):
         high = " ".join(cop_stop(0.17, age=35).details)
         self.assertIn("28 days", high)
         self.assertIn("interlock", high)
+
+    def test_legal_limit_is_zero_under_20(self):
+        self.assertEqual(legal_limit(35), 0.05)
+        self.assertEqual(legal_limit(None), 0.05)
+        self.assertEqual(legal_limit(19), 0)
 
     def test_unknown_age_is_treated_as_adult_and_says_so(self):
         stop = cop_stop(0.03)
