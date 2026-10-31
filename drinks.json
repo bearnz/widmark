@@ -407,7 +407,7 @@
   {
    "name": "Behemoth Me Time Mosaic Hazy IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 6.0,
    "units": [
     {
      "label": "can/bottle",
@@ -423,12 +423,12 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Behemoth Music City Hazy IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 6.8,
    "units": [
     {
      "label": "can/bottle",
@@ -444,7 +444,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Behemoth Porch Pounder APA",
@@ -944,7 +944,7 @@
   {
    "name": "Cassels Nectaron IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 6.1,
    "units": [
     {
      "label": "can/bottle",
@@ -960,7 +960,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Cassels Pilsner",
