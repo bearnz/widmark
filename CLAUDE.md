@@ -39,7 +39,8 @@ mix: a plan doesn't add to your BAC now, and tonight's drinks don't join the
 plan. Edit selected loads a drink back into the form to change it; edited drinks
 keep the ABV they were logged with. Both tabs say when you'd be legal to drive
 again: back under the 0.05% adult limit (zero under 20) at the typical
-elimination rate, with the later time for a slow one.
+elimination rate, with the later time for a slow one, and how long until each:
+from now on the tonight tab, from the first drink on a plan.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths, New
