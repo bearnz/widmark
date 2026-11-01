@@ -29,6 +29,7 @@ CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNOREC
 HINT = "#666"
 GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
 OTHER = "other amount"
+TYPES = {"All": "", "Beer": "beer", "Cider": "cider", "Wine": "wine", "RTDs": "rtd", "Spirits": "spirit"}
 
 
 class StateError(Exception):
@@ -317,6 +318,12 @@ class Session(ttk.Frame):
         self.search.trace_add("write", lambda *_: self._filter())
         ttk.Entry(box, textvariable=self.search).pack(fill="x")
         ttk.Label(box, text="Search, or type a custom drink like 500ml 6%", foreground=HINT).pack(anchor="w")
+        self.kind = tk.StringVar(value="")  # drink type to list, "" for all of them
+        row = ttk.Frame(box)
+        row.pack(fill="x", pady=(4, 0))
+        for label, kind in TYPES.items():
+            ttk.Radiobutton(row, text=label, value=kind, variable=self.kind, style="Toolbutton",
+                            command=self._filter).pack(side="left", expand=True, fill="x")
         self.listbox = tk.Listbox(box, height=12, width=44, exportselection=False)
         self.listbox.pack(fill="both", expand=True, pady=4)
         self.listbox.bind("<<ListboxSelect>>", lambda _: self._show_serve())
@@ -620,7 +627,8 @@ class Session(ttk.Frame):
         self.app.refilter()
 
     def _filter(self, keep=None):
-        """List the drinks matching the search, favourites pinned first; reselect `keep` if listed.
+        """List the drinks of the chosen type matching the search, favourites pinned first;
+        reselect `keep` if listed.
 
         The serve choices reset only if that changes which drink is selected, so re-listing
         (after a favourite or ABV change) doesn't undo a half-filled form.
@@ -628,8 +636,10 @@ class Session(ttk.Frame):
         before = self._selected()
         words = self.search.get().lower().split()
         favourites = set(self.app.data["favourites"])
+        kind = self.kind.get()
         matches = [d for d in self.app.catalogue
-                   if all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
+                   if kind in ("", d.get("type"))
+                   and all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
         self.matches = sorted(matches, key=lambda d: d["name"] not in favourites)
         self.listbox.delete(0, "end")
         for i, d in enumerate(self.matches):
