@@ -71,6 +71,8 @@ estimate only: never use it to decide whether you're fit to drive.
 
 ## Testing
 
+Tests live in `tests/`. From the repo root:
+
 ```
 uv run python -m unittest
 ```
