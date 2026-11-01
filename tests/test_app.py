@@ -457,6 +457,18 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual(w.data["favourites"], [])
         self.assertEqual(w.current.listbox.get(0), "Test Lager  (5%)")
 
+    def test_type_filter_narrows_the_list_and_keeps_the_search(self):
+        w = self.window
+        w.current.kind.set("spirit")
+        w.current._filter()
+        self.assertEqual(w.current.listbox.get(0, "end"), ("Test Gin  (40%)",))
+        w.current.search.set("lager")
+        self.assertEqual(w.current.listbox.size(), 0)
+        w.current.kind.set("")
+        w.current._filter()
+        self.assertEqual(w.current.listbox.get(0, "end"), ("Test Lager  (5%)",))
+        self.assertEqual(w.plan.listbox.size(), 2)  # each tab filters on its own
+
     def test_cop_stop_is_on_by_default_and_follows_the_bac(self):
         w = self.window
         self.assertTrue(w.cop_on.get())
