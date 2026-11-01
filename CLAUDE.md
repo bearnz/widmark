@@ -21,6 +21,7 @@ Pick a drink, then how it was served: one of its units (can/bottle, handle,
 pint, glass, bottle...) or any other amount in ml. Spirits are logged by the ml
 poured, with the mixer recorded alongside; only the spirit counts.
 Pin drinks you have often as favourites: they stay at the top of the list.
+The buttons above the list (All, Beer, Cider, Wine, RTDs, Spirits) show one type of drink.
 Drinks with no known ABV are listed greyed out; select one and use Set ABV to
 enter the ABV from its label (any drink's ABV can be corrected the same way).
 That writes the manual column in data/abv_sources.csv and rebuilds drinks.json,
