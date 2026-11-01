@@ -204,10 +204,22 @@ class LegalToDriveTest(unittest.TestCase):
         typical, slow = self.series(60)
         t, text, colour = app.legal_to_drive(typical, slow, 35)
         self.assertEqual(t, app.bac.time_below(typical, 0.05))
-        fmt = app.bac.fmt
-        self.assertEqual(text, f"Legal to drive again from about {fmt(t)} "
-                               f"({fmt(app.bac.time_below(slow, 0.05))} if you clear alcohol slowly)")
+        fmt, t_slow = app.bac.fmt, app.bac.time_below(slow, 0.05)
+        wait, wait_slow = (app.format_duration((x - self.START) / app.bac.MINUTE) for x in (t, t_slow))
+        self.assertEqual(text, f"Legal to drive again from about {fmt(t)} ({wait} after your first drink), "
+                               f"or {fmt(t_slow)} ({wait_slow} after your first drink) if you clear alcohol slowly")
         self.assertEqual(colour, app.RED)
+
+    def test_tonight_gives_the_wait_from_now_rounded_up(self):
+        typical, slow = self.series(60)
+        t, t_slow = app.bac.time_below(typical, 0.05), app.bac.time_below(slow, 0.05)
+        now = t - timedelta(hours=2, minutes=14, seconds=30)
+        _, text, _ = app.legal_to_drive(typical, slow, 35, now)
+        self.assertIn(f"{app.bac.fmt(t)} (in 2h15m), or ", text)
+        now = t + timedelta(minutes=1)
+        _, text, _ = app.legal_to_drive(typical, slow, 35, now)
+        self.assertIn(f"not until {app.bac.fmt(t_slow)} (in {app.format_duration((t_slow - now) / app.bac.MINUTE)})",
+                      text)
 
     def test_under_20_means_back_to_zero(self):
         typical, slow = self.series(10)
