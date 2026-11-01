@@ -5,6 +5,7 @@ Your profile, the last 24 hours of drinks and your plan are kept in ~/.boozer-ca
 Estimate only: never use it to decide whether you're fit to drive.
 """
 import json
+import math
 import os
 import re
 import tkinter as tk
@@ -147,19 +148,26 @@ def legal_to_drive(series, slow, age, now=None):
     """(time, text, colour): when BAC is back under the NZ limit for your age at the typical
     elimination rate, and how to say it, giving the slow rate's later time too.
 
-    now is None for a plan, which hasn't happened yet. time is None if never over the limit.
+    Each time comes with the wait until it: from now, or for a plan (now is None, as it
+    hasn't happened yet) from the first drink. time is None if never over the limit.
     """
     limit = copstop.legal_limit(age)
     what = "zero, the limit under 20" if not limit else (
         f"the {limit:.2f}% adult limit" + (" (assuming you're 20 or over)" if age is None else ""))
     t, t_slow = bac.time_below(series, limit), bac.time_below(slow, limit)
     when = "now" if now is not None else "the whole time"
+
+    def at(time):
+        # Rounded up, so the wait never ends before the clock time shown.
+        wait = format_duration(math.ceil((time - (now or series[0][0])) / bac.MINUTE))
+        return f"{bac.fmt(time)} ({'in ' + wait if now else wait + ' after your first drink'})"
+
     if t_slow is None or (now is not None and t_slow <= now):
         return t, f"Legal to drive {when}: under {what}", GREEN
     if t is None or (now is not None and t <= now):
         return t, (f"Probably legal to drive {when}, under {what}, but not until "
-                   f"{bac.fmt(t_slow)} if you clear alcohol slowly"), ORANGE
-    return t, f"Legal to drive again from about {bac.fmt(t)} ({bac.fmt(t_slow)} if you clear alcohol slowly)", RED
+                   f"{at(t_slow)} if you clear alcohol slowly"), ORANGE
+    return t, f"Legal to drive again from about {at(t)}, or {at(t_slow)} if you clear alcohol slowly", RED
 
 
 class App(tk.Tk):
