@@ -133,6 +133,47 @@ class SetManualTest(unittest.TestCase):
         self.assertNotIn("guess", drinks["Mac's Big Hoppa IPA"])
 
 
+class AddDrinkTest(unittest.TestCase):
+    def drinks(self, out):
+        return {d["name"]: d for d in json.loads(out.read_text(encoding="utf-8"))["drinks"]}
+
+    def test_adds_a_row_and_rebuilds(self):
+        src, out = copy_sources()
+        name = build_drinks.add_drink("  Backyard   Lager ", "beer", 4.6, "can 440; pint 568;", src, out)
+        self.assertEqual(name, "Backyard Lager")
+        added = self.drinks(out)["Backyard Lager"]
+        self.assertEqual((added["abv"], added["source"], added["pour"]), (4.6, "manual", False))
+        self.assertEqual(added["units"], [{"label": "can", "ml": 440}, {"label": "pint", "ml": 568}])
+        row = build_drinks.read(src)[1][-1]
+        self.assertEqual((row["drink"], row["manual"], row["status"], row["note"]),
+                         ("Backyard Lager", "4.6", "manual", build_drinks.ADDED_NOTE))
+
+    def test_no_abv_yet_is_listed_as_missing(self):
+        src, out = copy_sources()
+        build_drinks.add_drink("House Gin", "spirit", None, build_drinks.DEFAULT_UNITS["spirit"], src, out)
+        added = self.drinks(out)["House Gin"]
+        self.assertEqual((added["abv"], added["source"], added["pour"]), (None, "missing", True))
+
+    def test_refuses_listed_names_and_bad_rows_changing_nothing(self):
+        src, out = copy_sources()
+        before = src.read_text(encoding="utf-8")
+        for name, kind, abv, units in (("heineken", "beer", 5, "pint 568"),  # listed, in another case
+                                       ("", "beer", 5, "pint 568"),
+                                       ("New One", "mead", 5, "pint 568"),
+                                       ("New One", "beer", 5, "a pint"),
+                                       ("New One", "beer", 5, "")):
+            with self.assertRaises(build_drinks.BuildError, msg=name or "no name"):
+                build_drinks.add_drink(name, kind, abv, units, src, out)
+        with self.assertRaises(ValueError):
+            build_drinks.add_drink("New One", "beer", 150, "pint 568", src, out)
+        self.assertEqual(src.read_text(encoding="utf-8"), before)
+        self.assertFalse(out.exists())
+
+    def test_default_units_parse(self):
+        for kind in build_drinks.TYPE_ORDER:
+            self.assertTrue(build_drinks.parse_units(build_drinks.DEFAULT_UNITS[kind]))
+
+
 class InSyncTest(unittest.TestCase):
     def test_drinks_json_matches_the_csv(self):
         tmp = Path(tempfile.mkdtemp())

@@ -26,6 +26,9 @@ Drinks with no known ABV are listed greyed out; select one and use Set ABV to
 enter the ABV from its label (any drink's ABV can be corrected the same way).
 That writes the manual column in data/abv_sources.csv and rebuilds drinks.json,
 so the change shows up in git as an edit to commit.
+A drink that isn't listed can be added for good: type its name in the search,
+then Add to list asks for its type, ABV and serves. It becomes a new row in
+data/abv_sources.csv (noted "Added in the app"), the same as a Set ABV edit.
 Cop stop (on by default) shows what NZ law would do if you were pulled over
 driving at your current BAC: the infringement or court penalty for your age,
 from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
