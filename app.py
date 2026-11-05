@@ -9,13 +9,15 @@ import math
 import os
 import re
 import tkinter as tk
-from datetime import datetime, timedelta
+import webbrowser
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from tkinter import messagebox, simpledialog, ttk
 
 import bac
 import build_drinks
 import copstop
+import publish
 
 CATALOGUE = build_drinks.CATALOGUE
 STATE = Path.home() / ".boozer-calc" / "state.json"
@@ -262,6 +264,42 @@ class App(tk.Tk):
             selected = s._selected()
             s._filter(keep=selected and selected["name"])
 
+    def publish_list(self):
+        """Push the drink list changes made here (Set ABV, Add to list, CSV edits) to today's
+        chore/data- branch and open or update its PR, after showing what will go."""
+        title = "Publish list changes"
+        try:
+            changes = publish.local_changes()
+            if not changes:
+                messagebox.showinfo(title, "Nothing to publish: the drink list hasn't changed since the "
+                                    "last commit.", parent=self)
+                return
+            stale = publish.stale_prs()
+        except publish.PublishError as e:
+            messagebox.showerror(title, str(e), parent=self)
+            return
+        lines = "\n".join(f"• {line}" for line in publish.describe_all(changes))
+        text = (f"Push these to {publish.branch_for(date.today())} on GitHub and open or update "
+                f"its PR into main?\n\n{lines}")
+        if stale:
+            days = ", ".join(f"#{p['number']} ({p['headRefName'][len(publish.BRANCH_PREFIX):]})" for p in stale)
+            text += (f"\n\nStill open from an earlier day: {days}. Merge it first, or its changes "
+                     "go into today's PR too.")
+        if not messagebox.askyesno(title, text, parent=self):
+            return
+        self.configure(cursor="watch")
+        self.update_idletasks()
+        try:
+            url, pushed = publish.publish(changes)
+        except publish.PublishError as e:
+            messagebox.showerror(title, str(e), parent=self)
+            return
+        finally:
+            self.configure(cursor="")
+        done = "Pushed. The PR is" if pushed else "Nothing new since the last publish. The PR is"
+        if messagebox.askyesno(title, f"{done} {url}\n\nOpen it to review and merge?", parent=self):
+            webbrowser.open(url)
+
     def _cop_changed(self):
         self.data["cop_stop"] = self.cop_on.get()
         self.save()
@@ -339,6 +377,7 @@ class Session(ttk.Frame):
         self.abv_button = ttk.Button(row, text="Set ABV…", command=self.set_abv)
         self.abv_button.pack(side="left", padx=6)
         ttk.Button(row, text="Add to list…", command=self.new_drink).pack(side="left")
+        ttk.Button(box, text="Publish list changes…", command=self.app.publish_list).pack(anchor="w", pady=(0, 4))
 
         # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
         # A beer or cider starts on the serve saved as the default for its type.
