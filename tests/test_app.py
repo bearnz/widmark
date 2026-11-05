@@ -21,7 +21,7 @@ class CatalogueTest(unittest.TestCase):
             self.assertTrue(d["abv"] is None or 0 < d["abv"] <= 60, d)
             self.assertTrue(d["units"], d)
             for u in d["units"]:
-                self.assertTrue(u["label"] and 0 < u["ml"] <= 1500, d)
+                self.assertTrue(u["label"] and 0 < u["ml"] <= app.build_drinks.MAX_UNIT_ML, d)
             self.assertEqual(d["pour"], d["type"] == "spirit", d)
 
 

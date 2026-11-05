@@ -86,6 +86,8 @@ class ProblemsTest(unittest.TestCase):
         self.assert_problem(set_cell(2, "woolworths", "150"), "woolworths 150 isn't a possible ABV")
         self.assert_problem(set_cell(2, "type", "lager"), "type 'lager' isn't one of")
         self.assert_problem(set_cell(2, "units", "pint"), "can't read unit 'pint'")
+        self.assert_problem(set_cell(2, "units", "pint 568; keg 5000"), "keg 5000 ml isn't a single serve")
+        self.assert_problem(set_cell(2, "units", "pint 0"), "pint 0 ml isn't a single serve")
         self.assert_problem(set_cell(2, "drink", "-Heineken"), "spreadsheets read as a formula")
         self.assert_problem(set_cell(2, "drink", "Tui"), "another row has the same name")
 
@@ -161,6 +163,7 @@ class AddDrinkTest(unittest.TestCase):
                                        ("", "beer", 5, "pint 568"),
                                        ("New One", "mead", 5, "pint 568"),
                                        ("New One", "beer", 5, "a pint"),
+                                       ("New One", "beer", 5, "keg 5000"),
                                        ("New One", "beer", 5, "")):
             with self.assertRaises(build_drinks.BuildError, msg=name or "no name"):
                 build_drinks.add_drink(name, kind, abv, units, src, out)
