@@ -32,6 +32,12 @@ so the change shows up in git as an edit to commit.
 A drink that isn't listed can be added for good: type its name in the search,
 then Add to list asks for its type, ABV and serves. It becomes a new row in
 data/abv_sources.csv (noted "Added in the app"), the same as a Set ABV edit.
+Publish list changes pushes those edits to GitHub, after showing them: they go
+on one `chore/data-YYYY-MM-DD` branch per day with a PR into main, so a day's
+edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
+the checkout's branch and uncommitted files stay as they are (publish.py).
+Once the PR is merged and Publish says there's nothing new, the checkout's
+copies of the CSV and drinks.json can be discarded and main pulled.
 Cop stop (on by default) shows what NZ law would do if you were pulled over
 driving at your current BAC: the infringement or court penalty for your age,
 from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
@@ -76,6 +82,23 @@ It uses the Widmark formula with linear absorption and constant elimination.
 The constants (r factors, elimination rates, absorption times, preset sizes)
 are typical values that haven't been checked against a source. It's an
 estimate only: never use it to decide whether you're fit to drive.
+
+## Drink list PRs
+
+Changes to the drink list (ABVs, new drinks, any edit to data/abv_sources.csv)
+reach main only through the app's Publish button: one `chore/data-YYYY-MM-DD`
+branch and PR per day. Don't fold them into feature PRs, and don't commit them
+on a branch by hand; leave them uncommitted in the checkout for Publish.
+
+Before changing anything in the app, check for open data PRs:
+
+```
+gh pr list --state open --json number,headRefName,url
+```
+
+If a `chore/data-` PR from a day before today is open, remind Josh to review
+and merge it, with its link, and wait for him before making any changes.
+Today's own data PR doesn't block anything.
 
 ## Testing
 
