@@ -5465,7 +5465,7 @@
   {
    "name": "Stella Artois",
    "type": "beer",
-   "abv": null,
+   "abv": 5.0,
    "units": [
     {
      "label": "can/bottle",
@@ -5489,8 +5489,7 @@
     }
    ],
    "pour": false,
-   "source": "guess only",
-   "guess": 4.8
+   "source": "manual"
   },
   {
    "name": "Stoke Bright IPA",
