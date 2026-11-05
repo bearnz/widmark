@@ -26,7 +26,7 @@ class CatalogueTest(unittest.TestCase):
 
 
 class SetAbvTest(unittest.TestCase):
-    """Set ABV through the window, writing to a copy of the real ABV table."""
+    """Set ABV and Add to list through the window, writing to a copy of the real ABV table."""
 
     def setUp(self):
         tmp = Path(tempfile.mkdtemp())
@@ -47,6 +47,12 @@ class SetAbvTest(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
         patcher = mock.patch.object(app.simpledialog, "askstring", lambda *a, **k: self.answers.pop(0))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.new_drinks = []  # what the Add to list box will return, in order
+        self.offered = []  # what it was opened with
+        patcher = mock.patch.object(app, "ask_new_drink",
+                                    lambda parent, values: self.offered.append(values) or self.new_drinks.pop(0))
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -104,6 +110,42 @@ class SetAbvTest(unittest.TestCase):
             self.answers.append(answer)
             self.window.current.set_abv()
         self.assertEqual(len(self.messages), 2)
+        self.assertEqual(self.sources.read_text(encoding="utf-8"), before)
+
+    def test_unlisted_drink_is_added_from_the_search_for_good(self):
+        w = self.window
+        w.weight.set("80")
+        w.save_profile()
+        s = w.current
+        s.kind.set("rtd")
+        s.search.set("backyard lager")
+        self.assertEqual(s.listbox.size(), 0)
+        self.assertEqual(s.hint["text"], app.NOT_LISTED_HINT)
+        typed = {"name": "Backyard Lager", "type": "beer", "abv": "4.6%", "units": "can 440; pint 568"}
+        self.new_drinks += [dict(typed, abv="lots"), typed]  # a mistake first, then put right
+        s.new_drink()
+        self.assertEqual(self.offered[0], {"name": "backyard lager", "type": "rtd", "abv": "",
+                                           "units": app.build_drinks.DEFAULT_UNITS["rtd"]})
+        self.assertEqual(self.offered[1]["abv"], "lots")  # asked again with what was typed
+        self.assertIn("isn't a number", self.messages[0])
+
+        self.assertEqual(s.kind.get(), "")  # the rtd filter would hide the new beer
+        self.assertEqual(s.listbox.get(s.listbox.curselection()[0]), "Backyard Lager  (4.6%)")
+        self.assertEqual(s.hint["text"], app.SEARCH_HINT)
+        self.assertEqual(s.unit_pick["values"][0], "can (440 ml)")
+        s.add_drink()
+        self.assertEqual((w.data["log"][0]["name"], w.data["log"][0]["abv"]), ("Backyard Lager", 4.6))
+        self.assertIn("Backyard Lager", [d["name"] for d in app.load_catalogue(self.catalogue)])
+        w.plan.search.set("backyard")  # the plan tab lists it too
+        self.assertEqual([d["name"] for d in w.plan.matches], ["Backyard Lager"])
+
+    def test_adding_a_listed_drink_or_cancelling_changes_nothing(self):
+        before = self.sources.read_text(encoding="utf-8")
+        self.window.current.search.set("500ml 6%")
+        self.new_drinks += [{"name": "Heineken", "type": "beer", "abv": "5", "units": "pint 568"}, None]
+        self.window.current.new_drink()
+        self.assertEqual(self.offered[0]["name"], "")  # a custom drink isn't a name
+        self.assertIn("already in the list", self.messages[0])
         self.assertEqual(self.sources.read_text(encoding="utf-8"), before)
 
 
