@@ -4,8 +4,9 @@ Each CSV row is one product: the ways it's served ('units', e.g. "can/bottle 330
 handle 425; pint 568", each a label and mL), the ABV each retailer lists (blank
 where it lists none), the ABV the brewery itself lists, an old guess from memory,
 and a manual column for values checked by hand. Spirits are logged by mL poured,
-so their units are just quick picks. The status column records which ABV
-drinks.json uses:
+so their units are just quick picks. Beers and ciders also get the common 440 and
+500 ml serves (COMMON_SERVES) in drinks.json where they don't list them. The status
+column records which ABV drinks.json uses:
 
     manual      the manual value, which always wins
     brewery     the brewery's own value, over any retailer's (they copy it, sometimes wrongly)
@@ -45,6 +46,9 @@ NEEDS_REVIEW = ("conflict",) + LEFT_OUT
 DEFAULT_UNITS = {"beer": "can/bottle 330; handle 425; pint 568", "cider": "can/bottle 330; handle 425; pint 568",
                  "rtd": "can/bottle 330", "wine": "glass 150; large glass 250; bottle 750",
                  "spirit": "shot 15; double 30; family 37.5"}
+# Serves every beer and cider lists on top of its own units in drinks.json (not in the CSV),
+# as these sizes are common whatever the product's own can or bottle is.
+COMMON_SERVES = {"beer": "can/bottle 440; can/bottle 500", "cider": "can/bottle 440; can/bottle 500"}
 ADDED_NOTE = "Added in the app"
 # The biggest single serve a drink can list (the largest real one is a 1.3 L bottle);
 # anything more, like a keg, is logged as an other amount.
@@ -88,6 +92,19 @@ def parse_units(text):
             raise ValueError(f"can't read unit {part.strip()!r} in {text!r}; expected e.g. 'pint 568'")
         units.append({"label": label, "ml": float(ml)})
     return units
+
+
+def serves(row):
+    """A row's units, plus its type's COMMON_SERVES in sizes it doesn't already list.
+
+    The first unit stays first (the app picks it when there's no default); the rest go
+    smallest to largest.
+    """
+    units = parse_units(row["units"])
+    sizes = {u["ml"] for u in units}
+    extra = parse_units(COMMON_SERVES[row["type"]]) if row["type"] in COMMON_SERVES else []
+    units += [u for u in extra if u["ml"] not in sizes]
+    return units[:1] + sorted(units[1:], key=lambda u: u["ml"])
 
 
 def problems(fields, rows):
@@ -187,7 +204,7 @@ def build(sources=SOURCES, out=CATALOGUE):
     for row in rows:
         row["status"], abv = resolve(row)
         drink = {"name": row["drink"], "type": row["type"], "abv": abv,
-                 "units": parse_units(row["units"]), "pour": row["type"] == "spirit",
+                 "units": serves(row), "pour": row["type"] == "spirit",
                  "source": source(row, row["status"]) if abv is not None else row["status"]}
         if abv is None and num(row["guess"]) is not None:
             drink["guess"] = num(row["guess"])
