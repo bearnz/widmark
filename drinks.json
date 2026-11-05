@@ -2979,7 +2979,7 @@
   {
    "name": "Lakeman Love Doctor Hazy IPA",
    "type": "beer",
-   "abv": 8.5,
+   "abv": 8.7,
    "units": [
     {
      "label": "can/bottle",
@@ -2999,7 +2999,7 @@
     }
    ],
    "pour": false,
-   "source": "Liquorland"
+   "source": "manual"
   },
   {
    "name": "Lakeman Maximus Hazius X.I Triple Hazy IPA",
@@ -5465,7 +5465,7 @@
   {
    "name": "Stella Artois",
    "type": "beer",
-   "abv": null,
+   "abv": 5.0,
    "units": [
     {
      "label": "can/bottle",
@@ -5489,8 +5489,7 @@
     }
    ],
    "pour": false,
-   "source": "guess only",
-   "guess": 4.8
+   "source": "manual"
   },
   {
    "name": "Stoke Bright IPA",
@@ -10292,6 +10291,27 @@
    ],
    "pour": true,
    "source": "Liquorland"
+  },
+  {
+   "name": "Malfy Original Gin",
+   "type": "spirit",
+   "abv": 41.0,
+   "units": [
+    {
+     "label": "shot",
+     "ml": 15.0
+    },
+    {
+     "label": "double",
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 37.5
+    }
+   ],
+   "pour": true,
+   "source": "manual"
   },
   {
    "name": "Smirnoff Vodka",
