@@ -32,6 +32,12 @@ so the change shows up in git as an edit to commit.
 A drink that isn't listed can be added for good: type its name in the search,
 then Add to list asks for its type, ABV and serves. It becomes a new row in
 data/abv_sources.csv (noted "Added in the app"), the same as a Set ABV edit.
+Publish list changes pushes those edits to GitHub, after showing them: they go
+on one `chore/data-YYYY-MM-DD` branch per day with a PR into main, so a day's
+edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
+the checkout's branch and uncommitted files stay as they are (publish.py).
+Once the PR is merged and Publish says there's nothing new, the checkout's
+copies of the CSV and drinks.json can be discarded and main pulled.
 Cop stop (on by default) shows what NZ law would do if you were pulled over
 driving at your current BAC: the infringement or court penalty for your age,
 from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
