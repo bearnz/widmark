@@ -31,6 +31,7 @@ GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
 OTHER = "other amount"
 SEARCH_HINT = "Search, or type a custom drink like 500ml 6%"
 NOT_LISTED_HINT = "Not listed? Add to list… saves it for next time"
+DEFAULT_SERVE_TYPES = ("beer", "cider")  # types whose serve can be set as the one picked first
 TYPES = {"All": "", "Beer": "beer", "Cider": "cider", "Wine": "wine", "RTDs": "rtd", "Spirits": "spirit"}
 
 
@@ -91,7 +92,8 @@ def load_state(path=STATE):
     for entry in log:  # older versions had one meal setting for the whole log
         entry.setdefault("food", data.get("food", False))
     return {"profile": data.get("profile", {}), "log": log, "plan": data.get("plan", []),
-            "favourites": data.get("favourites", []), "cop_stop": data.get("cop_stop", True)}
+            "favourites": data.get("favourites", []), "cop_stop": data.get("cop_stop", True),
+            "default_serves": data.get("default_serves", {})}
 
 
 def save_state(data, path=STATE):
@@ -339,18 +341,22 @@ class Session(ttk.Frame):
         ttk.Button(row, text="Add to list…", command=self.new_drink).pack(side="left")
 
         # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
+        # A beer or cider starts on the serve saved as the default for its type.
         serve = ttk.Frame(box)
         serve.pack(fill="x", pady=(0, 4))
         self.unit_row = ttk.Frame(serve)
+        line = ttk.Frame(self.unit_row)
+        line.pack(fill="x")
         self.unit = tk.StringVar()
         self.other_ml = tk.StringVar()
-        ttk.Label(self.unit_row, text="Serve").pack(side="left")
-        self.unit_pick = ttk.Combobox(self.unit_row, textvariable=self.unit, state="readonly", width=24)
+        ttk.Label(line, text="Serve").pack(side="left")
+        self.unit_pick = ttk.Combobox(line, textvariable=self.unit, state="readonly", width=24)
         self.unit_pick.pack(side="left", padx=(4, 8))
         self.unit_pick.bind("<<ComboboxSelected>>", lambda _: self._unit_changed())
-        self.other_entry = ttk.Entry(self.unit_row, textvariable=self.other_ml, width=6)
+        self.other_entry = ttk.Entry(line, textvariable=self.other_ml, width=6)
         self.other_entry.pack(side="left")
-        ttk.Label(self.unit_row, text="ml").pack(side="left", padx=(2, 0))
+        ttk.Label(line, text="ml").pack(side="left", padx=(2, 0))
+        self.default_button = ttk.Button(self.unit_row, command=self.toggle_default)
         self.pour_row = ttk.Frame(serve)
         self.spirit_ml = tk.StringVar()
         self.mixer_ml = tk.StringVar()
@@ -656,6 +662,20 @@ class Session(ttk.Frame):
         save_state(self.app.data, self.app.state_path)
         self.app.refilter()
 
+    def toggle_default(self):
+        """Make the chosen serve the default for this drink's type, or unset it if it already is."""
+        d, unit = self._selected(), self._picked_unit()
+        if not (d and unit):
+            return
+        defaults = self.app.data["default_serves"]
+        if defaults.get(d["type"]) == unit["ml"]:
+            del defaults[d["type"]]
+        else:
+            defaults[d["type"]] = unit["ml"]
+        save_state(self.app.data, self.app.state_path)
+        for s in self.app.sessions:
+            s._unit_changed()
+
     def _filter(self, keep=None):
         """List the drinks of the chosen type matching the search, favourites pinned first;
         reselect `keep` if listed.
@@ -717,13 +737,30 @@ class Session(ttk.Frame):
             self.pour_row.pack(fill="x")
         else:
             units = d["units"] if d else []
+            default = self.app.data["default_serves"].get(d["type"]) if d else None
+            first = next((u for u in units if u["ml"] == default), units[0] if units else None)
             self.unit_pick["values"] = [unit_text(u) for u in units] + [OTHER]
-            self.unit.set(unit_text(units[0]) if units else OTHER)
+            self.unit.set(unit_text(first) if first else OTHER)
             self.unit_row.pack(fill="x")
             self._unit_changed()
 
+    def _picked_unit(self):
+        """The selected drink's unit chosen in Serve, or None for an other amount or no drink."""
+        d = self._selected()
+        i = self.unit_pick.current()
+        return d["units"][i] if d and not d["pour"] and 0 <= i < len(d["units"]) else None
+
     def _unit_changed(self):
         self.other_entry.configure(state="normal" if self.unit.get() == OTHER else "disabled")
+        d, unit = self._selected(), self._picked_unit()
+        if not (d and d["type"] in DEFAULT_SERVE_TYPES):
+            self.default_button.pack_forget()
+            return
+        is_default = unit is not None and self.app.data["default_serves"].get(d["type"]) == unit["ml"]
+        self.default_button.configure(
+            text=f"★ Default {d['type']} serve (click to unset)" if is_default else f"☆ Make this my default {d['type']} serve",
+            state="normal" if unit else "disabled")
+        self.default_button.pack(anchor="w", pady=(2, 0))
 
     # --- display ---
 
