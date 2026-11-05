@@ -2954,7 +2954,7 @@
   {
    "name": "Lakeman Dragon Slayer Double IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 8.5,
    "units": [
     {
      "label": "can/bottle",
@@ -2974,7 +2974,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Lakeman Love Doctor Hazy IPA",
