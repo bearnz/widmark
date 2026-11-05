@@ -508,6 +508,28 @@ class AppSmokeTest(unittest.TestCase):
         self.pick("gin")  # spirits are poured: no default serve
         self.assertFalse(w.current.default_button.winfo_manager())
 
+    def test_publish_shows_what_will_go_then_publishes(self):
+        w = self.window
+        asked = []
+        changes = {"Test Lager": ({"manual": "5.2"}, True)}
+        stale = [{"number": 14, "url": "u", "headRefName": "chore/data-2026-11-04"}]
+        with mock.patch.object(app.publish, "local_changes", return_value=changes),                 mock.patch.object(app.publish, "stale_prs", return_value=stale),                 mock.patch.object(app.publish, "publish", return_value=("https://example.test/pull/15", True)) as push,                 mock.patch.object(app.messagebox, "askyesno", lambda title, text, **_: asked.append(text) or True),                 mock.patch.object(app.webbrowser, "open") as browse:
+            w.publish_list()
+        self.assertIn("• Test Lager: ABV set to 5.2%", asked[0])
+        self.assertIn("Still open from an earlier day: #14 (2026-11-04)", asked[0])
+        push.assert_called_once_with(changes)
+        self.assertIn("https://example.test/pull/15", asked[1])
+        browse.assert_called_once_with("https://example.test/pull/15")
+
+    def test_publish_with_nothing_changed_or_declined_pushes_nothing(self):
+        w = self.window
+        with mock.patch.object(app.publish, "local_changes", return_value={}),                 mock.patch.object(app.publish, "publish") as push:
+            w.publish_list()
+        self.assertIn("Nothing to publish", self.messages[-1])
+        with mock.patch.object(app.publish, "local_changes", return_value={"A": ({"manual": "5"}, True)}),                 mock.patch.object(app.publish, "stale_prs", return_value=[]),                 mock.patch.object(app.messagebox, "askyesno", return_value=False),                 mock.patch.object(app.publish, "publish") as push:
+            w.publish_list()
+        push.assert_not_called()
+
     def test_favourites_are_pinned_and_remembered(self):
         w = self.window
         self.assertEqual(str(w.current.fav_button["state"]), "disabled")
