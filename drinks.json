@@ -1175,7 +1175,7 @@
   {
    "name": "Emerson's Hazed & Confused IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 5.8,
    "units": [
     {
      "label": "can/bottle",
@@ -1191,7 +1191,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Emerson's Pilsner",
@@ -3343,7 +3343,7 @@
   {
    "name": "Panhead Sandman Hazy Pale Ale",
    "type": "beer",
-   "abv": null,
+   "abv": 5.2,
    "units": [
     {
      "label": "can/bottle",
@@ -3359,7 +3359,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Panhead Supercharger APA",
