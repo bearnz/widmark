@@ -29,6 +29,8 @@ CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNOREC
 HINT = "#666"
 GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
 OTHER = "other amount"
+SEARCH_HINT = "Search, or type a custom drink like 500ml 6%"
+NOT_LISTED_HINT = "Not listed? Add to list… saves it for next time"
 TYPES = {"All": "", "Beer": "beer", "Cider": "cider", "Wine": "wine", "RTDs": "rtd", "Spirits": "spirit"}
 
 
@@ -317,7 +319,8 @@ class Session(ttk.Frame):
         self.search = tk.StringVar()
         self.search.trace_add("write", lambda *_: self._filter())
         ttk.Entry(box, textvariable=self.search).pack(fill="x")
-        ttk.Label(box, text="Search, or type a custom drink like 500ml 6%", foreground=HINT).pack(anchor="w")
+        self.hint = ttk.Label(box, foreground=HINT)
+        self.hint.pack(anchor="w")
         self.kind = tk.StringVar(value="")  # drink type to list, "" for all of them
         row = ttk.Frame(box)
         row.pack(fill="x", pady=(4, 0))
@@ -333,6 +336,7 @@ class Session(ttk.Frame):
         self.fav_button.pack(side="left")
         self.abv_button = ttk.Button(row, text="Set ABV…", command=self.set_abv)
         self.abv_button.pack(side="left", padx=6)
+        ttk.Button(row, text="Add to list…", command=self.new_drink).pack(side="left")
 
         # How it was served: one of the drink's units, or for spirits the mL poured plus mixer.
         serve = ttk.Frame(box)
@@ -614,6 +618,32 @@ class Session(ttk.Frame):
                 e["abv"] = new["abv"]
             self.app.save()
 
+    def new_drink(self):
+        """Add a drink that isn't listed to the drink list for good, starting from the search.
+
+        It goes into the ABV table as a new row, like Set ABV, so it shows up in git to commit.
+        """
+        search = " ".join(self.search.get().split())
+        kind = self.kind.get() or "beer"
+        values = {"name": "" if CUSTOM_RE.fullmatch(search) else search, "type": kind,
+                  "abv": "", "units": build_drinks.DEFAULT_UNITS[kind]}
+        while True:  # on a mistake, ask again with what was typed
+            values = ask_new_drink(self.app, values)
+            if values is None:
+                return
+            try:
+                name = build_drinks.add_drink(values["name"], values["type"], optional_abv(values["abv"]),
+                                              values["units"], self.app.sources, self.app.catalogue_path)
+                break
+            except (ValueError, build_drinks.BuildError) as e:
+                messagebox.showerror("Add to list", str(e), parent=self.app)
+        self.app.catalogue = load_catalogue(self.app.catalogue_path)
+        self.app.refilter()
+        if self.kind.get() not in ("", values["type"]):
+            self.kind.set("")
+        self.search.set(name)
+        self._filter(keep=name)
+
     def toggle_favourite(self):
         d = self._selected()
         if not d:
@@ -641,6 +671,9 @@ class Session(ttk.Frame):
                    if kind in ("", d.get("type"))
                    and all(w in f"{d['name']} {d.get('type', '')}".lower() for w in words)]
         self.matches = sorted(matches, key=lambda d: d["name"] not in favourites)
+        search = self.search.get().strip()
+        not_listed = search and not matches and not CUSTOM_RE.fullmatch(search)
+        self.hint["text"] = NOT_LISTED_HINT if not_listed else SEARCH_HINT
         self.listbox.delete(0, "end")
         for i, d in enumerate(self.matches):
             star = "★ " if d["name"] in favourites else ""
@@ -804,6 +837,47 @@ class Session(ttk.Frame):
             c.create_text(x(now) + 3, top, text="now", anchor="nw", font=small)
 
 
+class NewDrinkDialog(simpledialog.Dialog):
+    """Asks for a drink to add to the list: its name, type, ABV and how it's served."""
+
+    def __init__(self, parent, values):
+        self.values = values
+        super().__init__(parent, "Add to list")
+
+    def body(self, master):
+        self.vars = {k: tk.StringVar(value=self.values.get(k, "")) for k in ("name", "type", "abv", "units")}
+        name = ttk.Entry(master, textvariable=self.vars["name"], width=40)
+        kind = ttk.Combobox(master, textvariable=self.vars["type"], values=build_drinks.TYPE_ORDER,
+                            state="readonly", width=10)
+        kind.bind("<<ComboboxSelected>>", lambda _: self._type_changed())
+        self.shown_type = self.vars["type"].get()
+        rows = [("Name", name, None), ("Type", kind, None),
+                ("ABV %", ttk.Entry(master, textvariable=self.vars["abv"], width=8),
+                 "from the label; leave blank if you don't know it yet"),
+                ("Serves", ttk.Entry(master, textvariable=self.vars["units"], width=40),
+                 "each a name and ml, e.g. can 440; pint 568")]
+        for i, (label, widget, hint) in enumerate(rows):
+            ttk.Label(master, text=label).grid(row=2 * i, column=0, sticky="w", padx=(0, 6), pady=(4, 0))
+            widget.grid(row=2 * i, column=1, sticky="w", pady=(4, 0))
+            if hint:
+                ttk.Label(master, text=hint, foreground=HINT).grid(row=2 * i + 1, column=1, sticky="w")
+        return name
+
+    def _type_changed(self):
+        """Swap in the new type's usual serves, unless they've been changed from the old type's."""
+        if self.vars["units"].get().strip() == build_drinks.DEFAULT_UNITS.get(self.shown_type):
+            self.vars["units"].set(build_drinks.DEFAULT_UNITS[self.vars["type"].get()])
+        self.shown_type = self.vars["type"].get()
+
+    def apply(self):
+        self.result = {k: v.get() for k, v in self.vars.items()}
+
+
+def ask_new_drink(parent, values):
+    """The values entered in the Add to list box, starting from `values`; None if cancelled."""
+    return NewDrinkDialog(parent, values).result
+
+
 def fmt_num(value):
     return "" if value is None else f"{value:g}"
 
@@ -841,6 +915,15 @@ def amount(text, what, most, least=0.1):
     if value is None or not least <= value <= most:
         raise ValueError(f"{what} must be an amount in ml, up to {most}.")
     return value
+
+
+def optional_abv(text):
+    """An ABV typed as '4.5' or '4.5%', or None if left blank."""
+    text = text.strip().rstrip("%").strip()
+    try:
+        return float(text) if text else None
+    except ValueError:
+        raise ValueError(f"ABV {text!r} isn't a number, e.g. 4.5 (or leave it blank).") from None
 
 
 def whole(text):
