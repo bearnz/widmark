@@ -48,7 +48,7 @@ Garage Project Hazy Pernicious Weed,beer,can/bottle 330; handle 425; pint 568,6,
 Garage Project Hapi Daze Pale Ale,beer,can/bottle 330; handle 425; pint 568,4.6,4.6,,,4.6,,,brewery,
 Garage Project Party & Bullshit IPA,beer,can/bottle 440; handle 425; pint 568,6.2,,,,6.2,,,brewery,
 Garage Project Boss Level Ultra IPA,beer,can/bottle 440; handle 425; pint 568,8.5,8,,,8,,,brewery,Garage Project lists 8.0%
-Lakeman Love Doctor Hazy IPA,beer,can/bottle 440; handle 425; pint 568,8.5,,,,,,,one source,
+Lakeman Love Doctor Hazy IPA,beer,can/bottle 440; handle 425; pint 568,8.5,,,,,,8.7,manual,
 Epic Hop Zombie,beer,can/bottle 330; handle 425; pint 568,8.5,,,,,,,one source,
 Liberty Oh Brother Pale Ale,beer,can/bottle 330; handle 425; pint 568,5.1,,,,,,,one source,
 Liberty Halo Pilsner,beer,can/bottle 330; handle 425; pint 568,5,,,,,,,one source,
@@ -78,7 +78,7 @@ Coopers Best Extra Stout,beer,bottle 750; handle 425; pint 568,,6.3,,,,,,one sou
 Coopers Sparkling Ale,beer,bottle 750; handle 425; pint 568,,5.8,,,,,,one source,
 Coopers Original Pale Ale,beer,bottle 750; handle 425; pint 568,,,,,,,,missing,Stocked by Liquorland; no ABV listed
 Guinness Draught (can),beer,can/bottle 440; handle 425; pint 568,,,,4.2,,4.2,,one source,
-Stella Artois,beer,can/bottle 330; handle 425; pint 568,,,,,,4.8,,guess only,No retailer ABV found
+Stella Artois,beer,can/bottle 330; handle 425; pint 568,,,,,,4.8,5,manual,No retailer ABV found
 Tiger Lager,beer,can/bottle 330; handle 425; pint 568,,,,,5,,,brewery,neither lists ABV
 Tiger Crystal Ultra Low Carb,beer,can/bottle 330; handle 425; pint 568,,,,,4.2,,,brewery,none lists ABV
 Kingfisher Strong,beer,can/bottle 330; handle 425; pint 568,,,,,,,,missing,Stocked by Woolworths and New World; neither lists ABV
@@ -439,3 +439,4 @@ White wine (generic),wine,glass 150; large glass 250; bottle 750,,,,,,13,,generi
 Red wine (generic),wine,glass 150; large glass 250; bottle 750,,,,,,13.5,,generic,
 Bubbles / prosecco (generic),wine,flute 120; glass 150; bottle 750,,,,,,11,,generic,
 Spirit (generic),spirit,shot 15; double 30; family 37.5,,,,,,37.5,,generic,
+Malfy Original Gin,spirit,shot 15; double 30; family 37.5,,,,,,,41,manual,Added in the app
