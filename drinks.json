@@ -10293,6 +10293,27 @@
    "source": "Liquorland"
   },
   {
+   "name": "Malfy Original Gin",
+   "type": "spirit",
+   "abv": 41.0,
+   "units": [
+    {
+     "label": "shot",
+     "ml": 15.0
+    },
+    {
+     "label": "double",
+     "ml": 30.0
+    },
+    {
+     "label": "family",
+     "ml": 37.5
+    }
+   ],
+   "pour": true,
+   "source": "manual"
+  },
+  {
    "name": "Smirnoff Vodka",
    "type": "spirit",
    "abv": 37.5,
