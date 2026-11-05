@@ -31,7 +31,8 @@ class SetAbvTest(unittest.TestCase):
     def setUp(self):
         tmp = Path(tempfile.mkdtemp())
         self.sources, self.catalogue = tmp / "abv_sources.csv", tmp / "drinks.json"
-        shutil.copy(app.build_drinks.SOURCES, self.sources)
+        # The committed table, so drinks edited in this checkout don't start out marked as edited.
+        self.sources.write_text(app.publish.git("show", f"HEAD:{app.publish.CSV_PATH}"), encoding="utf-8")
         app.build_drinks.build(self.sources, self.catalogue)
         try:
             self.window = app.App(tmp / "state.json", catalogue_path=self.catalogue, sources=self.sources)
@@ -65,6 +66,11 @@ class SetAbvTest(unittest.TestCase):
         w.current.listbox.selection_set(0)
         w.current._show_serve()
 
+    def colour(self, session, name):
+        """The list's text colour for a drink (EDITED for one added or edited since the last commit)."""
+        i = next(i for i, d in enumerate(session.matches) if d["name"] == name)
+        return str(session.listbox.itemcget(i, "foreground"))
+
     def manual(self, drink):
         return {r["drink"]: r["manual"] for r in app.build_drinks.read(self.sources)[1]}[drink]
 
@@ -74,6 +80,7 @@ class SetAbvTest(unittest.TestCase):
         w.save_profile()
         self.pick("big hoppa")
         self.assertEqual(w.current.listbox.get(0), "Mac's Big Hoppa IPA  (no ABV yet)")
+        self.assertEqual(self.colour(w.current, "Mac's Big Hoppa IPA"), app.HINT)
         w.current.add_drink()
         self.assertEqual(w.data["log"], [])
         self.assertIn("has no ABV yet", self.messages[0])
@@ -84,6 +91,7 @@ class SetAbvTest(unittest.TestCase):
         saved = {d["name"]: d for d in app.load_catalogue(self.catalogue)}["Mac's Big Hoppa IPA"]
         self.assertEqual((saved["abv"], saved["source"]), (5.7, "manual"))
         self.assertEqual(w.current.listbox.get(w.current.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (5.7%)")
+        self.assertEqual(self.colour(w.current, "Mac's Big Hoppa IPA"), app.EDITED)
         w.current.add_drink()
         self.assertEqual(w.data["log"][0]["abv"], 5.7)
 
@@ -91,6 +99,7 @@ class SetAbvTest(unittest.TestCase):
         w.current.set_abv()
         self.assertEqual(self.manual("Mac's Big Hoppa IPA"), "")
         self.assertEqual(w.current.listbox.get(w.current.listbox.curselection()[0]), "Mac's Big Hoppa IPA  (no ABV yet)")
+        self.assertEqual(self.colour(w.current, "Mac's Big Hoppa IPA"), app.HINT)  # back as committed
 
     def test_correcting_an_abv_offers_to_update_logged_drinks(self):
         w = self.window
@@ -138,6 +147,9 @@ class SetAbvTest(unittest.TestCase):
         self.assertIn("Backyard Lager", [d["name"] for d in app.load_catalogue(self.catalogue)])
         w.plan.search.set("backyard")  # the plan tab lists it too
         self.assertEqual([d["name"] for d in w.plan.matches], ["Backyard Lager"])
+        self.assertEqual(self.colour(w.plan, "Backyard Lager"), app.EDITED)
+        w.plan.search.set("heineken")
+        self.assertEqual(self.colour(w.plan, "Heineken"), "")  # untouched drinks keep the usual colour
 
     def test_adding_a_listed_drink_or_cancelling_changes_nothing(self):
         before = self.sources.read_text(encoding="utf-8")
