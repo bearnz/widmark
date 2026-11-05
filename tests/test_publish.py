@@ -28,6 +28,9 @@ class PublishTest(unittest.TestCase):
         (seed / "data").mkdir(parents=True)
         for f in ("bac.py", "build_drinks.py", "drinks.json", publish.CSV_PATH):
             shutil.copy(publish.REPO / f, seed / f)
+        # The seed is the real drink list, so clear the ABV the tests set: otherwise setting it
+        # changes nothing once the real list has it (data PR #17 gave Love Doctor 8.7).
+        build_drinks.set_manual(LOVE_DOCTOR, None, seed / publish.CSV_PATH, seed / "drinks.json")
         git("init", "--quiet", "--initial-branch", "main", cwd=seed)
         git("add", ".", cwd=seed)
         git("commit", "--quiet", "-m", "seed", cwd=seed)
