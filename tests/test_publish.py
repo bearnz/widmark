@@ -111,6 +111,14 @@ class PublishTest(unittest.TestCase):
         self.assertIn(f"{LOVE_DOCTOR}: ABV set to 8.7%", self.bodies[20])  # the PR lists the whole day
         self.assertIn("Added Backyard Lager (beer, 4.6%; serves can 440; pint 568)", self.bodies[20])
 
+    def test_edited_drinks_are_the_rows_changed_since_the_last_commit(self):
+        self.assertEqual(publish.edited_drinks(self.repo), set())
+        self.set_abv(LOVE_DOCTOR, 8.7)
+        build_drinks.add_drink("Backyard Lager", "beer", 4.6, "can 440", self.repo / publish.CSV_PATH,
+                               self.repo / "drinks.json")
+        self.assertEqual(publish.edited_drinks(self.repo), {LOVE_DOCTOR, "Backyard Lager"})
+        self.assertEqual(publish.edited_drinks(self.repo.parent), set())  # not a checkout: none
+
     def test_publishing_again_with_nothing_new_pushes_nothing(self):
         self.set_abv(LOVE_DOCTOR, 8.7)
         self.publish()

@@ -29,6 +29,7 @@ AGE = (18, 120)
 HEIGHT_CM = (100, 250)
 CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNORECASE)
 HINT = "#666"
+EDITED = "#b8860b"  # dark yellow: a drink added or edited here and not yet committed
 GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
 OTHER = "other amount"
 SEARCH_HINT = "Search, or type a custom drink like 500ml 6%"
@@ -200,7 +201,10 @@ class App(tk.Tk):
             self.data = load_state(state_path)
             warning = str(e)
             self.after(200, lambda: messagebox.showwarning("Saved data", warning, parent=self))
-        self.catalogue = load_catalogue(catalogue_path) if catalogue is None else catalogue
+        if catalogue is None:
+            self.reload_catalogue()
+        else:
+            self.catalogue, self.edited = catalogue, set()
         self.cop_on = tk.BooleanVar(value=self.data["cop_stop"])
         self._build_profile()
         self.tabs = ttk.Notebook(self)
@@ -257,6 +261,11 @@ class App(tk.Tk):
             return
         self.data["profile"] = {"sex": self.sex.get(), "age": age, "weight": weight, "height": height}
         self.save()
+
+    def reload_catalogue(self):
+        """Read the drink list again, and which drinks were added or edited since the last commit."""
+        self.catalogue = load_catalogue(self.catalogue_path)
+        self.edited = publish.edited_drinks(sources=self.sources)
 
     def refilter(self):
         """Re-list the drinks on every tab (after a favourite or ABV change), keeping each selection."""
@@ -649,7 +658,7 @@ class Session(ttk.Frame):
         except (ValueError, build_drinks.BuildError) as e:
             messagebox.showerror("Set ABV", str(e) if text else f"Couldn't clear it: {e}", parent=self.app)
             return
-        self.app.catalogue = load_catalogue(self.app.catalogue_path)
+        self.app.reload_catalogue()
         self.app.refilter()
         new = self._selected()
         # Logged and planned drinks keep the ABV they were added with unless the user says
@@ -682,7 +691,7 @@ class Session(ttk.Frame):
                 break
             except (ValueError, build_drinks.BuildError) as e:
                 messagebox.showerror("Add to list", str(e), parent=self.app)
-        self.app.catalogue = load_catalogue(self.app.catalogue_path)
+        self.app.reload_catalogue()
         self.app.refilter()
         if self.kind.get() not in ("", values["type"]):
             self.kind.set("")
@@ -738,7 +747,9 @@ class Session(ttk.Frame):
             star = "★ " if d["name"] in favourites else ""
             abv = "no ABV yet" if d["abv"] is None else f"{d['abv']:g}%"
             self.listbox.insert("end", f"{star}{d['name']}  ({abv})")
-            if d["abv"] is None:
+            if d["name"] in self.app.edited:
+                self.listbox.itemconfigure(i, foreground=EDITED)
+            elif d["abv"] is None:
                 self.listbox.itemconfigure(i, foreground=HINT)
             if d["name"] == keep:
                 self.listbox.selection_set(i)

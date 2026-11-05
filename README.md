@@ -38,6 +38,8 @@ edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
 the checkout's branch and uncommitted files stay as they are (publish.py).
 Once the PR is merged and Publish says there's nothing new, the checkout's
 copies of the CSV and drinks.json can be discarded and main pulled.
+Until then, drinks added or edited since the last commit are listed in dark
+yellow, so uncommitted edits stand out.
 Cop stop (on by default) shows what NZ law would do if you were pulled over
 driving at your current BAC: the infringement or court penalty for your age,
 from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
