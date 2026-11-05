@@ -18,7 +18,10 @@ the profile, body water comes from the Watson formula instead of the fixed
 Widmark factor.
 
 Pick a drink, then how it was served: one of its units (can/bottle, handle,
-pint, glass, bottle...) or any other amount in ml. Spirits are logged by the ml
+pint, glass, bottle...) or any other amount in ml. Every beer and cider also
+offers the common 440 ml and 500 ml cans/bottles. For a beer or cider, the
+button under Serve makes the chosen size your default for that type, so it is
+picked first from then on (click it again to unset). Spirits are logged by the ml
 poured, with the mixer recorded alongside; only the spirit counts.
 Pin drinks you have often as favourites: they stay at the top of the list.
 The buttons above the list (All, Beer, Cider, Wine, RTDs, Spirits) show one type of drink.

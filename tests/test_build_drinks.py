@@ -43,6 +43,14 @@ class ResolveTest(unittest.TestCase):
 
 
 class UnitsTest(unittest.TestCase):
+    def test_beer_and_cider_get_the_common_serves_they_dont_list(self):
+        sizes = lambda **r: [(u["label"], u["ml"]) for u in build_drinks.serves(row(**r))]
+        self.assertEqual(sizes(units="bottle 1250; handle 425; pint 568", type="cider"),
+                         [("bottle", 1250), ("handle", 425), ("can/bottle", 440), ("can/bottle", 500), ("pint", 568)])
+        self.assertEqual(sizes(units="can 500; pint 568"),  # keeps its own 500, first stays first
+                         [("can", 500), ("can/bottle", 440), ("pint", 568)])
+        self.assertEqual(sizes(units="glass 150; bottle 750", type="wine"), [("glass", 150), ("bottle", 750)])
+
     def test_parse(self):
         self.assertEqual(build_drinks.parse_units("can/bottle 330; large glass 250"),
                          [{"label": "can/bottle", "ml": 330}, {"label": "large glass", "ml": 250}])
@@ -145,7 +153,8 @@ class AddDrinkTest(unittest.TestCase):
         self.assertEqual(name, "Backyard Lager")
         added = self.drinks(out)["Backyard Lager"]
         self.assertEqual((added["abv"], added["source"], added["pour"]), (4.6, "manual", False))
-        self.assertEqual(added["units"], [{"label": "can", "ml": 440}, {"label": "pint", "ml": 568}])
+        self.assertEqual(added["units"], [{"label": "can", "ml": 440}, {"label": "can/bottle", "ml": 500},
+                                          {"label": "pint", "ml": 568}])
         row = build_drinks.read(src)[1][-1]
         self.assertEqual((row["drink"], row["manual"], row["status"], row["note"]),
                          ("Backyard Lager", "4.6", "manual", build_drinks.ADDED_NOTE))

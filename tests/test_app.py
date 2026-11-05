@@ -171,11 +171,12 @@ class StateTest(unittest.TestCase):
 
     def test_missing_file_gives_empty_state(self):
         self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "plan": [], "favourites": [],
-                                                     "cop_stop": True})
+                                                     "cop_stop": True, "default_serves": {}})
 
     def test_round_trip(self):
         data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
-                "plan": [], "favourites": ["Lion Red"], "cop_stop": False}
+                "plan": [], "favourites": ["Lion Red"], "cop_stop": False,
+                "default_serves": {"beer": 440}}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
 
@@ -477,6 +478,35 @@ class AppSmokeTest(unittest.TestCase):
         w.current.other_ml.set("400")
         w.current.add_drink()
         self.assertEqual((w.data["log"][-1]["unit"], w.data["log"][-1]["ml"]), ("other", 400))
+
+    def test_default_serve_is_picked_first_and_remembered(self):
+        w = self.window
+        self.pick("lager")
+        self.assertEqual(w.current.unit.get(), "can/bottle (330 ml)")  # no default: the first unit
+        self.assertEqual(w.current.default_button["text"], "☆ Make this my default beer serve")
+        w.current.unit_pick.current(1)
+        w.current._unit_changed()
+        w.current.default_button.invoke()
+        self.assertEqual(w.data["default_serves"], {"beer": 568})
+        self.assertEqual(app.load_state(w.state_path)["default_serves"], {"beer": 568})
+        self.assertEqual(w.current.default_button["text"], "★ Default beer serve (click to unset)")
+
+        for s in w.sessions:  # both tabs now start a beer on a pint
+            s.search.set("")
+            s.search.set("lager")
+            s.listbox.selection_set(0)
+            s._show_serve()
+            self.assertEqual(s.unit.get(), "pint (568 ml)")
+        w.current.unit_pick.current(2)  # other amount can't be a default
+        w.current._unit_changed()
+        self.assertEqual(str(w.current.default_button["state"]), "disabled")
+
+        w.current.unit_pick.current(1)
+        w.current._unit_changed()
+        w.current.default_button.invoke()  # unset
+        self.assertEqual(w.data["default_serves"], {})
+        self.pick("gin")  # spirits are poured: no default serve
+        self.assertFalse(w.current.default_button.winfo_manager())
 
     def test_favourites_are_pinned_and_remembered(self):
         w = self.window
