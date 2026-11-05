@@ -96,7 +96,7 @@ def load_state(path=STATE):
         entry.setdefault("food", data.get("food", False))
     return {"profile": data.get("profile", {}), "log": log, "plan": data.get("plan", []),
             "favourites": data.get("favourites", []), "cop_stop": data.get("cop_stop", True),
-            "default_serves": data.get("default_serves", {})}
+            "default_serves": data.get("default_serves", {}), "default_pour": data.get("default_pour")}
 
 
 def save_state(data, path=STATE):
@@ -417,6 +417,10 @@ class Session(ttk.Frame):
             if label == "Spirit":  # quick picks for the spirit, e.g. shot 15 / double 30
                 self.quick = ttk.Frame(self.pour_row)
                 self.quick.pack(anchor="w", pady=(0, 2))
+            var.trace_add("write", lambda *_: self._pour_changed())
+        # Any spirit starts on the pour (spirit and mixer mL) saved as the default.
+        self.pour_button = ttk.Button(self.pour_row, command=self.toggle_default_pour)
+        self.pour_button.pack(anchor="w", pady=(2, 0))
 
         # Qty over 1 spreads the drinks evenly from When across "over".
         row = ttk.Frame(box)
@@ -724,6 +728,31 @@ class Session(ttk.Frame):
         for s in self.app.sessions:
             s._unit_changed()
 
+    def toggle_default_pour(self):
+        """Make the spirit and mixer mL in the form the default pour, or unset it if they already are."""
+        pour = self._typed_pour()
+        if pour is None:
+            return
+        self.app.data["default_pour"] = None if pour == self.app.data["default_pour"] else pour
+        save_state(self.app.data, self.app.state_path)
+        for s in self.app.sessions:
+            s._pour_changed()
+
+    def _typed_pour(self):
+        """The spirit and mixer mL typed in the form as {"ml", "mixer"}, or None if not valid amounts."""
+        try:
+            return {"ml": amount(self.spirit_ml.get(), "Spirit", 500),
+                    "mixer": amount(self.mixer_ml.get() or "0", "Mixer", 2000, least=0)}
+        except ValueError:
+            return None
+
+    def _pour_changed(self):
+        pour = self._typed_pour()
+        is_default = pour is not None and pour == self.app.data["default_pour"]
+        self.pour_button.configure(
+            text="★ Default pour (click to unset)" if is_default else "☆ Make this my default pour",
+            state="normal" if pour else "disabled")
+
     def _filter(self, keep=None):
         """List the drinks of the chosen type matching the search, favourites pinned first;
         reselect `keep` if listed.
@@ -783,7 +812,12 @@ class Session(ttk.Frame):
             for u in d["units"]:
                 ttk.Button(self.quick, text=f"{u['label']} {u['ml']:g}", width=10,
                            command=lambda ml=u["ml"]: self.spirit_ml.set(f"{ml:g}")).pack(side="left", padx=1)
-            self.spirit_ml.set(f"{d['units'][0]['ml']:g}")
+            pour = self.app.data["default_pour"]
+            if pour:
+                self.spirit_ml.set(f"{pour['ml']:g}")
+                self.mixer_ml.set(f"{pour['mixer']:g}" if pour["mixer"] else "")
+            else:
+                self.spirit_ml.set(f"{d['units'][0]['ml']:g}")
             self.pour_row.pack(fill="x")
         else:
             units = d["units"] if d else []

@@ -183,12 +183,13 @@ class StateTest(unittest.TestCase):
 
     def test_missing_file_gives_empty_state(self):
         self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "plan": [], "favourites": [],
-                                                     "cop_stop": True, "default_serves": {}})
+                                                     "cop_stop": True, "default_serves": {},
+                                                     "default_pour": None})
 
     def test_round_trip(self):
         data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
                 "plan": [], "favourites": ["Lion Red"], "cop_stop": False,
-                "default_serves": {"beer": 440}}
+                "default_serves": {"beer": 440}, "default_pour": {"ml": 30, "mixer": 200}}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
 
@@ -727,6 +728,38 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual((e["unit"], e["ml"], e["mixer"]), ("poured", 45, 150))
         self.assertAlmostEqual(app.entry_grams(e), 45 * 0.40 * 0.789)
         self.assertEqual(w.current.tree.item("0")["values"][1], "Test Gin, 45 ml + 150 ml mixer")
+
+    def test_default_pour_fills_spirit_and_mixer_and_is_remembered(self):
+        w, s = self.window, self.window.current
+        self.pick("gin")
+        self.assertEqual((s.spirit_ml.get(), s.pour_button["text"]), ("15", "☆ Make this my default pour"))
+        s.spirit_ml.set("30")
+        s.mixer_ml.set("200")
+        s.pour_button.invoke()
+        self.assertEqual(w.data["default_pour"], {"ml": 30, "mixer": 200})
+        self.assertEqual(app.load_state(w.state_path)["default_pour"], {"ml": 30, "mixer": 200})
+        self.assertEqual(s.pour_button["text"], "★ Default pour (click to unset)")
+        s.mixer_ml.set("150")  # no longer the default pour
+        self.assertEqual(s.pour_button["text"], "☆ Make this my default pour")
+        s.spirit_ml.set("lots")  # not an amount: can't be a default
+        self.assertEqual(str(s.pour_button["state"]), "disabled")
+
+        for tab in w.sessions:  # both tabs now start a spirit on the default pour
+            tab.search.set("")
+            tab.search.set("gin")
+            tab.listbox.selection_set(0)
+            tab._show_serve()
+            self.assertEqual((tab.spirit_ml.get(), tab.mixer_ml.get()), ("30", "200"))
+            self.assertEqual(tab.pour_button["text"], "★ Default pour (click to unset)")
+        s.add_drink()
+        self.assertEqual((w.data["log"][-1]["ml"], w.data["log"][-1]["mixer"]), (30, 200))
+
+        s.pour_button.invoke()  # unset
+        self.assertIsNone(w.data["default_pour"])
+        self.assertEqual(w.plan.pour_button["text"], "☆ Make this my default pour")
+        s.search.set("")
+        self.pick("gin")
+        self.assertEqual(s.spirit_ml.get(), "15")  # back to the drink's first unit
 
 
 if __name__ == "__main__":
