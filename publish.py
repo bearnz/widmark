@@ -71,10 +71,19 @@ def changed_rows(before, after):
     return changes
 
 
-def local_changes(repo=REPO):
-    """The drink list changes in this checkout since its last commit."""
-    return changed_rows(git("show", f"HEAD:{CSV_PATH}", cwd=repo),
-                        (repo / CSV_PATH).read_text(encoding="utf-8-sig"))
+def local_changes(repo=REPO, sources=None):
+    """The drink list changes in this checkout since its last commit (sources, the CSV the
+    app edits, defaults to the checkout's own)."""
+    sources = repo / CSV_PATH if sources is None else sources
+    return changed_rows(git("show", f"HEAD:{CSV_PATH}", cwd=repo), sources.read_text(encoding="utf-8-sig"))
+
+
+def edited_drinks(repo=REPO, sources=None):
+    """Names of the drinks added or edited since the last commit, or none if git can't say."""
+    try:
+        return set(local_changes(repo, sources))
+    except PublishError:
+        return set()
 
 
 def apply(changes, text):
