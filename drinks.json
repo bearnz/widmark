@@ -2979,7 +2979,7 @@
   {
    "name": "Lakeman Love Doctor Hazy IPA",
    "type": "beer",
-   "abv": 8.5,
+   "abv": 8.7,
    "units": [
     {
      "label": "can/bottle",
@@ -2999,7 +2999,7 @@
     }
    ],
    "pour": false,
-   "source": "Liquorland"
+   "source": "manual"
   },
   {
    "name": "Lakeman Maximus Hazius X.I Triple Hazy IPA",
