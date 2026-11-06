@@ -686,7 +686,7 @@
   {
    "name": "Behemoth Voodoo Juice DDH Hazy Double IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 8.0,
    "units": [
     {
      "label": "can/bottle",
@@ -706,7 +706,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Better Beer Zero Carb",
