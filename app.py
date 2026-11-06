@@ -483,8 +483,18 @@ class Session(ttk.Frame):
         self.probe_row = ttk.Frame(box)
         self.probe_scale = ttk.Scale(self.probe_row, orient="horizontal", command=self._probe_moved)
         self.probe_scale.pack(anchor="w")
-        self.probe_label = ttk.Label(self.probe_row, font=("Segoe UI", 10, "bold"))
-        self.probe_label.pack(anchor="w")
+        line = ttk.Frame(self.probe_row)
+        line.pack(anchor="w")
+        self.probe_label = ttk.Label(line, font=("Segoe UI", 10, "bold"))
+        self.probe_label.pack(side="left")
+        # A plan is usually ahead of now, off its chart, so its slider goes back to the peak.
+        self.probe_reset = ttk.Button(line, text="Back to peak" if self.planning else "Back to now",
+                                      command=self.reset_probe)
+        self.probe_reset.pack(side="left", padx=(8, 0))
+        # Cop stop at the picked time, once the slider has been moved off now (a plan: its peak).
+        self.probe_cop_headline = ttk.Label(self.probe_row, font=("Segoe UI", 10, "bold"), wraplength=590,
+                                            justify="left")
+        self.probe_cop_details = ttk.Label(self.probe_row, wraplength=590, justify="left")
         ttk.Label(box, text="Estimate only. Individual BAC varies widely; don't drive on these numbers.",
                   foreground="#a33").pack(anchor="w", pady=(6, 0))
 
@@ -920,7 +930,13 @@ class Session(ttk.Frame):
         if self.probe is not None and not t0 <= self.probe <= t1:
             self.probe = None  # the drinks changed and the picked time is off the chart
         self.probe_row.pack(anchor="w", after=self.chart)
-        self._place_probe(self.probe or (peak_t if self.planning else now))
+        self._probe_default = peak_t if self.planning else now
+        self._place_probe(self.probe or self._probe_default)
+
+    def reset_probe(self):
+        """Put the slider back on now (a plan: its peak), following it again as time passes."""
+        self.probe = None
+        self._place_probe(self._probe_default)
 
     def _place_probe(self, t):
         """Put the slider on time t without counting it as a pick, and show the estimate there."""
@@ -950,20 +966,31 @@ class Session(ttk.Frame):
         self.probe_label.configure(foreground=colour, text=(
             f"At {bac.fmt(t)}: {b:.3f}%  (fast to slow elimination "
             f"{bac.bac_at(fast, t):.3f}-{bac.bac_at(slow, t):.3f}%)"))
+        picked = self.probe is not None
+        self.probe_reset.state(["!disabled"] if picked else ["disabled"])
+        # The main cop stop already covers now (a plan: its peak), with the law note.
+        self._fill_cop(self.probe_cop_headline, self.probe_cop_details, b if picked else None,
+                       prefix=f"Pulled over at {bac.fmt(t)}: ")
 
     def _show_cop(self, bac_percent):
         """Show what a stop would mean at bac_percent, or hide it (toggle off, or no profile yet)."""
-        self.cop_headline.pack_forget()
-        self.cop_details.pack_forget()
+        self._fill_cop(self.cop_headline, self.cop_details, bac_percent,
+                       note=["NZ law as of October 2026, for a first offence. Not legal advice."])
+
+    def _fill_cop(self, headline, details, bac_percent, prefix="", note=()):
+        """Fill a cop stop's headline and details labels for bac_percent, or hide them when it's
+        None or cop stop is off."""
+        headline.pack_forget()
+        details.pack_forget()
         if bac_percent is None or not self.app.cop_on.get():
             return
         stop = copstop.cop_stop(bac_percent, self.app.data["profile"].get("age"))
         colour = {"clear": GREEN, "infringement": ORANGE, "court": RED}[stop.level]
-        self.cop_headline.configure(text=stop.headline, foreground=colour)
-        self.cop_details["text"] = "\n".join(
-            stop.details + ["NZ law as of October 2026, for a first offence. Not legal advice."])
-        self.cop_headline.pack(anchor="w", pady=(2, 0))
-        self.cop_details.pack(anchor="w")
+        headline.configure(text=prefix + stop.headline, foreground=colour)
+        details["text"] = "\n".join(stop.details + list(note))
+        headline.pack(anchor="w", pady=(2, 0))
+        if details["text"]:
+            details.pack(anchor="w")
 
     def draw_chart(self, series, now, legal=None):
         c = self.chart
