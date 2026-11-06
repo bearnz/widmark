@@ -348,6 +348,34 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual(saved["profile"]["weight"], 80)
         self.assertEqual(saved["log"][0]["count"], 2)
 
+    def test_slider_reads_the_estimate_at_a_time_on_the_chart(self):
+        w, s = self.window, self.window.current
+        w.weight.set("80")
+        w.save_profile()
+        self.assertFalse(s.probe_row.winfo_ismapped() or s.probe_row.winfo_manager())  # no chart yet
+        s.search.set("568ml 5%")
+        s.when.set("1h ago")
+        s.add_drink()
+        self.assertEqual(s.probe_row.winfo_manager(), "pack")
+        self.assertIsNone(s.probe)  # not touched: it sits on now
+        now_bac = s.now_label["text"].split("%")[0]
+        self.assertTrue(s.probe_label["text"].split(": ", 1)[1].startswith(now_bac + "%"), s.probe_label["text"])
+        self.assertIn("Now, fast to slow elimination", s.detail_label["text"])
+        series, slow, fast = s._estimate
+        self.assertLessEqual(app.bac.bac_at(fast, series[30][0]), app.bac.bac_at(slow, series[30][0]))
+
+        s._probe_moved("30")  # what dragging the slider to 30 minutes in does
+        t = series[0][0] + 30 * app.bac.MINUTE
+        self.assertEqual(s.probe, t)
+        b = app.bac.bac_at(series, t)
+        self.assertEqual(s.probe_label["text"], f"At {app.bac.fmt(t)}: {b:.3f}%  (fast to slow elimination "
+                         f"{app.bac.bac_at(fast, t):.3f}-{app.bac.bac_at(slow, t):.3f}%)")
+        self.assertEqual(len(s.chart.find_withtag("probe")), 2)
+        s.refresh()  # the minute tick keeps the picked time
+        self.assertEqual(s.probe, t)
+        self.assertTrue(s.probe_label["text"].startswith(f"At {app.bac.fmt(t)}:"))
+        self.assertAlmostEqual(float(s.probe_scale.get()), 30)
+
     def test_custom_drink_and_remove(self):
         w = self.window
         w.weight.set("70")

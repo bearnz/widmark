@@ -31,6 +31,7 @@ CUSTOM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*ml\s+(\d+(?:\.\d+)?)\s*%", re.IGNOREC
 HINT = "#666"
 EDITED = "#b8860b"  # dark yellow: a drink added or edited here and not yet committed
 GREEN, ORANGE, RED = "#2e7d32", "#d35400", "#c0392b"
+PROBE = "#7b3fa0"  # the chart's slider marker
 OTHER = "other amount"
 SEARCH_HINT = "Search, or type a custom drink like 500ml 6%"
 NOT_LISTED_HINT = "Not listed? Add to list… saves it for next time"
@@ -476,6 +477,14 @@ class Session(ttk.Frame):
         self.cop_details = ttk.Label(cop, wraplength=590, justify="left")
         self.chart = tk.Canvas(box, width=600, height=230, background="white", highlightthickness=0)
         self.chart.pack(anchor="w", pady=(8, 0))
+        # A slider along the chart's time axis reads off the estimate at any time on it.
+        self.probe = None  # the time picked on the slider; None follows now (a plan: its peak)
+        self._placing_probe = False
+        self.probe_row = ttk.Frame(box)
+        self.probe_scale = ttk.Scale(self.probe_row, orient="horizontal", command=self._probe_moved)
+        self.probe_scale.pack(anchor="w")
+        self.probe_label = ttk.Label(self.probe_row, font=("Segoe UI", 10, "bold"))
+        self.probe_label.pack(anchor="w")
         ttk.Label(box, text="Estimate only. Individual BAC varies widely; don't drive on these numbers.",
                   foreground="#a33").pack(anchor="w", pady=(6, 0))
 
@@ -861,6 +870,7 @@ class Session(ttk.Frame):
             if any(e is s for s in selected):
                 self.tree.selection_add(str(i))
         self.chart.delete("all")
+        self.probe_row.pack_forget()
         self.legal_label["text"] = ""
         p = self.app.data["profile"]
         if not p.get("weight"):
@@ -892,7 +902,7 @@ class Session(ttk.Frame):
                          f"-{max(b for _, b in slow):.3f}%")
         else:
             self.now_label.configure(text=f"{current:.3f}% now", foreground=colour)
-            lines += [f"Now, slow to fast elimination: {bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
+            lines += [f"Now, fast to slow elimination:{bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
                       f"Peak {peak:.3f}% around {bac.fmt(peak_t)}"]
         legal, text, legal_colour = legal_to_drive(series, slow, p.get("age"), None if self.planning else now)
         self.legal_label.configure(text=text, foreground=legal_colour)
@@ -905,6 +915,41 @@ class Session(ttk.Frame):
         self.detail_label["text"] = "\n".join(lines)
         self._show_cop(shown)
         self.draw_chart(series, now, legal)
+        self._estimate = series, slow, fast
+        t0, t1 = self._chart[:2]
+        if self.probe is not None and not t0 <= self.probe <= t1:
+            self.probe = None  # the drinks changed and the picked time is off the chart
+        self.probe_row.pack(anchor="w", after=self.chart)
+        self._place_probe(self.probe or (peak_t if self.planning else now))
+
+    def _place_probe(self, t):
+        """Put the slider on time t without counting it as a pick, and show the estimate there."""
+        t0, t1 = self._chart[:2]
+        self._placing_probe = True
+        self.probe_scale.configure(to=(t1 - t0) / bac.MINUTE)
+        self.probe_scale.set((t - t0) / bac.MINUTE)
+        self._placing_probe = False
+        self._show_probe(t)
+
+    def _probe_moved(self, value):
+        if self._placing_probe:
+            return
+        self.probe = self._chart[0] + round(float(value)) * bac.MINUTE
+        self._show_probe(self.probe)
+
+    def _show_probe(self, t):
+        """Mark time t on the chart and give the estimate then, with the fast-slow range."""
+        series, slow, fast = self._estimate
+        x, y, top, bottom = self._chart[2:]
+        b = bac.bac_at(series, t)
+        c = self.chart
+        c.delete("probe")
+        c.create_line(x(t), top, x(t), bottom, fill=PROBE, tags="probe")
+        c.create_oval(x(t) - 3, y(b) - 3, x(t) + 3, y(b) + 3, fill=PROBE, outline=PROBE, tags="probe")
+        colour = RED if b >= 0.08 else ORANGE if b >= 0.05 else ""
+        self.probe_label.configure(foreground=colour, text=(
+            f"At {bac.fmt(t)}: {b:.3f}%  (fast to slow elimination "
+            f"{bac.bac_at(fast, t):.3f}-{bac.bac_at(slow, t):.3f}%)"))
 
     def _show_cop(self, bac_percent):
         """Show what a stop would mean at bac_percent, or hide it (toggle off, or no profile yet)."""
@@ -956,6 +1001,10 @@ class Session(ttk.Frame):
         if t0 <= now <= t1:
             c.create_line(x(now), top, x(now), bottom, fill="#333", dash=(2, 2))
             c.create_text(x(now) + 3, top, text="now", anchor="nw", font=small)
+        self._chart = t0, t1, x, y, top, bottom
+        # Line the slider up under the time axis.
+        self.probe_scale.configure(length=right - left)
+        self.probe_scale.pack_configure(padx=(left, 0))
 
 
 class NewDrinkDialog(simpledialog.Dialog):
