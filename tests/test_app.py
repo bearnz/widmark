@@ -376,6 +376,46 @@ class AppSmokeTest(unittest.TestCase):
         self.assertTrue(s.probe_label["text"].startswith(f"At {app.bac.fmt(t)}:"))
         self.assertAlmostEqual(float(s.probe_scale.get()), 30)
 
+    def test_slider_cop_stop_and_back_to_now(self):
+        w, s = self.window, self.window.current
+        w.weight.set("80")
+        w.age.set("35")
+        w.save_profile()
+        s.search.set("568ml 5%")
+        s.when.set("1h ago")
+        s.add_drink()
+        # On now: no second cop stop, and nothing to go back to.
+        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
+        self.assertTrue(s.probe_reset.instate(["disabled"]))
+
+        s._probe_moved("0")  # the first drink's start: nothing absorbed yet
+        t0 = s._estimate[0][0][0]
+        self.assertEqual(s.probe_cop_headline.winfo_manager(), "pack")
+        self.assertEqual(s.probe_cop_headline["text"], f"Pulled over at {app.bac.fmt(t0)}: No alcohol: free to go.")
+        self.assertEqual(s.probe_cop_details.winfo_manager(), "")  # free to go has no details
+        self.assertFalse(s.probe_reset.instate(["disabled"]))
+        peak_t = max(s._estimate[0], key=lambda p: p[1])[0]
+        s._probe_moved(str((peak_t - t0) / app.bac.MINUTE))
+        stop = app.copstop.cop_stop(app.bac.bac_at(s._estimate[0], peak_t), 35)
+        self.assertEqual(s.probe_cop_headline["text"], f"Pulled over at {app.bac.fmt(peak_t)}: {stop.headline}")
+        self.assertEqual(s.probe_cop_details["text"], "\n".join(stop.details))
+
+        w.cop_on.set(False)
+        w._cop_changed()  # turning cop stop off hides both
+        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
+        self.assertEqual(s.cop_headline.winfo_manager(), "")
+        w.cop_on.set(True)
+        w._cop_changed()
+        self.assertEqual(s.probe_cop_headline.winfo_manager(), "pack")
+
+        s.reset_probe()
+        self.assertIsNone(s.probe)
+        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
+        self.assertTrue(s.probe_reset.instate(["disabled"]))
+        now_bac = s.now_label["text"].split("%")[0]
+        self.assertTrue(s.probe_label["text"].split(": ", 1)[1].startswith(now_bac + "%"), s.probe_label["text"])
+        self.assertEqual(w.plan.probe_reset["text"], "Back to peak")
+
     def test_custom_drink_and_remove(self):
         w = self.window
         w.weight.set("70")
