@@ -1,0 +1,34 @@
+# Merges the app's drink list PRs (chore/data-YYYY-MM-DD, opened by Publish in publish.py)
+# into main once the secret scan has passed on them. Publish shows the edits before it
+# pushes, and that click is the review for these PRs. Every other PR waits for Josh.
+#
+# workflow_run only fires for this file as it is on main, so changes here apply once merged.
+# A merge made with GITHUB_TOKEN starts no further workflow runs, so main's secret-scan
+# doesn't run on the merge commit; the same commits were already scanned on the PR.
+name: automerge-data
+
+on:
+  workflow_run:
+    workflows: [secret-scan]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'chore/data-') &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge the PR, if its head is still the scanned commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: gh pr merge "$BRANCH" --merge --match-head-commit "$SHA"
