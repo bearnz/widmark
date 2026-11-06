@@ -38,6 +38,9 @@ Publish list changes pushes those edits to GitHub, after showing them: they go
 on one `chore/data-YYYY-MM-DD` branch per day with a PR into main, so a day's
 edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
 the checkout's branch and uncommitted files stay as they are (publish.py).
+The PR merges into main by itself once its secret scan passes
+(.github/workflows/automerge-data.yml): the edits shown before Publish pushes
+are the review. A later Publish that day opens a new PR on the same branch.
 Once the PR is merged and Publish says there's nothing new, the checkout's
 copies of the CSV and drinks.json can be discarded and main pulled.
 Until then, drinks added or edited since the last commit are listed in dark
@@ -93,6 +96,9 @@ Changes to the drink list (ABVs, new drinks, any edit to data/abv_sources.csv)
 reach main only through the app's Publish button: one `chore/data-YYYY-MM-DD`
 branch and PR per day. Don't fold them into feature PRs, and don't commit them
 on a branch by hand; leave them uncommitted in the checkout for Publish.
+These are the one kind of PR that merges without Josh: automerge-data.yml merges
+a `chore/data-` PR once secret-scan passes on its head commit. Josh agreed to
+this on 2026-11-06. Every other PR, `chore/` ones included, waits for him.
 
 Before changing anything in the app, check for open data PRs:
 
@@ -100,8 +106,9 @@ Before changing anything in the app, check for open data PRs:
 gh pr list --state open --json number,headRefName,url
 ```
 
-If a `chore/data-` PR from a day before today is open, remind Josh to review
-and merge it, with its link, and wait for him before making any changes.
+If a `chore/data-` PR from a day before today is open, it didn't merge itself
+(usually a failed secret scan, or a head that moved after the scan). Tell Josh,
+with its link and why it's stuck, and wait for him before making any changes.
 Today's own data PR doesn't block anything.
 
 ## Testing
