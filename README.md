@@ -38,6 +38,9 @@ Publish list changes pushes those edits to GitHub, after showing them: they go
 on one `chore/data-YYYY-MM-DD` branch per day with a PR into main, so a day's
 edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
 the checkout's branch and uncommitted files stay as they are (publish.py).
+The PR merges into main by itself once its secret scan passes
+(.github/workflows/automerge-data.yml): the edits shown before Publish pushes
+are the review. A later Publish that day opens a new PR on the same branch.
 Once the PR is merged and Publish says there's nothing new, the checkout's
 copies of the CSV and drinks.json can be discarded and main pulled.
 Until then, drinks added or edited since the last commit are listed in dark
