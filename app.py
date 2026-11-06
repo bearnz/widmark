@@ -292,8 +292,8 @@ class App(tk.Tk):
                 f"its PR into main?\n\n{lines}")
         if stale:
             days = ", ".join(f"#{p['number']} ({p['headRefName'][len(publish.BRANCH_PREFIX):]})" for p in stale)
-            text += (f"\n\nStill open from an earlier day: {days}. Merge it first, or its changes "
-                     "go into today's PR too.")
+            text += (f"\n\nStill open from an earlier day: {days}. It didn't merge itself, so its "
+                     "secret scan may have failed: check it, or its changes go into today's PR too.")
         if not messagebox.askyesno(title, text, parent=self):
             return
         self.configure(cursor="watch")
@@ -306,7 +306,7 @@ class App(tk.Tk):
         finally:
             self.configure(cursor="")
         done = "Pushed. The PR is" if pushed else "Nothing new since the last publish. The PR is"
-        if messagebox.askyesno(title, f"{done} {url}\n\nOpen it to review and merge?", parent=self):
+        if messagebox.askyesno(title, f"{done} {url}\n\nIt merges into main by itself once its secret scan passes. Open it?", parent=self):
             webbrowser.open(url)
 
     def _cop_changed(self):

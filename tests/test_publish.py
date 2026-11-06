@@ -50,7 +50,7 @@ class PublishTest(unittest.TestCase):
         if args[:2] == ("pr", "list"):
             return json.dumps(self.prs)
         if args[:2] == ("pr", "create"):
-            number = 20 + len(self.prs)
+            number = 20 + len(self.created)
             self.created.append((arg("--base"), arg("--head")))
             self.prs.append({"number": number, "url": f"https://example.test/pull/{number}", "headRefName": arg("--head")})
             self.bodies[number] = Path(arg("--body-file")).read_text(encoding="utf-8")
@@ -113,6 +113,26 @@ class PublishTest(unittest.TestCase):
         self.assertEqual(self.origin_drink(BRANCH, "Backyard Lager")["abv"], 4.6)
         self.assertIn(f"{LOVE_DOCTOR}: ABV set to 8.7%", self.bodies[20])  # the PR lists the whole day
         self.assertIn("Added Backyard Lager (beer, 4.6%; serves can 440; pint 568)", self.bodies[20])
+
+    def test_after_the_days_pr_is_merged_a_new_change_opens_a_new_pr(self):
+        self.set_abv(LOVE_DOCTOR, 8.7)
+        self.publish()
+        other = self.repo.parent / "other"  # merge the day's PR into main, as automerge-data does
+        git("clone", "--quiet", str(self.origin), str(other), cwd=self.repo.parent)
+        git("merge", "--quiet", "--no-ff", "-m", "Merge pull request #20", f"origin/{BRANCH}", cwd=other)
+        git("--git-dir", str(self.origin), "fetch", "--quiet", str(other), "main:main", cwd=other)
+        self.prs.clear()  # merged, so no longer open
+
+        build_drinks.add_drink("Backyard Lager", "beer", 4.6, "can 440", self.repo / publish.CSV_PATH,
+                               self.repo / "drinks.json")
+        url, pushed = self.publish()
+        self.assertEqual((url, pushed), ("https://example.test/pull/21", True))
+        self.assertEqual(self.created, [("main", BRANCH), ("main", BRANCH)])
+        commits = git("--git-dir", str(self.origin), "rev-list", f"main..{BRANCH}", cwd=self.repo).split()
+        self.assertEqual(len(commits), 1)
+        self.assertEqual(self.origin_drink(BRANCH, "Backyard Lager")["abv"], 4.6)
+        self.assertNotIn(LOVE_DOCTOR, self.bodies[21])  # already on main
+        self.assertIn("Added Backyard Lager", self.bodies[21])
 
     def test_edited_drinks_are_the_rows_changed_since_the_last_commit(self):
         self.assertEqual(publish.edited_drinks(self.repo), set())
