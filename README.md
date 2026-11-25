@@ -9,6 +9,8 @@ given reading.
 > **Estimate only.** Individual BAC varies widely. Never use this to decide whether
 > you're fit to drive.
 
+![The Widmark desktop app partway through an evening: a live BAC estimate, the time it's legal to drive again, the roadside check and a chart of BAC over time](docs/screenshot.png)
+
 ## Features
 
 - **Live estimate and chart.** Log drinks as you go and see your current BAC, the
@@ -93,3 +95,7 @@ uv run python -m unittest
 
 The suite covers the model, the time parser, the catalogue build, the penalty
 rules, the publish flow (against throwaway git repos) and the app itself.
+
+## Licence
+
+No licence is granted. The code is published to read, and all rights are reserved.
