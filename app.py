@@ -1,7 +1,7 @@
 """Desktop app: save your profile, log drinks as you go, watch your estimated BAC, and plan
 a session on its own tab.
 
-Your profile, the last 24 hours of drinks and your plan are kept in ~/.boozer-calc/state.json.
+Your profile, the last 24 hours of drinks and your plan are kept in ~/.widmark/state.json.
 Estimate only: never use it to decide whether you're fit to drive.
 """
 import json
@@ -16,11 +16,12 @@ from tkinter import messagebox, simpledialog, ttk
 
 import bac
 import build_drinks
-import copstop
+import roadside
 import publish
 
 CATALOGUE = build_drinks.CATALOGUE
-STATE = Path.home() / ".boozer-calc" / "state.json"
+STATE = Path.home() / ".widmark" / "state.json"
+OLD_STATE = Path.home() / ".boozer-calc" / "state.json"  # before the rename to Widmark
 LOG_HOURS = 24  # drinks older than this drop off the log
 PLAN_DAYS = 7  # how far ahead a session can be planned
 MAX_QTY = 24
@@ -69,7 +70,7 @@ class StateLock:
                 fcntl.flock(self.file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError:
             self.file.close()
-            raise AlreadyOpen("boozer-calc is already open. Use that window, or close it first, "
+            raise AlreadyOpen("Widmark is already open. Use that window, or close it first, "
                               "so the two don't overwrite each other's drinks.") from None
 
     def release(self):
@@ -96,8 +97,16 @@ def load_state(path=STATE):
     for entry in log:  # older versions had one meal setting for the whole log
         entry.setdefault("food", data.get("food", False))
     return {"profile": data.get("profile", {}), "log": log, "plan": data.get("plan", []),
-            "favourites": data.get("favourites", []), "cop_stop": data.get("cop_stop", True),
+            "favourites": data.get("favourites", []),
+            "roadside_check": data.get("roadside_check", data.get("cop_stop", True)),  # its name before Widmark
             "default_serves": data.get("default_serves", {}), "default_pour": data.get("default_pour")}
+
+
+def move_old_state(old=OLD_STATE, new=STATE):
+    """Carry state.json over from the folder the app used before it was renamed Widmark."""
+    if old.exists() and not new.exists():
+        new.parent.mkdir(parents=True, exist_ok=True)
+        old.replace(new)
 
 
 def save_state(data, path=STATE):
@@ -160,7 +169,7 @@ def legal_to_drive(series, slow, age, now=None):
     Each time comes with the wait until it: from now, or for a plan (now is None, as it
     hasn't happened yet) from the first drink. time is None if never over the limit.
     """
-    limit = copstop.legal_limit(age)
+    limit = roadside.legal_limit(age)
     what = "zero, the limit under 20" if not limit else (
         f"the {limit:.2f}% adult limit" + (" (assuming you're 20 or over)" if age is None else ""))
     t, t_slow = bac.time_below(series, limit), bac.time_below(slow, limit)
@@ -194,7 +203,7 @@ class App(tk.Tk):
         self._lock = lock
         self.catalogue_path = catalogue_path
         self.sources = sources
-        self.title("boozer-calc")
+        self.title("Widmark: blood alcohol estimator")
         self.state_path = state_path
         try:
             self.data = load_state(state_path)
@@ -206,7 +215,7 @@ class App(tk.Tk):
             self.reload_catalogue()
         else:
             self.catalogue, self.edited = catalogue, set()
-        self.cop_on = tk.BooleanVar(value=self.data["cop_stop"])
+        self.roadside_on = tk.BooleanVar(value=self.data["roadside_check"])
         self._build_profile()
         self.tabs = ttk.Notebook(self)
         self.tabs.pack(fill="both", expand=True, padx=8, pady=(0, 8))
@@ -310,8 +319,8 @@ class App(tk.Tk):
         if messagebox.askyesno(title, f"{done} {url}\n\nIt merges into main by itself once its secret scan passes. Open it?", parent=self):
             webbrowser.open(url)
 
-    def _cop_changed(self):
-        self.data["cop_stop"] = self.cop_on.get()
+    def _roadside_changed(self):
+        self.data["roadside_check"] = self.roadside_on.get()
         self.save()
 
     def save(self):
@@ -466,15 +475,15 @@ class Session(ttk.Frame):
         self.detail_label = ttk.Label(box, justify="left")
         self.detail_label.pack(anchor="w")
 
-        # Cop stop: what NZ law would do if you were pulled over driving at the current
+        # Roadside check: what NZ law would do if you were stopped driving at the current
         # BAC, or for a plan at its peak.
-        cop = ttk.Frame(box)
-        cop.pack(fill="x", pady=(8, 0))
+        check = ttk.Frame(box)
+        check.pack(fill="x", pady=(8, 0))
         moment = "at your peak" if self.planning else "now"
-        ttk.Checkbutton(cop, text=f"Cop stop: what if you were pulled over driving {moment}?",
-                        variable=self.app.cop_on, command=self.app._cop_changed).pack(anchor="w")
-        self.cop_headline = ttk.Label(cop, font=("Segoe UI", 10, "bold"), wraplength=590, justify="left")
-        self.cop_details = ttk.Label(cop, wraplength=590, justify="left")
+        ttk.Checkbutton(check, text=f"Roadside check: what if you were stopped driving {moment}?",
+                        variable=self.app.roadside_on, command=self.app._roadside_changed).pack(anchor="w")
+        self.roadside_headline = ttk.Label(check, font=("Segoe UI", 10, "bold"), wraplength=590, justify="left")
+        self.roadside_details = ttk.Label(check, wraplength=590, justify="left")
         self.chart = tk.Canvas(box, width=600, height=230, background="white", highlightthickness=0)
         self.chart.pack(anchor="w", pady=(8, 0))
         # A slider along the chart's time axis reads off the estimate at any time on it.
@@ -491,10 +500,10 @@ class Session(ttk.Frame):
         self.probe_reset = ttk.Button(line, text="Back to peak" if self.planning else "Back to now",
                                       command=self.reset_probe)
         self.probe_reset.pack(side="left", padx=(8, 0))
-        # Cop stop at the picked time, once the slider has been moved off now (a plan: its peak).
-        self.probe_cop_headline = ttk.Label(self.probe_row, font=("Segoe UI", 10, "bold"), wraplength=590,
-                                            justify="left")
-        self.probe_cop_details = ttk.Label(self.probe_row, wraplength=590, justify="left")
+        # The roadside check at the picked time, once the slider has been moved off now (a plan: its peak).
+        self.probe_roadside_headline = ttk.Label(self.probe_row, font=("Segoe UI", 10, "bold"),
+                                                 wraplength=590, justify="left")
+        self.probe_roadside_details = ttk.Label(self.probe_row, wraplength=590, justify="left")
         ttk.Label(box, text="Estimate only. Individual BAC varies widely; don't drive on these numbers.",
                   foreground="#a33").pack(anchor="w", pady=(6, 0))
 
@@ -886,24 +895,24 @@ class Session(ttk.Frame):
         if not p.get("weight"):
             self.now_label.configure(text="--", foreground="")
             self.detail_label["text"] = "Set up your profile to get an estimate."
-            self._show_cop(None)
+            self._show_roadside(None)
             return
         if not log and self.planning:
             self.now_label.configure(text="--", foreground="")
             self.detail_label["text"] = "Add the drinks you plan to have, e.g. 2 pints from 9pm."
-            self._show_cop(None)
+            self._show_roadside(None)
             return
         if not log:
             self.now_label.configure(text="0.000%", foreground="")
             self.detail_label["text"] = "No drinks in the last 24 hours."
-            self._show_cop(0.0)
+            self._show_roadside(0.0)
             return
 
         series, slow, fast = estimate(p, log)
         current = bac.bac_at(series, now)
         grams = sum(entry_grams(e) for e in log)
         peak_t, peak = max(series, key=lambda s: s[1])
-        shown = peak if self.planning else current  # what the headline and cop stop are about
+        shown = peak if self.planning else current  # what the headline and roadside check are about
         colour = RED if shown >= 0.08 else ORANGE if shown >= 0.05 else ""
         lines = [f"{grams:.0f} g alcohol ({grams / bac.STANDARD_DRINK_G:.1f} standard drinks)"]
         if self.planning:
@@ -916,14 +925,14 @@ class Session(ttk.Frame):
                       f"Peak {peak:.3f}% around {bac.fmt(peak_t)}"]
         legal, text, legal_colour = legal_to_drive(series, slow, p.get("age"), None if self.planning else now)
         self.legal_label.configure(text=text, foreground=legal_colour)
-        limit = copstop.legal_limit(p.get("age"))
+        limit = roadside.legal_limit(p.get("age"))
         for th in (0.08, 0.05):
             t = bac.time_below(series, th)
             if t and th != limit:  # the legal limit is in the line above
                 lines.append(f"Below {th:.2f}%: {bac.fmt(t)}")
         lines.append(f"Zero: {bac.fmt(series[-1][0])}  (fast {bac.fmt(fast[-1][0])}, slow {bac.fmt(slow[-1][0])})")
         self.detail_label["text"] = "\n".join(lines)
-        self._show_cop(shown)
+        self._show_roadside(shown)
         self.draw_chart(series, now, legal)
         self._estimate = series, slow, fast
         t0, t1 = self._chart[:2]
@@ -968,23 +977,23 @@ class Session(ttk.Frame):
             f"{bac.bac_at(fast, t):.3f}-{bac.bac_at(slow, t):.3f}%)"))
         picked = self.probe is not None
         self.probe_reset.state(["!disabled"] if picked else ["disabled"])
-        # The main cop stop already covers now (a plan: its peak), with the law note.
-        self._fill_cop(self.probe_cop_headline, self.probe_cop_details, b if picked else None,
-                       prefix=f"Pulled over at {bac.fmt(t)}: ")
+        # The main roadside check already covers now (a plan: its peak), with the law note.
+        self._fill_roadside(self.probe_roadside_headline, self.probe_roadside_details, b if picked else None,
+                       prefix=f"Stopped at {bac.fmt(t)}: ")
 
-    def _show_cop(self, bac_percent):
+    def _show_roadside(self, bac_percent):
         """Show what a stop would mean at bac_percent, or hide it (toggle off, or no profile yet)."""
-        self._fill_cop(self.cop_headline, self.cop_details, bac_percent,
+        self._fill_roadside(self.roadside_headline, self.roadside_details, bac_percent,
                        note=["NZ law as of October 2026, for a first offence. Not legal advice."])
 
-    def _fill_cop(self, headline, details, bac_percent, prefix="", note=()):
-        """Fill a cop stop's headline and details labels for bac_percent, or hide them when it's
-        None or cop stop is off."""
+    def _fill_roadside(self, headline, details, bac_percent, prefix="", note=()):
+        """Fill a roadside check's headline and details labels for bac_percent, or hide them when it's
+        None or the roadside check is off."""
         headline.pack_forget()
         details.pack_forget()
-        if bac_percent is None or not self.app.cop_on.get():
+        if bac_percent is None or not self.app.roadside_on.get():
             return
-        stop = copstop.cop_stop(bac_percent, self.app.data["profile"].get("age"))
+        stop = roadside.check(bac_percent, self.app.data["profile"].get("age"))
         colour = {"clear": GREEN, "infringement": ORANGE, "court": RED}[stop.level]
         headline.configure(text=prefix + stop.headline, foreground=colour)
         details["text"] = "\n".join(stop.details + list(note))
@@ -1134,12 +1143,13 @@ def whole(text):
 
 
 def main():
+    move_old_state()
     try:
         window = App()
     except AlreadyOpen as e:
         root = tk.Tk()
         root.withdraw()
-        messagebox.showinfo("boozer-calc", str(e), parent=root)
+        messagebox.showinfo("Widmark", str(e), parent=root)
         root.destroy()
         return 1
     window.mainloop()

@@ -183,12 +183,26 @@ class StateTest(unittest.TestCase):
 
     def test_missing_file_gives_empty_state(self):
         self.assertEqual(app.load_state(self.path), {"profile": {}, "log": [], "plan": [], "favourites": [],
-                                                     "cop_stop": True, "default_serves": {},
+                                                     "roadside_check": True, "default_serves": {},
                                                      "default_pour": None})
+
+    def test_reads_the_roadside_check_setting_saved_before_the_rename(self):
+        app.save_state({"cop_stop": False}, self.path)
+        self.assertFalse(app.load_state(self.path)["roadside_check"])
+
+    def test_moves_state_from_the_old_folder(self):
+        old, new = self.path.with_name("old.json"), self.path.with_name("new") / "state.json"
+        app.save_state({"favourites": ["Lion Red"]}, old)
+        app.move_old_state(old, new)
+        self.assertFalse(old.exists())
+        self.assertEqual(app.load_state(new)["favourites"], ["Lion Red"])
+        app.save_state({"favourites": []}, old)
+        app.move_old_state(old, new)  # never over a state.json already in the new folder
+        self.assertEqual(app.load_state(new)["favourites"], ["Lion Red"])
 
     def test_round_trip(self):
         data = {"profile": {"sex": "female", "weight": 60}, "log": [{"time": "2026-10-25T21:00:00", "food": True}],
-                "plan": [], "favourites": ["Lion Red"], "cop_stop": False,
+                "plan": [], "favourites": ["Lion Red"], "roadside_check": False,
                 "default_serves": {"beer": 440}, "default_pour": {"ml": 30, "mixer": 200}}
         app.save_state(data, self.path)
         self.assertEqual(app.load_state(self.path), data)
@@ -376,7 +390,7 @@ class AppSmokeTest(unittest.TestCase):
         self.assertTrue(s.probe_label["text"].startswith(f"At {app.bac.fmt(t)}:"))
         self.assertAlmostEqual(float(s.probe_scale.get()), 30)
 
-    def test_slider_cop_stop_and_back_to_now(self):
+    def test_slider_roadside_check_and_back_to_now(self):
         w, s = self.window, self.window.current
         w.weight.set("80")
         w.age.set("35")
@@ -384,33 +398,33 @@ class AppSmokeTest(unittest.TestCase):
         s.search.set("568ml 5%")
         s.when.set("1h ago")
         s.add_drink()
-        # On now: no second cop stop, and nothing to go back to.
-        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
+        # On now: no second roadside check, and nothing to go back to.
+        self.assertEqual(s.probe_roadside_headline.winfo_manager(), "")
         self.assertTrue(s.probe_reset.instate(["disabled"]))
 
         s._probe_moved("0")  # the first drink's start: nothing absorbed yet
         t0 = s._estimate[0][0][0]
-        self.assertEqual(s.probe_cop_headline.winfo_manager(), "pack")
-        self.assertEqual(s.probe_cop_headline["text"], f"Pulled over at {app.bac.fmt(t0)}: No alcohol: free to go.")
-        self.assertEqual(s.probe_cop_details.winfo_manager(), "")  # free to go has no details
+        self.assertEqual(s.probe_roadside_headline.winfo_manager(), "pack")
+        self.assertEqual(s.probe_roadside_headline["text"], f"Stopped at {app.bac.fmt(t0)}: No alcohol: free to go.")
+        self.assertEqual(s.probe_roadside_details.winfo_manager(), "")  # free to go has no details
         self.assertFalse(s.probe_reset.instate(["disabled"]))
         peak_t = max(s._estimate[0], key=lambda p: p[1])[0]
         s._probe_moved(str((peak_t - t0) / app.bac.MINUTE))
-        stop = app.copstop.cop_stop(app.bac.bac_at(s._estimate[0], peak_t), 35)
-        self.assertEqual(s.probe_cop_headline["text"], f"Pulled over at {app.bac.fmt(peak_t)}: {stop.headline}")
-        self.assertEqual(s.probe_cop_details["text"], "\n".join(stop.details))
+        stop = app.roadside.check(app.bac.bac_at(s._estimate[0], peak_t), 35)
+        self.assertEqual(s.probe_roadside_headline["text"], f"Stopped at {app.bac.fmt(peak_t)}: {stop.headline}")
+        self.assertEqual(s.probe_roadside_details["text"], "\n".join(stop.details))
 
-        w.cop_on.set(False)
-        w._cop_changed()  # turning cop stop off hides both
-        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
-        self.assertEqual(s.cop_headline.winfo_manager(), "")
-        w.cop_on.set(True)
-        w._cop_changed()
-        self.assertEqual(s.probe_cop_headline.winfo_manager(), "pack")
+        w.roadside_on.set(False)
+        w._roadside_changed()  # turning the roadside check off hides both
+        self.assertEqual(s.probe_roadside_headline.winfo_manager(), "")
+        self.assertEqual(s.roadside_headline.winfo_manager(), "")
+        w.roadside_on.set(True)
+        w._roadside_changed()
+        self.assertEqual(s.probe_roadside_headline.winfo_manager(), "pack")
 
         s.reset_probe()
         self.assertIsNone(s.probe)
-        self.assertEqual(s.probe_cop_headline.winfo_manager(), "")
+        self.assertEqual(s.probe_roadside_headline.winfo_manager(), "")
         self.assertTrue(s.probe_reset.instate(["disabled"]))
         now_bac = s.now_label["text"].split("%")[0]
         self.assertTrue(s.probe_label["text"].split(": ", 1)[1].startswith(now_bac + "%"), s.probe_label["text"])
@@ -644,27 +658,27 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual(w.current.listbox.get(0, "end"), ("Test Lager  (5%)",))
         self.assertEqual(w.plan.listbox.size(), 2)  # each tab filters on its own
 
-    def test_cop_stop_is_on_by_default_and_follows_the_bac(self):
+    def test_roadside_check_is_on_by_default_and_follows_the_bac(self):
         w = self.window
-        self.assertTrue(w.cop_on.get())
-        self.assertFalse(w.current.cop_headline.winfo_manager())  # no profile yet: nothing to say
+        self.assertTrue(w.roadside_on.get())
+        self.assertFalse(w.current.roadside_headline.winfo_manager())  # no profile yet: nothing to say
         w.weight.set("80")
         w.age.set("35")
         w.save_profile()
-        self.assertEqual(w.current.cop_headline["text"], "No alcohol: free to go.")
+        self.assertEqual(w.current.roadside_headline["text"], "No alcohol: free to go.")
         self.add_custom("1000ml 40%", when="1h ago")  # a litre of spirits: well over 80 mg
-        self.assertTrue(w.current.cop_headline["text"].startswith("Court:"))
-        self.assertIn("28 days", w.current.cop_details["text"])
-        self.assertIn("Not legal advice", w.current.cop_details["text"])
+        self.assertTrue(w.current.roadside_headline["text"].startswith("Court:"))
+        self.assertIn("28 days", w.current.roadside_details["text"])
+        self.assertIn("Not legal advice", w.current.roadside_details["text"])
 
-    def test_cop_stop_can_be_turned_off_and_stays_off(self):
+    def test_roadside_check_can_be_turned_off_and_stays_off(self):
         w = self.window
         w.weight.set("80")
         w.save_profile()
-        w.cop_on.set(False)
-        w._cop_changed()
-        self.assertFalse(w.current.cop_headline.winfo_manager())
-        self.assertFalse(app.load_state(w.state_path)["cop_stop"])
+        w.roadside_on.set(False)
+        w._roadside_changed()
+        self.assertFalse(w.current.roadside_headline.winfo_manager())
+        self.assertFalse(app.load_state(w.state_path)["roadside_check"])
 
     def test_plan_is_a_separate_session(self):
         w, p = self.window, self.window.plan
