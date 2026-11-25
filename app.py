@@ -921,7 +921,7 @@ class Session(ttk.Frame):
                          f"-{max(b for _, b in slow):.3f}%")
         else:
             self.now_label.configure(text=f"{current:.3f}% now", foreground=colour)
-            lines += [f"Now, fast to slow elimination:{bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
+            lines += [f"Now, fast to slow elimination: {bac.bac_at(fast, now):.3f}-{bac.bac_at(slow, now):.3f}%",
                       f"Peak {peak:.3f}% around {bac.fmt(peak_t)}"]
         legal, text, legal_colour = legal_to_drive(series, slow, p.get("age"), None if self.planning else now)
         self.legal_label.configure(text=text, foreground=legal_colour)

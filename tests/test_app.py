@@ -374,7 +374,7 @@ class AppSmokeTest(unittest.TestCase):
         self.assertIsNone(s.probe)  # not touched: it sits on now
         now_bac = s.now_label["text"].split("%")[0]
         self.assertTrue(s.probe_label["text"].split(": ", 1)[1].startswith(now_bac + "%"), s.probe_label["text"])
-        self.assertIn("Now, fast to slow elimination", s.detail_label["text"])
+        self.assertIn("Now, fast to slow elimination: ", s.detail_label["text"])
         series, slow, fast = s._estimate
         self.assertLessEqual(app.bac.bac_at(fast, series[30][0]), app.bac.bac_at(slow, series[30][0]))
 
