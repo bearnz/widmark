@@ -1,6 +1,8 @@
-# boozer-calc
+# Widmark
 
-Python CLI that approximates blood alcohol (BAC) from the drinks you had.
+Desktop app and CLI that estimate blood alcohol (BAC) over time from the drinks
+you had, using the Widmark formula. Called boozer-calc before November 2026; the
+app moves an old `~/.boozer-calc/state.json` to `~/.widmark` on first start.
 
 ## Running
 
@@ -11,7 +13,7 @@ uv run app.py
 ```
 
 Your profile, the last 24 hours of drinks and your plan are saved to
-`~/.boozer-calc/state.json`, outside the repo. Only one window can be open at a
+`~/.widmark/state.json`, outside the repo. Only one window can be open at a
 time, so two can't overwrite each other's drinks. Times can be rough: `now`,
 `9pm`, `~21:30`, `noon`, `1h30m ago`, `an hour ago`. With age and height in
 the profile, body water comes from the Watson formula instead of the fixed
@@ -36,7 +38,7 @@ then Add to list asks for its type, ABV and serves. It becomes a new row in
 data/abv_sources.csv (noted "Added in the app"), the same as a Set ABV edit.
 Publish list changes pushes those edits to GitHub, after showing them: they go
 on one `chore/data-YYYY-MM-DD` branch per day with a PR into main, so a day's
-edits are one PR. It works in its own worktree (`~/.boozer-calc/publish`), so
+edits are one PR. It works in its own worktree (`~/.widmark/publish`), so
 the checkout's branch and uncommitted files stay as they are (publish.py).
 The PR merges into main by itself once its secret scan passes
 (.github/workflows/automerge-data.yml): the edits shown before Publish pushes
@@ -45,9 +47,9 @@ Once the PR is merged and Publish says there's nothing new, the checkout's
 copies of the CSV and drinks.json can be discarded and main pulled.
 Until then, drinks added or edited since the last commit are listed in dark
 yellow, so uncommitted edits stand out.
-Cop stop (on by default) shows what NZ law would do if you were pulled over
+Roadside check (on by default) shows what NZ law would do if you were stopped
 driving at your current BAC: the infringement or court penalty for your age,
-from NZTA and Community Law (copstop.py lists the pages). Not legal advice.
+from NZTA and Community Law (roadside.py lists the pages). Not legal advice.
 A qty above 1 is spread evenly from When over the time you give (one every 30
 minutes unless you change it). Tick "With a meal" for drinks had with food: they
 absorb more slowly. The log's With/without a meal button changes it afterwards.
@@ -60,7 +62,7 @@ plan. Edit selected loads a drink back into the form to change it; edited drinks
 keep the ABV they were logged with. Both tabs say when you'd be legal to drive
 again: back under the 0.05% adult limit (zero under 20) at the typical
 elimination rate, with the later time for a slow one, and how long until each:
-from now on the tonight tab, from the first drink on a plan.
+from now on the Current session tab, from the first drink on a plan.
 
 The drink list (`drinks.json`) is generated from `data/abv_sources.csv`: one row
 per product with its serving units, the ABV that Liquorland, Woolworths, New

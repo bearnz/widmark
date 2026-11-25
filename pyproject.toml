@@ -1,7 +1,7 @@
 [project]
-name = "boozer-calc"
+name = "widmark"
 version = "0.1.0"
-description = "Python CLI that approximates blood alcohol (BAC) from the drinks you had"
+description = "Desktop app and CLI that estimate blood alcohol (BAC) over time with the Widmark formula"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []

@@ -19,7 +19,7 @@ from datetime import date
 from pathlib import Path
 
 REPO = Path(__file__).parent
-WORKTREE = Path.home() / ".boozer-calc" / "publish"
+WORKTREE = Path.home() / ".widmark" / "publish"
 CSV_PATH = "data/abv_sources.csv"
 CATALOGUE_PATH = "drinks.json"
 BRANCH_PREFIX = "chore/data-"

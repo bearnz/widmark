@@ -1,6 +1,6 @@
-"""Cop stop: what NZ law says would happen if you were stopped driving at a given BAC.
+"""Roadside check: what NZ law says would happen if you were stopped driving at a given BAC.
 
-For fun and as a deterrent, not legal advice. Sources, read October 2026:
+A deterrent and an illustration of the law, not legal advice. Sources, read October 2026:
 - NZTA, Alcohol and drug limits (limits, court penalties, interlock):
   https://nzta.govt.nz/driver-licences/driving-offences-and-penalties/alcohol-and-drug-limits
 - NZTA, 28-day roadside licence suspension:
@@ -47,7 +47,7 @@ def legal_limit(age=None):
     return 0.0 if age is not None and age < ADULT_AGE else ADULT_LIMIT_MG / 1000
 
 
-def cop_stop(bac_percent, age=None):
+def check(bac_percent, age=None):
     """What a first-time offender faces if stopped now. age None is treated as 20 or over."""
     blood, breath = blood_mg(bac_percent), breath_ug(bac_percent)
     young = age is not None and age < ADULT_AGE
