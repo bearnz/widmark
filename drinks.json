@@ -507,7 +507,7 @@
   {
    "name": "Behemoth Lid Ripper Hazy IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 6.9,
    "units": [
     {
      "label": "can/bottle",
@@ -527,7 +527,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Behemoth Me Time Mosaic Hazy IPA",
