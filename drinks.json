@@ -453,7 +453,7 @@
   {
    "name": "Behemoth In Ya Face Double IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 8.0,
    "units": [
     {
      "label": "can/bottle",
@@ -473,7 +473,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Behemoth Juice Wayne Hazy IPA",
@@ -6274,7 +6274,7 @@
   {
    "name": "Urbanaut Cordoba Hazy Double IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 8.0,
    "units": [
     {
      "label": "can/bottle",
@@ -6294,7 +6294,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Urbanaut Czech Pilsner",
