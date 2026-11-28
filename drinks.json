@@ -6162,7 +6162,7 @@
   {
    "name": "Urbanaut Altamira Double Bright IPA",
    "type": "beer",
-   "abv": null,
+   "abv": 8.0,
    "units": [
     {
      "label": "can/bottle",
@@ -6182,7 +6182,7 @@
     }
    ],
    "pour": false,
-   "source": "missing"
+   "source": "manual"
   },
   {
    "name": "Urbanaut Atlanta Bright IPA",
